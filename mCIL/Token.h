@@ -73,6 +73,7 @@ enum class Keyword
 class Token
 {
 public:
+	//TODO: underscores not CamelCase
 	Token(const Token&);
 	Token& operator=(const Token&);
 

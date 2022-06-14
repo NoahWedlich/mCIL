@@ -243,7 +243,7 @@ const std::string Token::toString() const
 		valueRepr = this->lexeme_;
 		break;
 	case TokenType::TOKEN_NUMBER:
-		typeRepr = "[OPERATOR]";
+		typeRepr = "[NUMBER]";
 		valueRepr = this->lexeme_;
 	}
 

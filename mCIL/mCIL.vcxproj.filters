@@ -38,5 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Sample.cil" />
+    <None Include="LexerTest.cil" />
   </ItemGroup>
 </Project>
