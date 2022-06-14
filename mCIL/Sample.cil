@@ -1,0 +1,27 @@
+#include <std.print>
+
+def print_test(int iterations) -> int
+{
+	for(int i = 0; i < iterations; i++)
+	{
+		if (i % 2 == 0)
+		{
+			print(i);
+		}
+		elif (i % 5 == 0)
+		{
+			print(i);
+		}
+		else
+		{
+			print("Nope: " + i)
+		}
+	}
+	return 0;
+}
+
+int main()
+{
+	auto res = print_test(2);
+	print(res);
+}
