@@ -2,7 +2,8 @@
 
 std::map<std::string, Keyword> Lexer::keyword_map =
 {
-	{"NULL"   , Keyword::KEYWORD_NULL   },
+	{"null"   , Keyword::KEYWORD_NULL   },
+	{"bool"   , Keyword::KEYWORD_BOOL   },
 	{"num"    , Keyword::KEYWORD_NUM    },
 	{"str"    , Keyword::KEYWORD_STR    },
 	{"auto"   , Keyword::KEYWORD_AUTO   },
@@ -10,6 +11,7 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"true"   , Keyword::KEYWORD_TRUE   },
 	{"false"  , Keyword::KEYWORD_FALSE  },
 	{"if"     , Keyword::KEYWORD_IF     },
+	{"elif"   , Keyword::KEYWORD_ELIF   },
 	{"else"   , Keyword::KEYWORD_ELSE   },
 	{"for"    , Keyword::KEYWORD_FOR    },
 	{"while"  , Keyword::KEYWORD_WHILE  },
@@ -18,7 +20,7 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"return" , Keyword::KEYWORD_RETURN },
 	{"class"  , Keyword::KEYWORD_CLASS  },
 	{"this"   , Keyword::KEYWORD_THIS   },
-	{"extents", Keyword::KEYWORD_EXTENDS}
+	{"extends", Keyword::KEYWORD_EXTENDS}
 };
 
 Lexer::Lexer(const std::string file_name, std::ifstream& file)
@@ -53,38 +55,33 @@ Token Lexer::next_token()
 		{
 			return this->create_eof_token();
 		}
-		const char* current = this->current_line_ + this->char_off_;
-		const char* end = this->current_line_ + this->max_line_size_;
 
-		while (current < end)
+		if (*(this->current_line_ + this->char_off_) == '\n')
 		{
-			char currentChar = *current;
-			switch (currentChar)
-			{
-			case ' ': case '\t': case '\r':
-				current++;
-				while (*current == ' ' || *current == '\t' || *current == '\r')
-				{
-					current++;
-				}
-				break;
-			case '\n':
-				current++;
-				break;
-			case '1': case '2': case '3': case '4': case '5':
-			case '6': case '7': case '8': case '9':
-			{
-				bool found = false;
-				Token number = this->get_number(found);
-				if (found) { return number; }
-			}
-			default:
-				current++;
-				this->char_off_ = current - this->current_line_;
-				return this->create_invalid_token();
-			}
+			this->char_off_++;
+			continue;
 		}
-		this->char_off_ = current - this->current_line_;
+
+		this->skip_spaces();
+
+		Token next = this->create_invalid_token();
+		bool found = false;
+		
+		next = this->get_symbol(found);
+		if (found) { return next; }
+		next = this->get_operator(found);
+		if (found) { return next; }
+		next = this->get_number(found);
+		if (found) { return next; }
+		next = this->get_string(found);
+		if (found) { return next; }
+		next = this->get_keyword(found);
+		if (found) { return next; }
+		next = this->get_identifier(found);
+		if (found) { return next; }
+
+		this->char_off_++;
+		return next;
 	}
 }
 
@@ -148,7 +145,7 @@ Token Lexer::create_invalid_token()
 
 Token Lexer::create_eof_token()
 {
-	return Token::create_eof_token(this->position());
+	return Token::create_eof_token(Position{ this->line_off_ + 1, 0 });
 }
 
 Token Lexer::create_keyword_token(Keyword type, std::string lexeme)
@@ -181,16 +178,171 @@ Token Lexer::create_symbol_token(Symbol type, std::string lexeme)
 	return Token::create_symbol_token(type, lexeme, this->position());
 }
 
-Token Lexer::get_number(bool& found)
+void Lexer::skip_spaces()
 {
-	found = false;
-
 	const char* start = this->current_line_ + this->char_off_;
-	const char* end = this->current_line_ + this->max_line_size_;
+	const char* end = this->current_line_ + this->cur_line_size_;
 
 	const char* current = start;
 
-	Position pos = this->position();
+	if (*current == ' ' || *current == '\t' || *current == '\r')
+	{
+		current++;
+		while (*current == ' ' || *current == '\t' || *current == '\r')
+		{
+			current++;
+		}
+		this->char_off_ = current - this->current_line_;
+		return;
+	}
+}
+
+Token Lexer::get_symbol(bool& found)
+{
+	found = true;
+	const char* current = this->current_line_ + this->char_off_;
+
+	Token sym = this->create_invalid_token();
+
+	switch (*current)
+	{
+	case '(':
+		sym = this->create_symbol_token(Symbol::LEFT_PAREN, "(");
+		break;
+	case ')':
+		sym = this->create_symbol_token(Symbol::RIGHT_PAREN, ")");
+		break;
+	case '{':
+		sym = this->create_symbol_token(Symbol::LEFT_BRACE, "{");
+		break;
+	case '}':
+		sym = this->create_symbol_token(Symbol::RIGHT_BRACE, "}");
+		break;
+	case '[':
+		sym = this->create_symbol_token(Symbol::LEFT_BRACKET, "[");
+		break;
+	case ']':
+		sym = this->create_symbol_token(Symbol::RIGHT_BRACKET, "]");
+		break;
+	case ';':
+		sym = this->create_symbol_token(Symbol::SEMICOLON, ";");
+		break;
+	case ',':
+		sym = this->create_symbol_token(Symbol::COMMA, ",");
+		break;
+	case ':':
+		sym = this->create_symbol_token(Symbol::COLON, ":");
+		break;
+	case '.':
+		sym = this->create_symbol_token(Symbol::DOT, ".");
+		break;
+	default:
+		found = false;
+		return sym;
+	}
+	this->char_off_++;
+	return sym;
+}
+
+Token Lexer::get_operator(bool& found)
+{
+	found = true;
+	const char* current = this->current_line_ + this->char_off_;
+
+	Token op = this->create_invalid_token();
+
+	switch (*current)
+	{
+	case '+':
+		current++;
+		op = this->create_operator_token(Operator::OPERATOR_ADD, "+");
+		break;
+	case '-':
+		current++;
+		op = this->create_operator_token(Operator::OPERATOR_SUBTRACT, "-");
+		break;
+	case '*':
+		current++;
+		op = this->create_operator_token(Operator::OPERATOR_MULTIPLY, "*");
+		break;
+	case '/':
+		op = this->create_operator_token(Operator::OPERATOR_DIVIDE, "/");
+		current++;
+		break;
+	case '=':
+		current++;
+		if (*current == '=')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_EQUAL_EQUAL, "==");
+			current++;
+			break;
+		}
+		op = this->create_operator_token(Operator::OPERATOR_EQUAL, "=");
+		break;
+	case '!':
+		current++;
+		if (*current == '=')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_NOT_EQUAL, "!=");
+			current++;
+			break;
+		}
+		op = this->create_operator_token(Operator::OPERATOR_BANG, "!");
+		break;
+	case '<':
+		current++;
+		if (*current == '=')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_LESS_EQUAL, "<=");
+			current++;
+			break;
+		}
+		op = this->create_operator_token(Operator::OPERATOR_LESS, "<");
+		break;
+	case '>':
+		current++;
+		if (*current == '=')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_GREATER_EQUAL, ">=");
+			current++;
+			break;
+		}
+		op = this->create_operator_token(Operator::OPERATOR_GREATER, ">");
+		break;
+	case '&':
+		current++;
+		if (*current == '&')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_AND, "&&");
+			current++;
+			break;
+		}
+		//TODO: Single '&' error
+	case '|':
+		current++;
+		if (*current == '|')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_OR, "||");
+			current++;
+			break;
+		}
+		//TODO: Single '|' error
+	default:
+		found = false;
+		return op;
+	}
+
+	this->char_off_ = current - this->current_line_;
+	return op;
+}
+
+Token Lexer::get_number(bool& found)
+{
+	const char* start = this->current_line_ + this->char_off_;
+	const char* end = this->current_line_ + this->cur_line_size_;
+
+	const char* current = start;
+
 	std::string number_str = "";
 
 	while (current < end)
@@ -231,4 +383,104 @@ Token Lexer::get_number(bool& found)
 		return token;
 	}
 	return this->create_invalid_token();
+}
+
+Token Lexer::get_string(bool& found)
+{
+	found = false;
+
+	const char* current = this->current_line_ + this->char_off_;
+	const char* end = this->current_line_ + this->cur_line_size_;
+
+	std::string str = "";
+
+	//TODO: Single quote strings
+	if (*current != '\"')
+	{
+		return this->create_invalid_token();
+	}
+	current++;
+	while (*current != '\"')
+	{
+		if (current == end)
+		{
+			//TODO: Proper error reporting
+			std::cout << "Unterminated string\n";
+			return this->create_invalid_token();
+		}
+		str += *current;
+		current++;
+	}
+
+	found = true;
+	Token token = this->create_string_token(str, "\"" + str + "\"");
+	this->char_off_ = current + 1 - this->current_line_;
+	return token;
+}
+
+Token Lexer::get_keyword(bool& found)
+{
+	found = false;
+
+	const char* current = this->current_line_ + this->char_off_;
+	const char* end = this->current_line_ + this->cur_line_size_;
+
+	std::string key_str = "";
+
+	if (*current < 'a' || *current > 'z')
+	{
+		return this->create_invalid_token();
+	}
+	while ( current < end &&
+		(*current != ' '  &&
+		 *current != '\t' &&
+		 *current != '\r' &&
+		 *current != '\n'))
+	{
+		key_str += *current;
+		current++;
+	}
+	
+	auto code_it = this->keyword_map.find(key_str);
+
+	if (code_it == this->keyword_map.end())
+	{
+		return this->create_invalid_token();
+	}
+
+	found = true;
+	Token token = this->create_keyword_token(code_it->second, key_str);
+	this->char_off_ = current - this->current_line_;
+	return token;
+}
+
+Token Lexer::get_identifier(bool& found)
+{
+	found = false;
+
+	const char* current = this->current_line_ + this->char_off_;
+	const char* end = this->current_line_ + this->cur_line_size_;
+
+	std::string id_str = "";
+
+	if ((*current < 'A' || *current > 'Z') &&
+		(*current < 'a' || *current > 'z') &&
+		(*current != '_'))
+	{
+		return this->create_invalid_token();
+	}
+	while (current < end &&
+		(*current != ' ' &&
+		*current != '\t' &&
+		*current != '\r' &&
+		*current != '\n'))
+	{
+		id_str += *current;
+		current++;
+	}
+	
+	found = true;
+	Token token = this->create_identifier_token(id_str, id_str);
+	this->char_off_ = current - this->current_line_;
+	return token;
 }

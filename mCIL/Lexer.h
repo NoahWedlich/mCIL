@@ -28,11 +28,13 @@ private:
 	Token create_operator_token(Operator type, std::string lexeme);
 	Token create_symbol_token(Symbol type, std::string lexeme);
 
+	void  skip_spaces();
+
+	Token get_symbol(bool& found);
+	Token get_operator(bool& found);
 	Token get_number(bool &found);
 	Token get_string(bool& found);
 	Token get_keyword(bool& found);
-	Token get_operator(bool& found);
-	Token get_symbol(bool& found);
 	Token get_identifier(bool& found);
 
 	std::string file_name_;

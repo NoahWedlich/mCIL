@@ -232,7 +232,7 @@ const std::string Token::toString() const
 		break;
 	case TokenType::TOKEN_STRING:
 		typeRepr = "[STRING]";
-		valueRepr = *this->value_.string_value;
+		valueRepr = this->lexeme_;
 		break;
 	case TokenType::TOKEN_OPERATOR:
 		typeRepr = "[OPERATOR]";
