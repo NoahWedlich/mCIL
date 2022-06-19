@@ -39,7 +39,7 @@ std::vector<Token> Lexer::scan_file()
 {
 	Token currentToken = this->next_token();
 	std::vector<Token> tokens{ currentToken };
-	while (!currentToken.isEOF())
+	while (!currentToken.is_EOF())
 	{
 		currentToken = this->next_token();
 		tokens.push_back(currentToken);
@@ -87,15 +87,14 @@ Token Lexer::next_token()
 
 int Lexer::read_line()
 {
-	size_t current = 0;
+	int current = 0;
 	char c;
 	while (this->file_.get(c))
 	{
 		if (current + 1 >= this->max_line_size_)
 		{
-			//TODO: Error manager
 			size_t new_size = 2 * this->max_line_size_ + 1;
-			std::cout << "Out of memory\n";
+			ErrorManager::cil_warning(Position{ this->line_off_, 0 }, "Out of memory for reading line");
 			char* new_buffer = new char[new_size];
 			memcpy(new_buffer, this->current_line_, current);
 			delete[] this->current_line_;
@@ -310,6 +309,7 @@ Token Lexer::get_operator(bool& found)
 		op = this->create_operator_token(Operator::OPERATOR_GREATER, ">");
 		break;
 	case '&':
+	{
 		current++;
 		if (*current == '&')
 		{
@@ -317,7 +317,10 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		//TODO: Single '&' error
+		this->char_off_ = current - this->current_line_;
+		ErrorManager::cil_error(this->position(), "Expected second '&'");
+		return op;
+	}
 	case '|':
 		current++;
 		if (*current == '|')
@@ -326,7 +329,9 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		//TODO: Single '|' error
+		this->char_off_ = current - this->current_line_;
+		ErrorManager::cil_error(this->position(), "Expected second '|'");
+		return op;
 	default:
 		found = false;
 		return op;
@@ -394,7 +399,6 @@ Token Lexer::get_string(bool& found)
 
 	std::string str = "";
 
-	//TODO: Single quote strings
 	if (*current != '\"')
 	{
 		return this->create_invalid_token();
@@ -404,8 +408,8 @@ Token Lexer::get_string(bool& found)
 	{
 		if (current == end)
 		{
-			//TODO: Proper error reporting
-			std::cout << "Unterminated string\n";
+			this->char_off_ = current - this->current_line_;
+			ErrorManager::cil_error(this->position(), "Unterminated string");
 			return this->create_invalid_token();
 		}
 		str += *current;

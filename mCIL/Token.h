@@ -1,8 +1,5 @@
 #pragma once
-#include <string>
-#include <iostream>
-#include <map>
-#include <assert.h>
+#include "cil-system.h"
 #include "Position.h"
 
 enum class TokenType
@@ -75,7 +72,6 @@ enum class Keyword
 class Token
 {
 public:
-	//TODO: underscores not CamelCase
 	Token(const Token&);
 	Token& operator=(const Token&);
 
@@ -83,14 +79,14 @@ public:
 	Position position() const;
 	const std::string& lexeme() const;
 
-	bool isInvalid() const;
-	bool isEOF() const;
-	bool isSymbol() const;
-	bool isOperator() const;
-	bool isKeyword() const;
-	bool isString() const;
-	bool isNumber() const;
-	bool isIdentifier() const;
+	bool is_invalid() const;
+	bool is_EOF() const;
+	bool is_symbol() const;
+	bool is_operator() const;
+	bool is_keyword() const;
+	bool is_string() const;
+	bool is_number() const;
+	bool is_identifier() const;
 
 	Symbol symbol() const;
 	Operator op() const;
@@ -108,7 +104,7 @@ public:
 	static Token create_number_token(double value, std::string lexeme, Position pos);
 	static Token create_identifier_token(const std::string& value, std::string lexeme, Position pos);
 
-	const std::string toString() const;
+	const std::string to_string() const;
 private:
 	Token(TokenType type, std::string lexeme, Position pos);
 

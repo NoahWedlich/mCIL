@@ -1,7 +1,6 @@
 #pragma once
-#include <fstream>
-#include <iostream>
-#include <vector>
+#include "cil-system.h"
+#include "Diagnostics.h"
 #include "Token.h"
 #include "Position.h"
 

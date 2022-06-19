@@ -27,8 +27,6 @@ Token::Token(const Token& other)
 	case TokenType::TOKEN_NUMBER:
 		this->value_.number_value = other.value_.number_value;
 		break;
-	default:
-		assert(false);
 	}
 }
 
@@ -76,42 +74,42 @@ const std::string& Token::lexeme() const
 	return this->lexeme_;
 }
 
-bool Token::isInvalid() const
+bool Token::is_invalid() const
 {
 	return this->type_ == TokenType::TOKEN_INVALID;
 }
 
-bool Token::isEOF() const
+bool Token::is_EOF() const
 {
 	return this->type_ == TokenType::TOKEN_EOF;
 }
 
-bool Token::isSymbol() const
+bool Token::is_symbol() const
 {
 	return this->type_ == TokenType::TOKEN_SYMBOL;
 }
 
-bool Token::isOperator() const
+bool Token::is_operator() const
 {
 	return this->type_ == TokenType::TOKEN_OPERATOR;
 }
 
-bool Token::isKeyword() const
+bool Token::is_keyword() const
 {
 	return this->type_ == TokenType::TOKEN_KEYWORD;
 }
 
-bool Token::isString() const
+bool Token::is_string() const
 {
 	return this->type_ == TokenType::TOKEN_STRING;
 }
 
-bool Token::isNumber() const
+bool Token::is_number() const
 {
 	return this->type_ == TokenType::TOKEN_NUMBER;
 }
 
-bool Token::isIdentifier() const
+bool Token::is_identifier() const
 {
 	return this->type_ == TokenType::TOKEN_IDENTIFIER;
 }
@@ -204,7 +202,7 @@ Token Token::create_identifier_token(const std::string& value, std::string lexem
 	return token;
 }
 
-const std::string Token::toString() const
+const std::string Token::to_string() const
 {
 	std::string typeRepr;
 	std::string valueRepr;
