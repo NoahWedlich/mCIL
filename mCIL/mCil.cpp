@@ -1,12 +1,13 @@
 #include "cil-system.h"
 #include "Lexer.h"
 #include "Token.h"
+#include "SourceFileManager.h"
 #include "Diagnostics.h"
 
 int main()
 {
-	std::ifstream file{ "LexerTest.cil" };
-	Lexer lexer{ "LexerTest", file };
+	SourceFileManager source{ "LexerTest.cil" };
+	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
 	{

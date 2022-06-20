@@ -3,11 +3,12 @@
 #include "Diagnostics.h"
 #include "Token.h"
 #include "Position.h"
+#include "SourceManager.h"
 
 class Lexer
 {
 public:
-	Lexer(const std::string file_name, std::ifstream& file);
+	Lexer(SourceManager& source);
 	~Lexer();
 
 	std::vector<Token> scan_file();
@@ -36,8 +37,7 @@ private:
 	Token get_keyword(bool& found);
 	Token get_identifier(bool& found);
 
-	std::string file_name_;
-	std::ifstream& file_;
+	SourceManager& source_;
 	char* current_line_;
 	size_t max_line_size_;
 	size_t cur_line_size_;

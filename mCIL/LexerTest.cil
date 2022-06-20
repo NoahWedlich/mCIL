@@ -1,7 +1,7 @@
 ( ) { } [ ] ; , . :
 ! + - * / = == != < > <= >= && ||
 123 123.123
-"Test string!
+"Test string!"
 null bool num str auto const true
 false if elif else for while break
 def return class this extends

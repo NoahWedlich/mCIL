@@ -23,8 +23,8 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"extends", Keyword::KEYWORD_EXTENDS}
 };
 
-Lexer::Lexer(const std::string file_name, std::ifstream& file)
-	: file_name_(file_name), file_(file), current_line_(nullptr),
+Lexer::Lexer(SourceManager& source)
+	: source_(source), current_line_(nullptr),
 	  max_line_size_(128), cur_line_size_(0), char_off_(0), line_off_(0)
 {
 	this->current_line_ = new char[this->max_line_size_];
@@ -87,34 +87,20 @@ Token Lexer::next_token()
 
 int Lexer::read_line()
 {
-	int current = 0;
-	char c;
-	while (this->file_.get(c))
-	{
-		if (current + 1 >= this->max_line_size_)
-		{
-			size_t new_size = 2 * this->max_line_size_ + 1;
-			ErrorManager::cil_warning(Position{ this->line_off_, 0 }, "Out of memory for reading line");
-			char* new_buffer = new char[new_size];
-			memcpy(new_buffer, this->current_line_, current);
-			delete[] this->current_line_;
-			this->current_line_ = new_buffer;
-			this->max_line_size_ = new_size;
-		}
-		this->current_line_[current] = c;
-		++current;
-		
-		if (c == '\n')
-		{
-			break;
-		}
-	}
-
-	this->current_line_[current] = '\0';
-
-	if (current == 0)
+	if (this->source_.is_at_end())
 	{ return -1; }
-	return current;
+	
+	size_t length = 0;
+	while (!this->source_.get_next_line(this->current_line_, this->max_line_size_, length))
+	{
+		size_t new_size = 2 * this->max_line_size_ + 1;
+		ErrorManager::cil_warning(Position{ this->line_off_, 0 }, "Out of memory for reading line");
+		char* new_buffer = new char[new_size];
+		delete[] this->current_line_;
+		this->current_line_ = new_buffer;
+		this->max_line_size_ = new_size;
+	}
+	return length;
 }
 
 bool Lexer::read_required_line()
