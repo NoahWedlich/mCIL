@@ -11,6 +11,7 @@ int main()
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
 	{
+		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
 	}
 	for (Token& token : tokens)

@@ -80,6 +80,7 @@ Token Lexer::next_token()
 		next = this->get_identifier(found);
 		if (found) { return next; }
 
+		ErrorManager::cil_error(this->position(), "Invalid character");
 		this->char_off_++;
 		return next;
 	}
@@ -395,6 +396,7 @@ Token Lexer::get_string(bool& found)
 		if (current == end)
 		{
 			this->char_off_ = current - this->current_line_;
+			found = true;
 			ErrorManager::cil_error(this->position(), "Unterminated string");
 			return this->create_invalid_token();
 		}

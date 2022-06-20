@@ -32,7 +32,7 @@ void SourceFileManager::update_line_buffer()
 std::string SourceFileManager::get_line_at_off(size_t line_off)
 {
 	this->line_buffer_.clear();
-	this->file_.seekg(0);
+	this->file_.seekg(0, this->file_.beg);
 	size_t line = 0;
 	char c;
 	while (this->file_.get(c))
@@ -64,6 +64,5 @@ bool SourceFileManager::get_next_line(char* line_buffer, size_t max_size, size_t
 
 bool SourceFileManager::is_at_end()
 {
-	this->update_line_buffer();
-	return (this->line_buffer_.size() == 0);
+	return this->file_.peek() == EOF;
 }
