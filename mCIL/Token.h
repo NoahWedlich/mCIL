@@ -48,7 +48,7 @@ enum class Operator
 
 enum class Keyword
 {
-	KEYWORD_NULL,
+	KEYWORD_NONE,
 	KEYWORD_BOOL,
 	KEYWORD_NUM,
 	KEYWORD_STR,

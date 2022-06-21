@@ -2,7 +2,7 @@
 
 std::map<std::string, Keyword> Lexer::keyword_map =
 {
-	{"null"   , Keyword::KEYWORD_NULL   },
+	{"none"   , Keyword::KEYWORD_NONE   },
 	{"bool"   , Keyword::KEYWORD_BOOL   },
 	{"num"    , Keyword::KEYWORD_NUM    },
 	{"str"    , Keyword::KEYWORD_STR    },
