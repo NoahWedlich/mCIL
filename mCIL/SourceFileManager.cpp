@@ -33,6 +33,11 @@ std::string SourceFileManager::get_line_at_off(size_t line_off)
 {
 	this->line_buffer_.clear();
 	this->file_.seekg(0, this->file_.beg);
+	if (line_off == 0)
+	{
+		this->update_line_buffer();
+		return this->line_buffer_;
+	}
 	size_t line = 0;
 	char c;
 	while (this->file_.get(c))

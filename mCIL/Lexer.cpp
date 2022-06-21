@@ -95,7 +95,7 @@ int Lexer::read_line()
 	while (!this->source_.get_next_line(this->current_line_, this->max_line_size_, length))
 	{
 		size_t new_size = 2 * this->max_line_size_ + 1;
-		ErrorManager::cil_warning(Position{ this->line_off_, 0 }, "Out of memory for reading line");
+		ErrorManager::cil_warning(Position{ this->line_off_ - 1, 0 }, "Out of memory for reading line");
 		char* new_buffer = new char[new_size];
 		delete[] this->current_line_;
 		this->current_line_ = new_buffer;
@@ -119,9 +119,9 @@ bool Lexer::read_required_line()
 	return true;
 }
 
-Position Lexer::position()
+Position Lexer::position(int offset)
 {
-	return Position{ this->line_off_, this->char_off_ };
+	return Position{ this->line_off_ - 1, this->char_off_ + offset};
 }
 
 Token Lexer::create_invalid_token()
@@ -131,7 +131,7 @@ Token Lexer::create_invalid_token()
 
 Token Lexer::create_eof_token()
 {
-	return Token::create_eof_token(Position{ this->line_off_ + 1, 0 });
+	return Token::create_eof_token(Position{ this->line_off_, 0 });
 }
 
 Token Lexer::create_keyword_token(Keyword type, std::string lexeme)
@@ -305,7 +305,7 @@ Token Lexer::get_operator(bool& found)
 			break;
 		}
 		this->char_off_ = current - this->current_line_;
-		ErrorManager::cil_error(this->position(), "Expected second '&'");
+		ErrorManager::cil_error(this->position(-1), "Invalid operator, did you mean '&&'");
 		return op;
 	}
 	case '|':
@@ -317,7 +317,7 @@ Token Lexer::get_operator(bool& found)
 			break;
 		}
 		this->char_off_ = current - this->current_line_;
-		ErrorManager::cil_error(this->position(), "Expected second '|'");
+		ErrorManager::cil_error(this->position(-1), "Invalid operator, did you mean '||'");
 		return op;
 	default:
 		found = false;

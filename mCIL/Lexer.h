@@ -17,7 +17,7 @@ private:
 
 	int read_line();
 	bool read_required_line();
-	Position position();
+	Position position(int offset = 0);
 
 	Token create_invalid_token();
 	Token create_eof_token();
