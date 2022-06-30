@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Expression.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Diagnostics.cpp" />
     <ClCompile Include="Lexer.cpp" />
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cil-system.h" />
+    <ClInclude Include="Expression.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Diagnostics.h" />
     <ClInclude Include="Lexer.h" />
