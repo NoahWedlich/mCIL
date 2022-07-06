@@ -132,6 +132,7 @@
     <ClCompile Include="Diagnostics.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="mCil.cpp" />
+    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="SourceFileManager.cpp" />
     <ClCompile Include="Token.cpp" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Diagnostics.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="SourceFileManager.h" />
     <ClInclude Include="SourceManager.h" />
