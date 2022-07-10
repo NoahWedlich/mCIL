@@ -230,7 +230,23 @@ Expression* Parser::logical_or_expr()
 
 Expression* Parser::ternary_expr()
 {
-    return nullptr;
+    Expression* expr = this->logical_and_expr();
+    const Token token = this->peek();
+    if (this->match_symbol(Symbol::QUERY))
+    {
+        Expression* left = this->logical_or_expr();
+        if (this->match_symbol(Symbol::COLON))
+        {
+            Expression* right = this->logical_or_expr();
+            return Expression::make_ternary_expr(expr, left, right, Position{ token.position() });
+        }
+        else
+        {
+            //TODO: Handle this error
+            throw std::invalid_argument("Expected ':' after '?'");
+        }
+    }
+    return expr;
 }
 
 Expression* Parser::assignment_expr()

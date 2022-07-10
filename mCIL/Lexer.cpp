@@ -219,6 +219,9 @@ Token Lexer::get_symbol(bool& found)
 	case ':':
 		sym = this->create_symbol_token(Symbol::COLON, ":");
 		break;
+	case '?':
+		sym = this->create_symbol_token(Symbol::QUERY, "?");
+		break;
 	case '.':
 		sym = this->create_symbol_token(Symbol::DOT, ".");
 		break;
