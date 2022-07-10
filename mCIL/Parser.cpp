@@ -261,5 +261,5 @@ Expression* Parser::assignment_expr()
 
 Expression* Parser::expression()
 {
-    return nullptr;
+    return this->assignment_expr();
 }
