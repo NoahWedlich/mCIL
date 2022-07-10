@@ -11,7 +11,6 @@ enum class ExprType
 	EXPRESSION_UNARY,
 	EXPRESSION_BINARY,
 	EXPRESSION_TERNARY,
-	EXPRESSION_LOGICAL,
 };
 
 enum class PrimaryType
@@ -45,7 +44,6 @@ public:
 	static Expression* make_unary_expr(Operator, Expression*, Position);
 	static Expression* make_binary_expr(Operator, Expression*, Expression*, Position);
 	static Expression* make_ternary_expr(Expression*, Expression*, Expression*, Position);
-	static Expression* make_logical_expr(Operator, Expression*, Expression*, Position);
 
 	Position pos() const
 	{ return this->pos_; }
@@ -67,9 +65,6 @@ public:
 
 	bool is_ternary_expr()
 	{ return this->type_ == ExprType::EXPRESSION_TERNARY; }
-
-	bool is_logical_expr()
-	{ return this->type_ == ExprType::EXPRESSION_LOGICAL; }
 
 private:
 	ExprType type_;
@@ -134,17 +129,6 @@ public:
 
 private:
 	Expression* cond_;
-	Expression* left_;
-	Expression* right_;
-};
-
-class LogicalExpression : public Expression
-{
-public:
-	LogicalExpression(Operator op, Expression* left, Expression* right, Position pos)
-		: Expression(ExprType::EXPRESSION_LOGICAL, pos), op_(op), left_(left), right_(right) {}
-private:
-	Operator op_;
 	Expression* left_;
 	Expression* right_;
 };

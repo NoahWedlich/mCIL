@@ -24,14 +24,20 @@ private:
 	bool match_identifier();
 	bool match_symbol(Symbol sym);
 	bool match_operator(Operator op);
+	bool match_operators(Operator a, Operator b)
+	{ return this->match_operator(a) || this->match_operator(b); }
 	bool match_keyword(Keyword key);
 
 	Expression* grouping_expr();
 	Expression* primary_expr();
 	Expression* unary_expr();
-	Expression* binary_expr();
-	Expression* ternary_expr();
+	Expression* factor_expr();
+	Expression* sum_expr();
+	Expression* comparison_expr();
+	Expression* equality_expr();
 	Expression* logical_expr();
+	Expression* ternary_expr();
+	Expression* assignment_expr();
 	Expression* expression();
 
 	std::vector<Token>& tokens_;

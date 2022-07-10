@@ -59,8 +59,3 @@ Expression* Expression::make_ternary_expr(Expression* cond, Expression* left, Ex
 {
 	return new TernaryExpression(cond, left, right, pos);
 }
-
-Expression* Expression::make_logical_expr(Operator op, Expression* left, Expression* right, Position pos)
-{
-	return new LogicalExpression(op, left, right, pos);
-}

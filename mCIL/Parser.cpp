@@ -135,6 +135,45 @@ Expression* Parser::primary_expr()
 
 Expression* Parser::unary_expr()
 {
+    const Token token = this->peek();
+
+    if (this->match_operators(Operator::OPERATOR_BANG, Operator::OPERATOR_SUBTRACT))
+    {
+        //TODO: Refactor position
+        return Expression::make_unary_expr(token.op(), this->unary_expr(), token.position());
+    }
+    else
+    {
+        //TODO: Change to 'call'
+        return this->primary_expr();
+    }
+}
+
+Expression* Parser::factor_expr()
+{
+    Expression* left = this->unary_expr();
+    const Token token = this->peek();
+    while (this->match_operators(Operator::OPERATOR_MULTIPLY, Operator::OPERATOR_DIVIDE))
+    {
+        Expression* right = this->unary_expr();
+        //TODO: Refactor position
+        left = Expression::make_binary_expr(token.op(), left, right, token.position());
+    }
+    return left;
+}
+
+Expression* Parser::sum_expr()
+{
+    return nullptr;
+}
+
+Expression* Parser::comparison_expr()
+{
+    return nullptr;
+}
+
+Expression* Parser::equality_expr()
+{
     return nullptr;
 }
 
