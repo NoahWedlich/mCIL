@@ -19,6 +19,13 @@ private:
 	bool atEnd()
 	{ return this->peek().is_EOF(); }
 
+	bool match_number();
+	bool match_string();
+	bool match_identifier();
+	bool match_symbol(Symbol sym);
+	bool match_operator(Operator op);
+	bool match_keyword(Keyword key);
+
 	Expression* grouping_expr();
 	Expression* primary_expr();
 	Expression* unary_expr();

@@ -15,21 +15,85 @@ std::vector<Expression>& Parser::parse()
     return expressions;
 }
 
-Expression* Parser::grouping_expr()
+bool Parser::match_number()
 {
     const Token token = this->peek();
-    if (token.is_symbol() && token.symbol() == Symbol::LEFT_PAREN)
+    if (token.type() == TokenType::TOKEN_NUMBER)
     {
         this->advance();
+        return true;
+    }
+    return false;
+}
+
+bool Parser::match_string()
+{
+    const Token token = this->peek();
+    if (token.type() == TokenType::TOKEN_STRING)
+    {
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
+bool Parser::match_identifier()
+{
+    const Token token = this->peek();
+    if (token.type() == TokenType::TOKEN_IDENTIFIER)
+    {
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
+bool Parser::match_symbol(Symbol sym)
+{
+    const Token token = this->peek();
+    if (token.type() == TokenType::TOKEN_SYMBOL && token.symbol() == sym)
+    {
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
+bool Parser::match_operator(Operator op)
+{
+    const Token token = this->peek();
+    if (token.type() == TokenType::TOKEN_OPERATOR && token.op() == op)
+    {
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
+bool Parser::match_keyword(Keyword key)
+{
+    const Token token = this->peek();
+    if (token.type() == TokenType::TOKEN_KEYWORD && token.keyword() == key)
+    {
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
+Expression* Parser::grouping_expr()
+{
+    if (this->match_symbol(Symbol::LEFT_PAREN))
+    {
         Expression* expr = this->expression();
         const Token rightParen = this->advance();
-        if (!rightParen.is_symbol() || rightParen.symbol() != Symbol::RIGHT_PAREN)
+        if (!this->match_symbol(Symbol::RIGHT_PAREN))
         {
             //TODO: Handle this error
             throw std::invalid_argument("Expected ')'");
         }
         //TODO: Refactor position
-        return Expression::make_grouping_expr(expr, Position{ token.position() });
+        return Expression::make_grouping_expr(expr, Position{ 0, 0, 0 });
     }
     //TODO: Handle this error
     throw std::invalid_argument("Expected Expression");
@@ -38,25 +102,31 @@ Expression* Parser::grouping_expr()
 Expression* Parser::primary_expr()
 {
     const Token token = this->peek();
-    //TODO: Make tokens revertable or refactor advance/peek
-    switch (token.type())
+
+    //TODO: Refactor positions
+    if (this->match_number())
     {
-    case TokenType::TOKEN_NUMBER:
-        return Expression::make_num_expr(token.number_val(), Position{ token.position() });
-    case TokenType::TOKEN_STRING:
+        return Expression::make_num_expr(token.number_val(), Position{ token.position()});
+    }
+    else if (this->match_string())
+    {
         return Expression::make_str_expr(token.string_val(), Position{ token.position() });
-    case TokenType::TOKEN_IDENTIFIER:
+    }
+    else if (this->match_identifier())
+    {
         return Expression::make_identifier_expr(token.identifier(), Position{ token.position() });
-    case TokenType::TOKEN_KEYWORD:
-        switch (token.keyword())
-        {
-        case Keyword::KEYWORD_TRUE:
-            return Expression::make_bool_expr(true, Position{ token.position() });
-        case Keyword::KEYWORD_FALSE:
-            return Expression::make_bool_expr(false, Position{ token.position() });
-        //TODO: Implement 'this' and 'none'
-        }
-    default:
+    }
+    else if (this->match_keyword(Keyword::KEYWORD_TRUE))
+    {
+        return Expression::make_bool_expr(true, Position{ token.position() });
+    }
+    else if (this->match_keyword(Keyword::KEYWORD_FALSE))
+    {
+        return Expression::make_bool_expr(false, Position{ token.position() });
+    }
+    //TODO: Implement 'this' and 'none'
+    else
+    {
         return this->grouping_expr();
     }
 }
