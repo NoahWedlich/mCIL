@@ -191,7 +191,15 @@ Expression* Parser::comparison_expr()
 
 Expression* Parser::equality_expr()
 {
-    return nullptr;
+    Expression* left = this->comparison_expr();
+    const Token token = this->peek();
+    while (this->match_operators(Operator::OPERATOR_EQUAL_EQUAL, Operator::OPERATOR_NOT_EQUAL))
+    {
+        Expression* right = this->comparison_expr();
+        //TODO: Refactor position
+        left = Expression::make_binary_expr(token.op(), left, right, token.position());
+    }
+    return left;
 }
 
 Expression* Parser::binary_expr()
