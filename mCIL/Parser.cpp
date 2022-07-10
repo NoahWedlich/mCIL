@@ -177,7 +177,16 @@ Expression* Parser::sum_expr()
 
 Expression* Parser::comparison_expr()
 {
-    return nullptr;
+    Expression* left = this->sum_expr();
+    const Token token = this->peek();
+    while (this->match_operators(Operator::OPERATOR_GREATER, Operator::OPERATOR_GREATER_EQUAL) ||
+           this->match_operators(Operator::OPERATOR_LESS   , Operator::OPERATOR_LESS_EQUAL   ))
+    {
+        Expression* right = this->sum_expr();
+        //TODO: Refactor position
+        left = Expression::make_binary_expr(token.op(), left, right, token.position());
+    }
+    return left;
 }
 
 Expression* Parser::equality_expr()
