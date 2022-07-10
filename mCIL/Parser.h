@@ -35,7 +35,8 @@ private:
 	Expression* sum_expr();
 	Expression* comparison_expr();
 	Expression* equality_expr();
-	Expression* logical_expr();
+	Expression* logical_and_expr();
+	Expression* logical_or_expr();
 	Expression* ternary_expr();
 	Expression* assignment_expr();
 	Expression* expression();

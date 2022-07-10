@@ -202,9 +202,30 @@ Expression* Parser::equality_expr()
     return left;
 }
 
-Expression* Parser::binary_expr()
+Expression* Parser::logical_and_expr()
 {
-    return nullptr;
+    Expression* left = this->equality_expr();
+    const Token token = this->peek();
+    while (this->match_operator(Operator::OPERATOR_AND))
+    {
+        Expression* right = this->equality_expr();
+        //TODO: Refactor position
+        left = Expression::make_binary_expr(token.op(), left, right, token.position());
+    }
+    return left;
+}
+
+Expression* Parser::logical_or_expr()
+{
+    Expression* left = this->logical_and_expr();
+    const Token token = this->peek();
+    while (this->match_operator(Operator::OPERATOR_OR))
+    {
+        Expression* right = this->logical_and_expr();
+        //TODO: Refactor position
+        left = Expression::make_binary_expr(token.op(), left, right, token.position());
+    }
+    return left;
 }
 
 Expression* Parser::ternary_expr()
@@ -212,7 +233,7 @@ Expression* Parser::ternary_expr()
     return nullptr;
 }
 
-Expression* Parser::logical_expr()
+Expression* Parser::assignment_expr()
 {
     return nullptr;
 }
