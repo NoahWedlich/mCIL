@@ -8,7 +8,7 @@ class Parser
 public:
 	Parser(std::vector<Token>& tokens);
 
-	std::vector<Expression>& parse();
+	std::vector<Expression>* parse();
 private:
 	Token peek()
 	{ return this->tokens_[this->current]; }

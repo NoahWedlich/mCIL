@@ -152,6 +152,9 @@
     <None Include="LexerTest.cil" />
     <None Include="Sample.cil" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="ParseTest.cil" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

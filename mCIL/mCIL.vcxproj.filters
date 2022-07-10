@@ -76,4 +76,7 @@
     <None Include="Sample.cil" />
     <None Include="LexerTest.cil" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="ParseTest.cil" />
+  </ItemGroup>
 </Project>

@@ -5,12 +5,12 @@
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
-std::vector<Expression>& Parser::parse()
+std::vector<Expression>* Parser::parse()
 {
-    std::vector<Expression> expressions{};
+    std::vector<Expression>* expressions = new std::vector<Expression>();
     while (!this->atEnd())
     {
-        expressions.push_back(*(this->expression()));
+        expressions->push_back(*(this->expression()));
     }
     return expressions;
 }
