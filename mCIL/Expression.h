@@ -11,6 +11,7 @@ enum class ExprType
 	EXPRESSION_UNARY,
 	EXPRESSION_BINARY,
 	EXPRESSION_TERNARY,
+	EXPRESSION_ASSIGNMENT
 };
 
 enum class PrimaryType
@@ -44,6 +45,7 @@ public:
 	static Expression* make_unary_expr(Operator, Expression*, Position);
 	static Expression* make_binary_expr(Operator, Expression*, Expression*, Position);
 	static Expression* make_ternary_expr(Expression*, Expression*, Expression*, Position);
+	static Expression* make_assignment_expr(Token, Expression*, Position);
 
 	Position pos() const
 	{ return this->pos_; }
@@ -65,6 +67,9 @@ public:
 
 	bool is_ternary_expr()
 	{ return this->type_ == ExprType::EXPRESSION_TERNARY; }
+
+	bool is_assignment_expr()
+	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
 
 private:
 	ExprType type_;
@@ -130,5 +135,15 @@ public:
 private:
 	Expression* cond_;
 	Expression* left_;
+	Expression* right_;
+};
+
+class AssignmentExpression : public Expression
+{
+public:
+	AssignmentExpression(const std::string& identifier, Expression* right, Position pos)
+		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), right_(right) {}
+private:
+	const std::string& identifier_;
 	Expression* right_;
 };

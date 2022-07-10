@@ -59,3 +59,8 @@ Expression* Expression::make_ternary_expr(Expression* cond, Expression* left, Ex
 {
 	return new TernaryExpression(cond, left, right, pos);
 }
+
+Expression* Expression::make_assignment_expr(Token token, Expression* right, Position pos)
+{
+	return new AssignmentExpression(token.identifier(), right, pos);
+}

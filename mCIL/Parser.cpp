@@ -125,10 +125,7 @@ Expression* Parser::primary_expr()
         return Expression::make_bool_expr(false, Position{ token.position() });
     }
     //TODO: Implement 'this' and 'none'
-    else
-    {
-        return this->grouping_expr();
-    }
+    return this->grouping_expr();
 }
 
 //TODO: Add the 'call' rule
@@ -142,11 +139,8 @@ Expression* Parser::unary_expr()
         //TODO: Refactor position
         return Expression::make_unary_expr(token.op(), this->unary_expr(), token.position());
     }
-    else
-    {
-        //TODO: Change to 'call'
-        return this->primary_expr();
-    }
+    //TODO: Change to 'call'
+    return this->primary_expr();
 }
 
 Expression* Parser::factor_expr()
@@ -251,7 +245,18 @@ Expression* Parser::ternary_expr()
 
 Expression* Parser::assignment_expr()
 {
-    return nullptr;
+    const Token id = this->peek();
+    //TODO: Implement call.identifier
+    if (this->match_identifier())
+    {
+        const Token token = this->peek();
+        if (this->match_operator(Operator::OPERATOR_EQUAL))
+        {
+            Expression* right = this->assignment_expr();
+            return Expression::make_assignment_expr(id, right, Position{ token.position() });
+        }
+    }
+    return this->ternary_expr();
 }
 
 Expression* Parser::expression()
