@@ -1,7 +1,7 @@
 #pragma once
-#include "cil-system.h"
-#include "Position.h"
-#include "Token.h"
+#include "../cil-system.h"
+#include "../Diagnostics/Position.h"
+#include "../Lexing/Token.h"
 
 enum class ExprType
 {
@@ -71,6 +71,8 @@ public:
 	bool is_assignment_expr()
 	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
 
+	friend class ASTDebugPrinter;
+
 private:
 	ExprType type_;
 	Position pos_;
@@ -88,6 +90,8 @@ class GroupingExpression : public Expression
 public:
 	GroupingExpression(Expression* expr, Position pos)
 		: Expression(ExprType::EXPRESSION_GROUPING, pos), expr_(expr) {}
+
+	friend class ASTDebugPrinter;
 private:
 	Expression* expr_;
 };
@@ -98,6 +102,7 @@ public:
 	PrimaryExpression(PrimaryType type, primary_value val, Position pos)
 		: Expression(ExprType::EXPRESSION_PRIMARY, pos), primary_type_(type), val_(val) {}
 
+	friend class ASTDebugPrinter;
 private:
 	PrimaryType primary_type_;
 	primary_value val_;
@@ -109,6 +114,7 @@ public:
 	UnaryExpression(Operator op, Expression* expr, Position pos)
 		: Expression(ExprType::EXPRESSION_UNARY, pos), op_(op), expr_(expr) {}
 
+	friend class ASTDebugPrinter;
 private:
 	Operator op_;
 	Expression* expr_;
@@ -120,6 +126,7 @@ public:
 	BinaryExpression(Operator op, Expression* left, Expression* right, Position pos)
 		: Expression(ExprType::EXPRESSION_BINARY, pos), op_(op), left_(left), right_(right) {}
 
+	friend class ASTDebugPrinter;
 private:
 	Operator op_;
 	Expression* left_;
@@ -132,6 +139,7 @@ public:
 	TernaryExpression(Expression* cond, Expression* left, Expression* right, Position pos)
 		: Expression(ExprType::EXPRESSION_TERNARY, pos), cond_(cond), left_(left), right_(right) {}
 
+	friend class ASTDebugPrinter;
 private:
 	Expression* cond_;
 	Expression* left_;
@@ -143,6 +151,8 @@ class AssignmentExpression : public Expression
 public:
 	AssignmentExpression(const std::string& identifier, Expression* right, Position pos)
 		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), right_(right) {}
+
+	friend class ASTDebugPrinter;
 private:
 	const std::string& identifier_;
 	Expression* right_;

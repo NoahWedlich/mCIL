@@ -1,13 +1,13 @@
 #include "cil-system.h"
-#include "Lexer.h"
-#include "Parser.h"
-#include "Token.h"
-#include "SourceFileManager.h"
-#include "Diagnostics.h"
+#include "Lexing/Lexer.h"
+#include "Parsing/Parser.h"
+#include "Diagnostics/SourceFileManager.h"
+#include "Diagnostics/Diagnostics.h"
+#include "Tools/ASTDebugPrinter.h"
 
 int main()
 {
-	SourceFileManager source{ "ParseTest.cil" };
+	SourceFileManager source{ "Samples/ParseTest.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
@@ -16,6 +16,10 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 	Parser parser{ tokens };
+
+	//TODO: Change to statements
 	std::vector<Expression> exprs = *parser.parse();
-	int test = 0;
+	
+	ASTDebugPrinter dbg{ std::cout };
+	dbg.print_expression(&exprs[0]);
 }

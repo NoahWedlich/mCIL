@@ -1,6 +1,6 @@
 #pragma once
-#include "cil-system.h"
-#include "SourceManager.h"
+#include "../cil-system.h"
+#include "../Diagnostics/SourceManager.h"
 #include "Position.h"
 
 typedef std::pair<const Position, const std::string> cil_error_t;

@@ -18,65 +18,77 @@
     <ClCompile Include="mCil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lexer.cpp">
+    <ClCompile Include="Lexing\Lexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Token.cpp">
+    <ClCompile Include="Lexing\Token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostics.cpp">
+    <ClCompile Include="Diagnostics\Diagnostics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFileManager.cpp">
+    <ClCompile Include="Diagnostics\SourceFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
+    <ClCompile Include="Interpreting\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Expression.cpp">
+    <ClCompile Include="Parsing\Expression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser.cpp">
+    <ClCompile Include="Parsing\Parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\ASTDebugPrinter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\TokenPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Lexer.h">
+    <ClInclude Include="Lexing\Lexer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Token.h">
+    <ClInclude Include="Lexing\Token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Position.h">
+    <ClInclude Include="Diagnostics\Position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostics.h">
+    <ClInclude Include="Diagnostics\Diagnostics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cil-system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SourceManager.h">
+    <ClInclude Include="Diagnostics\SourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFileManager.h">
+    <ClInclude Include="Diagnostics\SourceFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="Interpreting\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Expression.h">
+    <ClInclude Include="Parsing\Expression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser.h">
+    <ClInclude Include="Parsing\Parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\ASTDebugPrinter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\TokenPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sample.cil" />
-    <None Include="LexerTest.cil" />
+    <None Include="Samples\Sample.cil" />
+    <None Include="Samples\LexerTest.cil" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ParseTest.cil" />
+    <Text Include="Samples\ParseTest.cil" />
   </ItemGroup>
 </Project>

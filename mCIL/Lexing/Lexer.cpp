@@ -101,7 +101,7 @@ int Lexer::read_line()
 		this->current_line_ = new_buffer;
 		this->max_line_size_ = new_size;
 	}
-	return length;
+	return (int)length;
 }
 
 bool Lexer::read_required_line()

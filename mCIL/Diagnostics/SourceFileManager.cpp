@@ -5,6 +5,12 @@ SourceFileManager::SourceFileManager(std::string file_path)
 {
     this->file_name_ = file_path.substr(0, file_path.find("."));
     this->file_ = std::ifstream(file_path);
+
+	if (!this->file_.good())
+	{
+		std::cout << "ERROR: Could not open file '" + file_path + "'" << std::endl;
+		exit(1);
+	}
 }
 
 SourceFileManager::~SourceFileManager()
@@ -38,7 +44,7 @@ std::string SourceFileManager::get_line_at_off(size_t line_off)
 		this->update_line_buffer();
 		return this->line_buffer_;
 	}
-	size_t line = 0;
+	int line = 0;
 	char c;
 	while (this->file_.get(c))
 	{

@@ -127,33 +127,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Expression.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Diagnostics.cpp" />
-    <ClCompile Include="Lexer.cpp" />
+    <ClCompile Include="Tools\ASTDebugPrinter.cpp" />
+    <ClCompile Include="Parsing\Expression.cpp" />
+    <ClCompile Include="Interpreting\Object.cpp" />
+    <ClCompile Include="Diagnostics\Diagnostics.cpp" />
+    <ClCompile Include="Lexing\Lexer.cpp" />
     <ClCompile Include="mCil.cpp" />
-    <ClCompile Include="Parser.cpp" />
-    <ClCompile Include="SourceFileManager.cpp" />
-    <ClCompile Include="Token.cpp" />
+    <ClCompile Include="Parsing\Parser.cpp" />
+    <ClCompile Include="Diagnostics\SourceFileManager.cpp" />
+    <ClCompile Include="Lexing\Token.cpp" />
+    <ClCompile Include="Tools\TokenPrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tools\ASTDebugPrinter.h" />
     <ClInclude Include="cil-system.h" />
-    <ClInclude Include="Expression.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Diagnostics.h" />
-    <ClInclude Include="Lexer.h" />
-    <ClInclude Include="Parser.h" />
-    <ClInclude Include="Position.h" />
-    <ClInclude Include="SourceFileManager.h" />
-    <ClInclude Include="SourceManager.h" />
-    <ClInclude Include="Token.h" />
+    <ClInclude Include="Parsing\Expression.h" />
+    <ClInclude Include="Interpreting\Object.h" />
+    <ClInclude Include="Diagnostics\Diagnostics.h" />
+    <ClInclude Include="Lexing\Lexer.h" />
+    <ClInclude Include="Parsing\Parser.h" />
+    <ClInclude Include="Diagnostics\Position.h" />
+    <ClInclude Include="Diagnostics\SourceFileManager.h" />
+    <ClInclude Include="Diagnostics\SourceManager.h" />
+    <ClInclude Include="Lexing\Token.h" />
+    <ClInclude Include="Tools\TokenPrinter.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LexerTest.cil" />
-    <None Include="Sample.cil" />
+    <None Include="Samples\LexerTest.cil" />
+    <None Include="Samples\Sample.cil" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ParseTest.cil" />
+    <Text Include="Samples\ParseTest.cil" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

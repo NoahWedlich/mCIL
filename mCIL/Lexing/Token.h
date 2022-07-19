@@ -1,6 +1,6 @@
 #pragma once
-#include "cil-system.h"
-#include "Position.h"
+#include "../cil-system.h"
+#include "../Diagnostics/Position.h"
 
 enum class TokenType
 {
