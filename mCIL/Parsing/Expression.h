@@ -76,6 +76,7 @@ public:
 	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 
 private:
 	ExprType type_;
@@ -96,6 +97,7 @@ public:
 		: Expression(ExprType::EXPRESSION_GROUPING, pos), expr_(expr) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	expr_ptr expr_;
 };
@@ -107,6 +109,7 @@ public:
 		: Expression(ExprType::EXPRESSION_PRIMARY, pos), primary_type_(type), val_(val) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	PrimaryType primary_type_;
 	primary_value val_;
@@ -119,6 +122,7 @@ public:
 		: Expression(ExprType::EXPRESSION_UNARY, pos), op_(op), expr_(expr) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	Operator op_;
 	expr_ptr expr_;
@@ -131,6 +135,7 @@ public:
 		: Expression(ExprType::EXPRESSION_BINARY, pos), op_(op), left_(left), right_(right) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	Operator op_;
 	expr_ptr left_;
@@ -144,6 +149,7 @@ public:
 		: Expression(ExprType::EXPRESSION_TERNARY, pos), cond_(cond), left_(left), right_(right) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	expr_ptr cond_;
 	expr_ptr left_;
@@ -157,6 +163,7 @@ public:
 		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), right_(right) {}
 
 	friend class ASTDebugPrinter;
+	friend class ASTPrettyPrinter;
 private:
 	const std::string& identifier_;
 	expr_ptr right_;

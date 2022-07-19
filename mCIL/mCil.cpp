@@ -3,7 +3,7 @@
 #include "Parsing/Parser.h"
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
-#include "Tools/ASTDebugPrinter.h"
+#include "Tools/ASTPrettyPrinter.h"
 
 int main()
 {
@@ -20,6 +20,6 @@ int main()
 	//TODO: Change to statements
 	program_t& exprs = parser.parse();
 	
-	ASTDebugPrinter dbg{ std::cout };
+	ASTPrettyPrinter dbg{ std::cout };
 	dbg.print_expression(exprs[0]);
 }

@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tools\ASTPrettyPrinter.cpp" />
     <ClCompile Include="Tools\ASTDebugPrinter.cpp" />
     <ClCompile Include="Parsing\Expression.cpp" />
     <ClCompile Include="Interpreting\Object.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Tools\TokenPrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tools\ASTPrettyPrinter.h" />
     <ClInclude Include="Tools\ASTDebugPrinter.h" />
     <ClInclude Include="cil-system.h" />
     <ClInclude Include="Parsing\Expression.h" />
