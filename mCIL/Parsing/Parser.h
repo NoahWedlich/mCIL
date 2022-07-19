@@ -8,7 +8,7 @@ class Parser
 public:
 	Parser(std::vector<Token>& tokens);
 
-	std::vector<Expression>* parse();
+	program_t& parse();
 private:
 	Token peek()
 	{ return this->tokens_[this->current]; }
@@ -28,18 +28,18 @@ private:
 	{ return this->match_operator(a) || this->match_operator(b); }
 	bool match_keyword(Keyword key);
 
-	Expression* grouping_expr();
-	Expression* primary_expr();
-	Expression* unary_expr();
-	Expression* factor_expr();
-	Expression* sum_expr();
-	Expression* comparison_expr();
-	Expression* equality_expr();
-	Expression* logical_and_expr();
-	Expression* logical_or_expr();
-	Expression* ternary_expr();
-	Expression* assignment_expr();
-	Expression* expression();
+	expr_ptr grouping_expr();
+	expr_ptr primary_expr();
+	expr_ptr unary_expr();
+	expr_ptr factor_expr();
+	expr_ptr sum_expr();
+	expr_ptr comparison_expr();
+	expr_ptr equality_expr();
+	expr_ptr logical_and_expr();
+	expr_ptr logical_or_expr();
+	expr_ptr ternary_expr();
+	expr_ptr assignment_expr();
+	expr_ptr expression();
 
 	std::vector<Token>& tokens_;
 	int current;

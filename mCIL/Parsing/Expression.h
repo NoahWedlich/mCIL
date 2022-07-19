@@ -3,6 +3,10 @@
 #include "../Diagnostics/Position.h"
 #include "../Lexing/Token.h"
 
+class Expression;
+typedef std::shared_ptr<Expression> expr_ptr;
+typedef std::vector<expr_ptr> program_t;
+
 enum class ExprType
 {
 	EXPRESSION_ERROR,
@@ -36,16 +40,16 @@ public:
 	Expression(ExprType, Position);
 	virtual ~Expression();
 
-	static Expression* make_error_expr(Position);
-	static Expression* make_grouping_expr(Expression*, Position);
-	static Expression* make_bool_expr(bool, Position);
-	static Expression* make_num_expr(double, Position);
-	static Expression* make_str_expr(const std::string&, Position);
-	static Expression* make_identifier_expr(const std::string&, Position);
-	static Expression* make_unary_expr(Operator, Expression*, Position);
-	static Expression* make_binary_expr(Operator, Expression*, Expression*, Position);
-	static Expression* make_ternary_expr(Expression*, Expression*, Expression*, Position);
-	static Expression* make_assignment_expr(Token, Expression*, Position);
+	static expr_ptr make_error_expr(Position);
+	static expr_ptr make_grouping_expr(expr_ptr, Position);
+	static expr_ptr make_bool_expr(bool, Position);
+	static expr_ptr make_num_expr(double, Position);
+	static expr_ptr make_str_expr(const std::string&, Position);
+	static expr_ptr make_identifier_expr(const std::string&, Position);
+	static expr_ptr make_unary_expr(Operator, expr_ptr, Position);
+	static expr_ptr make_binary_expr(Operator, expr_ptr, expr_ptr, Position);
+	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr, Position);
+	static expr_ptr make_assignment_expr(Token, expr_ptr, Position);
 
 	Position pos() const
 	{ return this->pos_; }
@@ -88,12 +92,12 @@ public:
 class GroupingExpression : public Expression
 {
 public:
-	GroupingExpression(Expression* expr, Position pos)
+	GroupingExpression(expr_ptr expr, Position pos)
 		: Expression(ExprType::EXPRESSION_GROUPING, pos), expr_(expr) {}
 
 	friend class ASTDebugPrinter;
 private:
-	Expression* expr_;
+	expr_ptr expr_;
 };
 
 class PrimaryExpression : public Expression
@@ -111,49 +115,49 @@ private:
 class UnaryExpression : public Expression
 {
 public:
-	UnaryExpression(Operator op, Expression* expr, Position pos)
+	UnaryExpression(Operator op, expr_ptr expr, Position pos)
 		: Expression(ExprType::EXPRESSION_UNARY, pos), op_(op), expr_(expr) {}
 
 	friend class ASTDebugPrinter;
 private:
 	Operator op_;
-	Expression* expr_;
+	expr_ptr expr_;
 };
 
 class BinaryExpression : public Expression
 {
 public:
-	BinaryExpression(Operator op, Expression* left, Expression* right, Position pos)
+	BinaryExpression(Operator op, expr_ptr left, expr_ptr right, Position pos)
 		: Expression(ExprType::EXPRESSION_BINARY, pos), op_(op), left_(left), right_(right) {}
 
 	friend class ASTDebugPrinter;
 private:
 	Operator op_;
-	Expression* left_;
-	Expression* right_;
+	expr_ptr left_;
+	expr_ptr right_;
 };
 
 class TernaryExpression : public Expression
 {
 public:
-	TernaryExpression(Expression* cond, Expression* left, Expression* right, Position pos)
+	TernaryExpression(expr_ptr cond, expr_ptr left, expr_ptr right, Position pos)
 		: Expression(ExprType::EXPRESSION_TERNARY, pos), cond_(cond), left_(left), right_(right) {}
 
 	friend class ASTDebugPrinter;
 private:
-	Expression* cond_;
-	Expression* left_;
-	Expression* right_;
+	expr_ptr cond_;
+	expr_ptr left_;
+	expr_ptr right_;
 };
 
 class AssignmentExpression : public Expression
 {
 public:
-	AssignmentExpression(const std::string& identifier, Expression* right, Position pos)
+	AssignmentExpression(const std::string& identifier, expr_ptr right, Position pos)
 		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), right_(right) {}
 
 	friend class ASTDebugPrinter;
 private:
 	const std::string& identifier_;
-	Expression* right_;
+	expr_ptr right_;
 };

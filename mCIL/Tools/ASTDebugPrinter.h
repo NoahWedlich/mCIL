@@ -9,18 +9,18 @@ public:
 	ASTDebugPrinter(std::ostream& os = std::cout)
 		: os_(os) {}
 
-	void print_expression(Expression* expr);
+	void print_expression(expr_ptr expr);
 
 private:
 	std::ostream& os_;
 
-	std::string repr_expr(Expression* expr);
+	std::string repr_expr(expr_ptr expr);
 
-	std::string repr_grouping(GroupingExpression* expr);
-	std::string repr_primary(PrimaryExpression* expr);
-	std::string repr_unary(UnaryExpression* expr);
-	std::string repr_binary(BinaryExpression* expr);
-	std::string repr_ternary(TernaryExpression* expr);
-	std::string repr_assignment(AssignmentExpression* expr);
+	std::string repr_grouping(std::shared_ptr<GroupingExpression> expr);
+	std::string repr_primary(std::shared_ptr<PrimaryExpression> expr);
+	std::string repr_unary(std::shared_ptr<UnaryExpression> expr);
+	std::string repr_binary(std::shared_ptr<BinaryExpression> expr);
+	std::string repr_ternary(std::shared_ptr<TernaryExpression> expr);
+	std::string repr_assignment(std::shared_ptr<AssignmentExpression> expr);
 };
 

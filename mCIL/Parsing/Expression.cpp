@@ -7,60 +7,60 @@ Expression::~Expression()
 {
 }
 
-Expression* Expression::make_error_expr(Position pos)
+expr_ptr Expression::make_error_expr(Position pos)
 {
-	return new ErrorExpression(pos);
+	return expr_ptr(new ErrorExpression(pos));
 }
 
-Expression* Expression::make_grouping_expr(Expression* expr, Position pos)
+expr_ptr Expression::make_grouping_expr(expr_ptr expr, Position pos)
 {
-	return new GroupingExpression(expr, pos);
+	return expr_ptr(new GroupingExpression(expr, pos));
 }
 
-Expression* Expression::make_bool_expr(bool val, Position pos)
+expr_ptr Expression::make_bool_expr(bool val, Position pos)
 {
 	primary_value value{};
 	value.bool_val = val;
-	return new PrimaryExpression(PrimaryType::PRIMARY_BOOL, value, pos);
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_BOOL, value, pos));
 }
 
-Expression* Expression::make_num_expr(double val, Position pos)
+expr_ptr Expression::make_num_expr(double val, Position pos)
 {
 	primary_value value{};
 	value.num_val = val;
-	return new PrimaryExpression(PrimaryType::PRIMARY_NUM, value, pos);
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_NUM, value, pos));
 }
 
-Expression* Expression::make_str_expr(const std::string& val, Position pos)
+expr_ptr Expression::make_str_expr(const std::string& val, Position pos)
 {
 	primary_value value{};
 	value.str_val = &val;
-	return new PrimaryExpression(PrimaryType::PRIMARY_STR, value, pos);
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_STR, value, pos));
 }
 
-Expression* Expression::make_identifier_expr(const std::string& val, Position pos)
+expr_ptr Expression::make_identifier_expr(const std::string& val, Position pos)
 {
 	primary_value value{};
 	value.identifier_val = &val;
-	return new PrimaryExpression(PrimaryType::PRIMARY_IDENTIFIER, value, pos);
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_IDENTIFIER, value, pos));
 }
 
-Expression* Expression::make_unary_expr(Operator op, Expression* expr, Position pos)
+expr_ptr Expression::make_unary_expr(Operator op, expr_ptr expr, Position pos)
 {
-	return new UnaryExpression(op, expr, pos);
+	return expr_ptr(new UnaryExpression(op, expr, pos));
 }
 
-Expression* Expression::make_binary_expr(Operator op, Expression* left, Expression* right, Position pos)
+expr_ptr Expression::make_binary_expr(Operator op, expr_ptr left, expr_ptr right, Position pos)
 {
-	return new BinaryExpression(op, left, right, pos);
+	return expr_ptr(new BinaryExpression(op, left, right, pos));
 }
 
-Expression* Expression::make_ternary_expr(Expression* cond, Expression* left, Expression* right, Position pos)
+expr_ptr Expression::make_ternary_expr(expr_ptr cond, expr_ptr left, expr_ptr right, Position pos)
 {
-	return new TernaryExpression(cond, left, right, pos);
+	return expr_ptr(new TernaryExpression(cond, left, right, pos));
 }
 
-Expression* Expression::make_assignment_expr(Token token, Expression* right, Position pos)
+expr_ptr Expression::make_assignment_expr(Token token, expr_ptr right, Position pos)
 {
-	return new AssignmentExpression(token.identifier(), right, pos);
+	return expr_ptr(new AssignmentExpression(token.identifier(), right, pos));
 }

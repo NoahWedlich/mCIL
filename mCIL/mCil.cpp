@@ -18,8 +18,8 @@ int main()
 	Parser parser{ tokens };
 
 	//TODO: Change to statements
-	std::vector<Expression> exprs = *parser.parse();
+	program_t& exprs = parser.parse();
 	
 	ASTDebugPrinter dbg{ std::cout };
-	dbg.print_expression(&exprs[0]);
+	dbg.print_expression(exprs[0]);
 }

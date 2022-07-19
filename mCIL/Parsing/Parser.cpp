@@ -5,14 +5,14 @@
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
-std::vector<Expression>* Parser::parse()
+program_t& Parser::parse()
 {
-    std::vector<Expression>* expressions = new std::vector<Expression>();
+    program_t* program = new program_t();
     while (!this->atEnd())
     {
-        expressions->push_back(*(this->expression()));
+        program->emplace_back(this->expression());
     }
-    return expressions;
+    return *program;
 }
 
 bool Parser::match_number()
@@ -81,11 +81,11 @@ bool Parser::match_keyword(Keyword key)
     return false;
 }
 
-Expression* Parser::grouping_expr()
+expr_ptr Parser::grouping_expr()
 {
     if (this->match_symbol(Symbol::LEFT_PAREN))
     {
-        Expression* expr = this->expression();
+        expr_ptr expr = this->expression();
         const Token rightParen = this->advance();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         {
@@ -93,13 +93,13 @@ Expression* Parser::grouping_expr()
             throw std::invalid_argument("Expected ')'");
         }
         //TODO: Refactor position
-        return Expression::make_grouping_expr(expr, Position{ 0, 0, 0 });
+        return Expression::make_grouping_expr(expr, Position{0, 0, 0});
     }
     //TODO: Handle this error
     throw std::invalid_argument("Expected Expression");
 }
 
-Expression* Parser::primary_expr()
+expr_ptr Parser::primary_expr()
 {
     const Token token = this->peek();
 
@@ -130,7 +130,7 @@ Expression* Parser::primary_expr()
 
 //TODO: Add the 'call' rule
 
-Expression* Parser::unary_expr()
+expr_ptr Parser::unary_expr()
 {
     const Token token = this->peek();
 
@@ -143,95 +143,95 @@ Expression* Parser::unary_expr()
     return this->primary_expr();
 }
 
-Expression* Parser::factor_expr()
+expr_ptr Parser::factor_expr()
 {
-    Expression* left = this->unary_expr();
+    expr_ptr left = this->unary_expr();
     const Token token = this->peek();
     while (this->match_operators(Operator::OPERATOR_MULTIPLY, Operator::OPERATOR_DIVIDE))
     {
-        Expression* right = this->unary_expr();
+        expr_ptr right = this->unary_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::sum_expr()
+expr_ptr Parser::sum_expr()
 {
-    Expression* left = this->factor_expr();
+    expr_ptr left = this->factor_expr();
     const Token token = this->peek();
     while (this->match_operators(Operator::OPERATOR_ADD, Operator::OPERATOR_SUBTRACT))
     {
-        Expression* right = this->factor_expr();
+        expr_ptr right = this->factor_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::comparison_expr()
+expr_ptr Parser::comparison_expr()
 {
-    Expression* left = this->sum_expr();
+    expr_ptr left = this->sum_expr();
     const Token token = this->peek();
     while (this->match_operators(Operator::OPERATOR_GREATER, Operator::OPERATOR_GREATER_EQUAL) ||
            this->match_operators(Operator::OPERATOR_LESS   , Operator::OPERATOR_LESS_EQUAL   ))
     {
-        Expression* right = this->sum_expr();
+        expr_ptr right = this->sum_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::equality_expr()
+expr_ptr Parser::equality_expr()
 {
-    Expression* left = this->comparison_expr();
+    expr_ptr left = this->comparison_expr();
     const Token token = this->peek();
     while (this->match_operators(Operator::OPERATOR_EQUAL_EQUAL, Operator::OPERATOR_NOT_EQUAL))
     {
-        Expression* right = this->comparison_expr();
+        expr_ptr right = this->comparison_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::logical_and_expr()
+expr_ptr Parser::logical_and_expr()
 {
-    Expression* left = this->equality_expr();
+    expr_ptr left = this->equality_expr();
     const Token token = this->peek();
     while (this->match_operator(Operator::OPERATOR_AND))
     {
-        Expression* right = this->equality_expr();
+        expr_ptr right = this->equality_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::logical_or_expr()
+expr_ptr Parser::logical_or_expr()
 {
-    Expression* left = this->logical_and_expr();
+    expr_ptr left = this->logical_and_expr();
     const Token token = this->peek();
     while (this->match_operator(Operator::OPERATOR_OR))
     {
-        Expression* right = this->logical_and_expr();
+        expr_ptr right = this->logical_and_expr();
         //TODO: Refactor position
         left = Expression::make_binary_expr(token.op(), left, right, token.position());
     }
     return left;
 }
 
-Expression* Parser::ternary_expr()
+expr_ptr Parser::ternary_expr()
 {
-    Expression* expr = this->logical_and_expr();
+    expr_ptr expr = this->logical_and_expr();
     const Token token = this->peek();
     if (this->match_symbol(Symbol::QUERY))
     {
-        Expression* left = this->logical_or_expr();
+        expr_ptr left = this->logical_or_expr();
         if (this->match_symbol(Symbol::COLON))
         {
-            Expression* right = this->logical_or_expr();
+            expr_ptr right = this->logical_or_expr();
             return Expression::make_ternary_expr(expr, left, right, Position{ token.position() });
         }
         else
@@ -243,7 +243,7 @@ Expression* Parser::ternary_expr()
     return expr;
 }
 
-Expression* Parser::assignment_expr()
+expr_ptr Parser::assignment_expr()
 {
     const Token id = this->peek();
     //TODO: Implement call.identifier
@@ -252,14 +252,14 @@ Expression* Parser::assignment_expr()
         const Token token = this->peek();
         if (this->match_operator(Operator::OPERATOR_EQUAL))
         {
-            Expression* right = this->assignment_expr();
+            expr_ptr right = this->assignment_expr();
             return Expression::make_assignment_expr(id, right, Position{ token.position() });
         }
     }
     return this->ternary_expr();
 }
 
-Expression* Parser::expression()
+expr_ptr Parser::expression()
 {
     return this->assignment_expr();
 }
