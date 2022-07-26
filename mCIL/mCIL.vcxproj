@@ -128,6 +128,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Interpreting\Interpreter.cpp" />
+    <ClCompile Include="REPL\REPLFileManager.cpp" />
+    <ClCompile Include="REPL\REPL.cpp" />
     <ClCompile Include="Tools\ASTPrettyPrinter.cpp" />
     <ClCompile Include="Tools\ASTDebugPrinter.cpp" />
     <ClCompile Include="Parsing\Expression.cpp" />
@@ -142,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interpreting\Interpreter.h" />
+    <ClInclude Include="REPL\REPLFileManager.h" />
+    <ClInclude Include="REPL\REPL.h" />
     <ClInclude Include="Tools\ASTPrettyPrinter.h" />
     <ClInclude Include="Tools\ASTDebugPrinter.h" />
     <ClInclude Include="cil-system.h" />

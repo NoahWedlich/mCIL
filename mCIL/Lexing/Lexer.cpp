@@ -37,6 +37,10 @@ Lexer::~Lexer()
 
 std::vector<Token> Lexer::scan_file()
 {
+	this->cur_line_size_ = 0;
+	this->char_off_ = 0;
+	this->line_off_ = 0;
+
 	Token currentToken = this->next_token();
 	std::vector<Token> tokens{ currentToken };
 	while (!currentToken.is_EOF())
@@ -392,6 +396,7 @@ Token Lexer::get_string(bool& found)
 
 	if (*current != '\"')
 	{
+		//TODO: Error Reporting
 		return this->create_invalid_token();
 	}
 	current++;

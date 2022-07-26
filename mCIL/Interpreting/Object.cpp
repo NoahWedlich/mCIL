@@ -133,8 +133,9 @@ const std::string Object::to_string() const
 	case ObjType::NONE:
 		return "(None)";
 	case ObjType::BOOL:
-		return "(Bool: " + this->value_.bool_value ? "true)" : "false)";
+		return this->value_.bool_value ? "(Bool: true)" : "(Bool: false)";
 	case ObjType::NUM:
+		//TODO: Remove trailing zeros and dot
 		return "(Num: " + std::to_string(this->value_.num_value) + ")";
 	case ObjType::STR:
 		return "(Str: " + *this->value_.str_value + ")";

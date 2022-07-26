@@ -6,25 +6,29 @@
 #include "Tools/ASTDebugPrinter.h"
 #include "Tools/ASTPrettyPrinter.h"
 #include "Interpreting/Interpreter.h"
+#include "REPL/REPL.h"
 
 int main()
 {
-	SourceFileManager source{ "Samples/ParseTest.cil" };
-	Lexer lexer{ source };
-	std::vector<Token> tokens = lexer.scan_file();
-	if (ErrorManager::error_ocurred)
-	{
-		ErrorManager::report_errors(source);
-		exit(EXIT_FAILURE);
-	}
-	Parser parser{ tokens };
+	REPL repl{};
+	repl.run();
 
-	//TODO: Change to statements
-	program_t& exprs = parser.parse();
+	//SourceFileManager source{ "Samples/ParseTest.cil" };
+	//Lexer lexer{ source };
+	//std::vector<Token> tokens = lexer.scan_file();
+	//if (ErrorManager::error_ocurred)
+	//{
+	//	ErrorManager::report_errors(source);
+	//	exit(EXIT_FAILURE);
+	//}
+	//Parser parser{ tokens };
 
-	/*ASTDebugPrinter dbg{ std::cout };
-	dbg.print_expression(exprs[0]);*/
-	
-	Interpreter interpreter{ exprs };
-	interpreter.run();
+	////TODO: Change to statements
+	//program_t& exprs = parser.parse();
+
+	///*ASTDebugPrinter dbg{ std::cout };
+	//dbg.print_expression(exprs[0]);*/
+	//
+	//Interpreter interpreter{ exprs };
+	//interpreter.run();
 }

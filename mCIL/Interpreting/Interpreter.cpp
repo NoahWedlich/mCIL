@@ -11,6 +11,11 @@ void Interpreter::run()
 	}
 }
 
+Object Interpreter::run_single_expression(expr_ptr expr)
+{
+	return this->run_expr(expr);
+}
+
 Object Interpreter::run_expr(expr_ptr expr)
 {
 	switch (expr->type_)
@@ -60,7 +65,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 
 Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
-	Object inner = this->run_expr(expr);
+	Object inner = this->run_expr(expr->expr_);
 	switch (expr->op_)
 	{
 	case Operator::OPERATOR_BANG:

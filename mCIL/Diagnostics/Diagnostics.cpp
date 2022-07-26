@@ -26,3 +26,9 @@ void ErrorManager::report_errors(SourceManager& source)
 		std::cout << "\t" << carot_prefix << "^" << std::endl;
 	}
 }
+
+void ErrorManager::clear_errors()
+{
+	ErrorManager::errors.clear();
+	ErrorManager::error_ocurred = false;
+}

@@ -10,6 +10,8 @@ public:
 
 	void run();
 
+	Object run_single_expression(expr_ptr expr);
+
 private:
 	Object run_expr(expr_ptr expr);
 

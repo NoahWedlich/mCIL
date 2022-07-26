@@ -13,6 +13,8 @@ struct ErrorManager
 
 	static void report_errors(SourceManager& source);
 
+	static void clear_errors();
+
 	static bool error_ocurred;
 	static std::vector<cil_error_t> errors;
 };

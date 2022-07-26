@@ -51,6 +51,12 @@
     <ClCompile Include="Interpreting\Interpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="REPL\REPL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="REPL\REPLFileManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -93,6 +99,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreting\Interpreter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="REPL\REPL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="REPL\REPLFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

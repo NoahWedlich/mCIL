@@ -229,7 +229,7 @@ expr_ptr Parser::logical_or_expr()
 
 expr_ptr Parser::ternary_expr()
 {
-    expr_ptr expr = this->logical_and_expr();
+    expr_ptr expr = this->logical_or_expr();
     const Token token = this->peek();
     if (this->match_symbol(Symbol::QUERY))
     {
