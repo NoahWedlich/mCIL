@@ -7,7 +7,7 @@ void ASTDebugPrinter::print_expression(expr_ptr expr)
 
 std::string ASTDebugPrinter::repr_expr(expr_ptr expr)
 {
-	switch (expr->type_)
+	switch (expr->type())
 	{
 	case ExprType::EXPRESSION_ERROR:
 		return "(ERROR)";
@@ -30,21 +30,21 @@ std::string ASTDebugPrinter::repr_expr(expr_ptr expr)
 
 std::string ASTDebugPrinter::repr_grouping(std::shared_ptr<GroupingExpression> expr)
 {
-	return "( Group " + this->repr_expr(expr->expr_) + " )";
+	return "( Group " + this->repr_expr(expr->expr()) + " )";
 }
 
 std::string ASTDebugPrinter::repr_primary(std::shared_ptr<PrimaryExpression> expr)
 {
-	switch (expr->primary_type_)
+	switch (expr->primary_type())
 	{
 	case PrimaryType::PRIMARY_BOOL:
-		return "( BOOL " + std::string(expr->val_.bool_val ? "True" : "False") + " )";
+		return "( BOOL " + std::string(expr->val().bool_val ? "True" : "False") + " )";
 	case PrimaryType::PRIMARY_NUM:
-		return "( NUM " + std::to_string(expr->val_.num_val) + " )";
+		return "( NUM " + std::to_string(expr->val().num_val) + " )";
 	case PrimaryType::PRIMARY_STR:
-		return "( STR " + * expr->val_.str_val + " )";
+		return "( STR " + * expr->val().str_val + " )";
 	case PrimaryType::PRIMARY_IDENTIFIER:
-		return "( IDENTIFIER " + * expr->val_.identifier_val + " )";
+		return "( IDENTIFIER " + * expr->val().identifier_val + " )";
 	default:
 		return "( INVALID_PRIMARY )";
 	}
@@ -52,24 +52,24 @@ std::string ASTDebugPrinter::repr_primary(std::shared_ptr<PrimaryExpression> exp
 
 std::string ASTDebugPrinter::repr_unary(std::shared_ptr<UnaryExpression> expr)
 {
-	return "( " + TokenPrinter::print_operator(expr->op_) + " " + this->repr_expr(expr->expr_) + " )";
+	return "( " + TokenPrinter::print_operator(expr->op()) + " " + this->repr_expr(expr->expr()) + " )";
 }
 
 std::string ASTDebugPrinter::repr_binary(std::shared_ptr<BinaryExpression> expr)
 {
-	return "( " + TokenPrinter::print_operator(expr->op_) + " " +
-		this->repr_expr(expr->left_) + " " +
-		this->repr_expr(expr->right_) + " )";
+	return "( " + TokenPrinter::print_operator(expr->op()) + " " +
+		this->repr_expr(expr->left()) + " " +
+		this->repr_expr(expr->right()) + " )";
 }
 
 std::string ASTDebugPrinter::repr_ternary(std::shared_ptr<TernaryExpression> expr)
 {
-	return "( ? " + this->repr_expr(expr->cond_) + " : " +
-		this->repr_expr(expr->left_) + " " +
-		this->repr_expr(expr->right_) + " )";
+	return "( ? " + this->repr_expr(expr->cond()) + " : " +
+		this->repr_expr(expr->left()) + " " +
+		this->repr_expr(expr->right()) + " )";
 }
 
 std::string ASTDebugPrinter::repr_assignment(std::shared_ptr<AssignmentExpression> expr)
 {
-	return "( = " + expr->identifier_ + " " + this->repr_expr(expr->right_) + " )";
+	return "( = " + expr->identifier() + " " + this->repr_expr(expr->expr()) + " )";
 }

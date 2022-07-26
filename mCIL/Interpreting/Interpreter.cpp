@@ -18,7 +18,7 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 
 Object Interpreter::run_expr(expr_ptr expr)
 {
-	switch (expr->type_)
+	switch (expr->type())
 	{
 	case ExprType::EXPRESSION_ERROR:
 		return Object::create_error_object();
@@ -42,19 +42,19 @@ Object Interpreter::run_expr(expr_ptr expr)
 
 Object Interpreter::run_grouping_expr(std::shared_ptr<GroupingExpression> expr)
 {
-	return this->run_expr(expr->expr_);
+	return this->run_expr(expr->expr());
 }
 
 Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 {
-	switch (expr->primary_type_)
+	switch (expr->primary_type())
 	{
 	case PrimaryType::PRIMARY_BOOL:
-		return Object::create_bool_object(expr->val_.bool_val);
+		return Object::create_bool_object(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
-		return Object::create_num_object(expr->val_.num_val);
+		return Object::create_num_object(expr->val().num_val);
 	case PrimaryType::PRIMARY_STR:
-		return Object::create_str_object(*expr->val_.str_val);
+		return Object::create_str_object(*expr->val().str_val);
 	case PrimaryType::PRIMARY_IDENTIFIER:
 		//TODO: Add variables
 	default:
@@ -65,8 +65,8 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 
 Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
-	Object inner = this->run_expr(expr->expr_);
-	switch (expr->op_)
+	Object inner = this->run_expr(expr->expr());
+	switch (expr->op())
 	{
 	case Operator::OPERATOR_BANG:
 		return Object::create_bool_object(!inner.to_bool().bool_value());
@@ -88,10 +88,10 @@ Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 
 Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 {
-	Object left = this->run_expr(expr->left_);
-	Object right = this->run_expr(expr->right_);
+	Object left = this->run_expr(expr->left());
+	Object right = this->run_expr(expr->right());
 
-	switch (expr->op_)
+	switch (expr->op())
 	{
 	case Operator::OPERATOR_ADD:
 		if (left.is_num() && right.is_num())
@@ -220,13 +220,13 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 
 Object Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 {
-	Object cond = this->run_expr(expr->cond_);
+	Object cond = this->run_expr(expr->cond());
 
 	if (cond.to_bool().bool_value())
 	{
-		return this->run_expr(expr->left_);
+		return this->run_expr(expr->left());
 	}
-	return this->run_expr(expr->right_);
+	return this->run_expr(expr->right());
 }
 
 Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)

@@ -75,10 +75,8 @@ public:
 	bool is_assignment_expr()
 	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
 
-	//TODO: Change to getters
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const ExprType type() const
+	{ return this->type_; }
 
 private:
 	ExprType type_;
@@ -98,9 +96,8 @@ public:
 	GroupingExpression(expr_ptr expr, Position pos)
 		: Expression(ExprType::EXPRESSION_GROUPING, pos), expr_(expr) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const expr_ptr expr() const
+	{ return expr_; }
 private:
 	expr_ptr expr_;
 };
@@ -111,9 +108,11 @@ public:
 	PrimaryExpression(PrimaryType type, primary_value val, Position pos)
 		: Expression(ExprType::EXPRESSION_PRIMARY, pos), primary_type_(type), val_(val) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const PrimaryType primary_type() const
+	{ return primary_type_; }
+
+	const primary_value val() const
+	{ return val_; }
 private:
 	PrimaryType primary_type_;
 	primary_value val_;
@@ -125,9 +124,11 @@ public:
 	UnaryExpression(Operator op, expr_ptr expr, Position pos)
 		: Expression(ExprType::EXPRESSION_UNARY, pos), op_(op), expr_(expr) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const Operator op() const
+	{ return op_; }
+
+	const expr_ptr expr() const
+	{ return expr_; }
 private:
 	Operator op_;
 	expr_ptr expr_;
@@ -139,9 +140,14 @@ public:
 	BinaryExpression(Operator op, expr_ptr left, expr_ptr right, Position pos)
 		: Expression(ExprType::EXPRESSION_BINARY, pos), op_(op), left_(left), right_(right) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const Operator op() const
+	{ return op_; }
+
+	const expr_ptr left() const
+	{ return left_; }
+
+	const expr_ptr right() const
+	{ return right_; }
 private:
 	Operator op_;
 	expr_ptr left_;
@@ -154,9 +160,15 @@ public:
 	TernaryExpression(expr_ptr cond, expr_ptr left, expr_ptr right, Position pos)
 		: Expression(ExprType::EXPRESSION_TERNARY, pos), cond_(cond), left_(left), right_(right) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+
+	const expr_ptr cond() const
+	{ return cond_; }
+
+	const expr_ptr left() const
+	{ return left_; }
+
+	const expr_ptr right() const
+	{ return right_; }
 private:
 	expr_ptr cond_;
 	expr_ptr left_;
@@ -167,12 +179,14 @@ class AssignmentExpression : public Expression
 {
 public:
 	AssignmentExpression(const std::string& identifier, expr_ptr right, Position pos)
-		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), right_(right) {}
+		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), expr_(right) {}
 
-	friend class ASTDebugPrinter;
-	friend class ASTPrettyPrinter;
-	friend class Interpreter;
+	const std::string& identifier() const
+	{ return identifier_; }
+
+	const expr_ptr expr() const
+	{ return expr_; }
 private:
 	const std::string& identifier_;
-	expr_ptr right_;
+	expr_ptr expr_;
 };
