@@ -41,14 +41,30 @@ std::vector<Token> Lexer::scan_file()
 	this->char_off_ = 0;
 	this->line_off_ = 0;
 
-	Token currentToken = this->next_token();
-	std::vector<Token> tokens{ currentToken };
-	while (!currentToken.is_EOF())
+	try
 	{
-		currentToken = this->next_token();
-		tokens.push_back(currentToken);
+		Token currentToken = this->next_token();
+	
+		std::vector<Token> tokens{ currentToken };
+		while (!currentToken.is_EOF())
+		{
+			try
+			{
+				currentToken = this->next_token();
+				tokens.push_back(currentToken);
+			}
+			catch (LexerError& err)
+			{
+				ErrorManager::cil_lexer_error(err);
+			}
+		}
+		return tokens;
+		}
+	catch (LexerError& err)
+	{
+		ErrorManager::cil_lexer_error(err);
+		return std::vector<Token> { Token::create_eof_token(Position{0, 0}) };
 	}
-	return tokens;
 }
 
 Token Lexer::next_token()
@@ -85,7 +101,7 @@ Token Lexer::next_token()
 		next = this->get_identifier(found);
 		if (found) { return next; }
 
-		ErrorManager::cil_error(this->position(), "Invalid character");
+		throw LexerError("Invalid character", this->position());
 		this->char_off_++;
 		return next;
 	}
@@ -136,7 +152,7 @@ Token Lexer::create_invalid_token()
 
 Token Lexer::create_eof_token()
 {
-	return Token::create_eof_token(Position{ this->line_off_, 0 });
+	return Token::create_eof_token(this->position());
 }
 
 Token Lexer::create_keyword_token(Keyword type, std::string lexeme)
@@ -313,7 +329,7 @@ Token Lexer::get_operator(bool& found)
 			break;
 		}
 		this->char_off_ = current - this->current_line_;
-		ErrorManager::cil_error(this->position(-1), "Invalid operator, did you mean '&&'");
+		throw LexerError("Invalid operator, did you mean '&&'", this->position(-1));
 		return op;
 	}
 	case '|':
@@ -325,7 +341,7 @@ Token Lexer::get_operator(bool& found)
 			break;
 		}
 		this->char_off_ = current - this->current_line_;
-		ErrorManager::cil_error(this->position(-1), "Invalid operator, did you mean '||'");
+		throw LexerError("Invalid operator, did you mean '||'", this->position(-1));
 		return op;
 	default:
 		found = false;
@@ -396,7 +412,6 @@ Token Lexer::get_string(bool& found)
 
 	if (*current != '\"')
 	{
-		//TODO: Error Reporting
 		return this->create_invalid_token();
 	}
 	current++;
@@ -406,7 +421,7 @@ Token Lexer::get_string(bool& found)
 		{
 			this->char_off_ = current - this->current_line_;
 			found = true;
-			ErrorManager::cil_error(this->position(), "Unterminated string");
+			throw LexerError("Unterminated string", this->position());
 			return this->create_invalid_token();
 		}
 		str += *current;

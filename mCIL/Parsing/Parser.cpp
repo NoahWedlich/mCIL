@@ -1,7 +1,5 @@
 #include "Parser.h"
 
-//TODO: Error reporting
-
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
@@ -83,19 +81,18 @@ bool Parser::match_keyword(Keyword key)
 
 expr_ptr Parser::grouping_expr()
 {
+    const Token token = this->peek();
     if (this->match_symbol(Symbol::LEFT_PAREN))
     {
         expr_ptr expr = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         {
-            //TODO: Handle this error
-            throw std::invalid_argument("Expected ')'");
+            throw ParserError("Expected ')'", *expr);
         }
         //TODO: Refactor position
-        return Expression::make_grouping_expr(expr, Position{0, 0, 0});
+        return Expression::make_grouping_expr(expr, token.position());
     }
-    //TODO: Handle this error
-    throw std::invalid_argument("Expected Expression");
+    throw ParserError("Expected Expression", *Expression::make_error_expr(token.position()));
 }
 
 expr_ptr Parser::primary_expr()
@@ -241,8 +238,7 @@ expr_ptr Parser::ternary_expr()
         }
         else
         {
-            //TODO: Handle this error
-            throw std::invalid_argument("Expected ':' after '?'");
+            throw ParserError("Expected ':' after '?'", *left);
         }
     }
     return expr;
@@ -267,5 +263,13 @@ expr_ptr Parser::assignment_expr()
 
 expr_ptr Parser::expression()
 {
-    return this->assignment_expr();
+    try
+    {
+        return this->assignment_expr();
+    }
+    catch (ParserError err)
+    {
+        ErrorManager::cil_parser_error(err);
+        return Expression::make_error_expr(this->peek().position());
+    }
 }

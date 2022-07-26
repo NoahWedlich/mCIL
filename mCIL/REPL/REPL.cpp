@@ -16,27 +16,37 @@ void REPL::run()
 		std::getline(std::cin, buffer);
 		this->source_.add_line(buffer);
 
-		try
+		std::vector<Token> tokens = this->lexer_.scan_file();
+		if (ErrorManager::error_ocurred)
 		{
-			std::vector<Token> tokens = this->lexer_.scan_file();
-			if (ErrorManager::error_ocurred)
-			{
-				ErrorManager::report_errors(this->source_);
-				ErrorManager::clear_errors();
-			}
+			ErrorManager::report_errors(this->source_);
+			ErrorManager::clear_errors();
+			this->source_.clear();
+			continue;
+		}
 
-			Parser parser{ tokens };
-			program_t& program = parser.parse();
-			//TODO: Default constructor
-			Interpreter interpreter{ program };
-			Object result = interpreter.run_single_expression(program[0]);
-			std::cout << result.to_string() << std::endl;
-		}
-		catch (std::invalid_argument)
+		Parser parser{ tokens };
+		program_t& program = parser.parse();
+		if (ErrorManager::error_ocurred)
 		{
-			//TODO: Error reporting
-			std::cout << "Error" << std::endl;
+			ErrorManager::report_errors(this->source_);
+			ErrorManager::clear_errors();
+			this->source_.clear();
+			continue;
 		}
+
+		//TODO: Default constructor
+		Interpreter interpreter{ program };
+		Object result = interpreter.run_single_expression(program[0]);
+		if (ErrorManager::error_ocurred)
+		{
+			ErrorManager::report_errors(this->source_);
+			ErrorManager::clear_errors();
+			this->source_.clear();
+			continue;
+		}
+
+		std::cout << result.to_string() << std::endl;
 		this->source_.clear();
 	}
 }
