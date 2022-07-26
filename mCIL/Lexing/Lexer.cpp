@@ -67,6 +67,7 @@ Token Lexer::next_token()
 		Token next = this->create_invalid_token();
 		bool found = false;
 		
+		//TODO: Add comments
 		next = this->get_symbol(found);
 		if (found) { return next; }
 		next = this->get_operator(found);

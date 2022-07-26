@@ -1,7 +1,7 @@
 #pragma once
 #include "../cil-system.h"
 
-enum class obj_type
+enum class ObjType
 {
 	NONE,
 	BOOL,
@@ -17,7 +17,7 @@ public:
 	Object(const Object&);
 	Object& operator=(const Object&);
 
-	obj_type type() const;
+	ObjType type() const;
 
 	bool is_none() const;
 	bool is_bool() const;
@@ -33,21 +33,22 @@ public:
 	static Object create_none_object();
 	static Object create_bool_object(bool val);
 	static Object create_num_object(double val);
-	static Object create_str_object(std::string& val);
+	static Object create_str_object(const std::string& val);
 	static Object create_unkown_object();
 	static Object create_error_object();
 	
 	const std::string to_string() const;
+	Object to_bool();
 
 private:
-	Object(obj_type type);
+	Object(ObjType type);
 
-	obj_type type_;
+	ObjType type_;
 
 	union {
 		bool bool_value;
 		double num_value;
-		std::string* str_value;
+		const std::string* str_value;
 	} value_;
 };
 

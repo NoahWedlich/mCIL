@@ -75,8 +75,10 @@ public:
 	bool is_assignment_expr()
 	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
 
+	//TODO: Change to getters
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 
 private:
 	ExprType type_;
@@ -98,6 +100,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	expr_ptr expr_;
 };
@@ -110,6 +113,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	PrimaryType primary_type_;
 	primary_value val_;
@@ -123,6 +127,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	Operator op_;
 	expr_ptr expr_;
@@ -136,6 +141,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	Operator op_;
 	expr_ptr left_;
@@ -150,6 +156,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	expr_ptr cond_;
 	expr_ptr left_;
@@ -164,6 +171,7 @@ public:
 
 	friend class ASTDebugPrinter;
 	friend class ASTPrettyPrinter;
+	friend class Interpreter;
 private:
 	const std::string& identifier_;
 	expr_ptr right_;
