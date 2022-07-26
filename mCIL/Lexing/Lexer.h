@@ -1,9 +1,10 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Diagnostics/Diagnostics.h"
-#include "Token.h"
 #include "../Diagnostics/Position.h"
 #include "../Diagnostics/SourceManager.h"
+#include "../Diagnostics/Errors.h"
+#include "Token.h"
 
 class Lexer
 {

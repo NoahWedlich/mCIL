@@ -7,13 +7,28 @@ void Interpreter::run()
 {
 	for (expr_ptr expr : program_)
 	{
-		this->run_expr(expr);
+		try
+		{
+			this->run_expr(expr);
+		}
+		catch (InterpreterError& err)
+		{
+			ErrorManager::cil_interpreter_error(err);
+		}
 	}
 }
 
 Object Interpreter::run_single_expression(expr_ptr expr)
 {
-	return this->run_expr(expr);
+	try
+	{
+		return this->run_expr(expr);
+	}
+	catch (InterpreterError& err)
+	{
+		ErrorManager::cil_interpreter_error(err);
+		return Object::create_error_object();
+	}
 }
 
 Object Interpreter::run_expr(expr_ptr expr)
@@ -35,8 +50,7 @@ Object Interpreter::run_expr(expr_ptr expr)
 	case ExprType::EXPRESSION_ASSIGNMENT:
 		return this->run_assignment_expr(std::dynamic_pointer_cast<AssignmentExpression, Expression>(expr));
 	default:
-		//TODO: Add Error Reporting
-		return Object::create_error_object();
+		throw InterpreterError("Unreachable!", *expr);
 	}
 }
 
@@ -58,8 +72,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	case PrimaryType::PRIMARY_IDENTIFIER:
 		//TODO: Add variables
 	default:
-		//TODO: Add Error Reporting
-		return Object::create_error_object();
+		throw InterpreterError("Unreachable", *expr);
 	}
 }
 
@@ -77,12 +90,10 @@ Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 		}
 		else
 		{ 
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operand for unary '-' must be num", *expr);
 		}
 	default:
-		//TODO: Add Error Reporting
-		return Object::create_error_object();
+		throw InterpreterError("Unreachable", *expr);
 	}
 }
 
@@ -100,8 +111,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{ 
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '+' must be nums", *expr);
 		}
 	case Operator::OPERATOR_SUBTRACT:
 		if (left.is_num() && right.is_num())
@@ -110,8 +120,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '-' must be nums", *expr);
 		}
 	case Operator::OPERATOR_MULTIPLY:
 		if (left.is_num() && right.is_num())
@@ -120,8 +129,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '*' must be nums", *expr);
 		}
 	case Operator::OPERATOR_DIVIDE:
 		if (left.is_num() && right.is_num())
@@ -130,8 +138,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '/' must be nums", *expr);
 		}
 	case Operator::OPERATOR_GREATER:
 		if (left.is_num() && right.is_num())
@@ -140,8 +147,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '>' must be nums", *expr);
 		}
 	case Operator::OPERATOR_LESS:
 		if (left.is_num() && right.is_num())
@@ -150,8 +156,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '<' must be nums", *expr);
 		}
 	case Operator::OPERATOR_GREATER_EQUAL:
 		if (left.is_num() && right.is_num())
@@ -160,8 +165,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '>=' must be nums", *expr);
 		}
 	case Operator::OPERATOR_LESS_EQUAL:
 		if (left.is_num() && right.is_num())
@@ -170,15 +174,13 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		}
 		else
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '<=' must be nums", *expr);
 		}
 	case Operator::OPERATOR_EQUAL_EQUAL:
 	{
 		if (left.type() != right.type())
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '==' must be the same", *expr);
 		}
 		switch (left.type())
 		{
@@ -196,8 +198,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 	{
 		if (left.type() != right.type())
 		{
-			//TODO: Error reporting
-			return Object::create_error_object();
+			throw InterpreterError("Operands for binary '!=' must be the same", *expr);
 		}
 		switch (left.type())
 		{
@@ -215,6 +216,8 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		return Object::create_bool_object(left.to_bool().bool_value() && right.to_bool().bool_value());
 	case Operator::OPERATOR_OR:
 		return Object::create_bool_object(left.to_bool().bool_value() || right.to_bool().bool_value());
+	default:
+		throw InterpreterError("Unreachable", *expr);
 	}
 }
 

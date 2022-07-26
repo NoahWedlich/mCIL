@@ -33,8 +33,7 @@ bool REPLFileManager::get_next_line(char* line_buffer, size_t max_size, size_t& 
 		this->curr_line_++;
 		return true;
 	}
-	//TODO: Error reporting
-	return false;
+	throw (new LexerError("Error reading next line", Position(this->curr_line_, 0)));
 }
 
 std::string REPLFileManager::get_line_at_off(size_t line_off)
@@ -43,8 +42,7 @@ std::string REPLFileManager::get_line_at_off(size_t line_off)
 	{
 		return this->source_[line_off];
 	}
-	//TODO: Error reporting
-	return "";
+	throw (new LexerError("Invalid line offset", Position(0, 0)));
 }
 
 bool REPLFileManager::is_at_end()

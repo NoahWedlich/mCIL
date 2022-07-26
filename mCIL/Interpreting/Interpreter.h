@@ -2,6 +2,8 @@
 #include "../cil-system.h"
 #include "Object.h"
 #include "../Parsing/Expression.h"
+#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/Diagnostics.h"
 
 class Interpreter
 {

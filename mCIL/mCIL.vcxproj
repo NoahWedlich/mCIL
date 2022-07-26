@@ -143,6 +143,7 @@
     <ClCompile Include="Tools\TokenPrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Diagnostics\Errors.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
     <ClInclude Include="REPL\REPL.h" />

@@ -1,6 +1,8 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Lexing/Token.h"
+#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/Diagnostics.h"
 #include "Expression.h"
 
 class Parser
