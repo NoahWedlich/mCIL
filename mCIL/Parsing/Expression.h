@@ -5,7 +5,7 @@
 
 class Expression;
 typedef std::shared_ptr<Expression> expr_ptr;
-typedef std::vector<expr_ptr> program_t;
+typedef std::vector<expr_ptr> expr_list;
 
 enum class ExprType
 {
@@ -37,8 +37,10 @@ union primary_value
 class Expression
 {
 public:
-	Expression(ExprType, Position);
-	virtual ~Expression();
+	Expression(ExprType type, Position pos)
+		: type_(type), pos_(pos) {}
+
+	virtual ~Expression() {}
 
 	static expr_ptr make_error_expr(Position);
 	static expr_ptr make_grouping_expr(expr_ptr, Position);
@@ -53,6 +55,9 @@ public:
 
 	Position pos() const
 	{ return this->pos_; }
+
+	const ExprType type() const
+	{ return this->type_; }
 
 	bool is_error_expr() const
 	{ return this->type_ == ExprType::EXPRESSION_ERROR; }
@@ -74,9 +79,6 @@ public:
 
 	bool is_assignment_expr()
 	{ return this->type_ == ExprType::EXPRESSION_ASSIGNMENT; }
-
-	const ExprType type() const
-	{ return this->type_; }
 
 private:
 	ExprType type_;

@@ -1,12 +1,5 @@
 #include "Expression.h"
 
-Expression::Expression(ExprType type, Position pos)
-	: type_(type), pos_(pos) {}
-
-Expression::~Expression()
-{
-}
-
 expr_ptr Expression::make_error_expr(Position pos)
 {
 	return expr_ptr(new ErrorExpression(pos));
