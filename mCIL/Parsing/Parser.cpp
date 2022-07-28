@@ -3,12 +3,12 @@
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
-program_t& Parser::parse()
+stmt_list& Parser::parse()
 {
-    program_t* program = new program_t();
+    stmt_list* program = new stmt_list();
     while (!this->atEnd())
     {
-        program->emplace_back(this->expression());
+        program->emplace_back(this->statement());
     }
     return *program;
 }
@@ -16,7 +16,7 @@ program_t& Parser::parse()
 bool Parser::match_number()
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_NUMBER)
+    if (token.is_number())
     {
         this->advance();
         return true;
@@ -27,7 +27,7 @@ bool Parser::match_number()
 bool Parser::match_string()
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_STRING)
+    if (token.is_string())
     {
         this->advance();
         return true;
@@ -38,7 +38,7 @@ bool Parser::match_string()
 bool Parser::match_identifier()
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_IDENTIFIER)
+    if (token.is_string())
     {
         this->advance();
         return true;
@@ -49,7 +49,7 @@ bool Parser::match_identifier()
 bool Parser::match_symbol(Symbol sym)
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_SYMBOL && token.symbol() == sym)
+    if (token.is_symbol() && token.symbol() == sym)
     {
         this->advance();
         return true;
@@ -60,7 +60,7 @@ bool Parser::match_symbol(Symbol sym)
 bool Parser::match_operator(Operator op)
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_OPERATOR && token.op() == op)
+    if (token.is_operator() && token.op() == op)
     {
         this->advance();
         return true;
@@ -71,13 +71,32 @@ bool Parser::match_operator(Operator op)
 bool Parser::match_keyword(Keyword key)
 {
     const Token token = this->peek();
-    if (token.type() == TokenType::TOKEN_KEYWORD && token.keyword() == key)
+    if (token.is_keyword() && token.keyword() == key)
     {
         this->advance();
         return true;
     }
     return false;
 }
+
+void Parser::consume_semicolon(stmt_ptr last)
+{
+    const Token token = this->peek();
+    if (!this->match_symbol(Symbol::SEMICOLON))
+    {
+        throw ParserError("Expected a semicolon", *last);
+    }
+}
+
+void Parser::consume_semicolon(expr_ptr last)
+{
+    const Token token = this->peek();
+    if (!this->match_symbol(Symbol::SEMICOLON))
+    {
+        throw ParserError("Expected a semicolon", *last);
+    }
+}
+
 
 expr_ptr Parser::grouping_expr()
 {
@@ -92,7 +111,7 @@ expr_ptr Parser::grouping_expr()
         //TODO: Refactor position
         return Expression::make_grouping_expr(expr, token.position());
     }
-    throw ParserError("Expected Expression", *Expression::make_error_expr(token.position()));
+    throw ParserError("Expected Expression", token);
 }
 
 expr_ptr Parser::primary_expr()
@@ -271,5 +290,116 @@ expr_ptr Parser::expression()
     {
         ErrorManager::cil_parser_error(err);
         return Expression::make_error_expr(this->peek().position());
+    }
+}
+
+stmt_ptr Parser::expr_stmt()
+{
+    const Token token = this->peek();
+    expr_ptr expr = Expression::make_error_expr(token.position());
+    try
+    {
+        expr = this->expression();
+    }
+    catch(ParserError)
+    {
+        throw ParserError("Expected statement", token);
+    }
+    this->consume_semicolon(expr);
+    return Statement::make_expr_stmt(expr, this->peek().position());
+}
+
+stmt_ptr Parser::block_stmt()
+{
+    const Token l_brace = this->peek();
+    if (this->match_symbol(Symbol::LEFT_BRACE))
+    {
+        stmt_list inner {};
+        while (!this->atEnd())
+        {
+            inner.push_back(this->statement());
+            if (this->match_symbol(Symbol::RIGHT_BRACE))
+            {
+                return Statement::make_block_stmt(inner, this->peek().position());
+            }
+        }
+        throw ParserError("Expected closing brace", l_brace);
+    }
+    return this->expr_stmt();
+}
+
+stmt_ptr Parser::print_stmt()
+{
+    if (this->match_keyword(Keyword::KEYWORD_PRINT))
+    {
+        expr_ptr expr = this->expression();
+        this->consume_semicolon(expr);
+        return Statement::make_print_stmt(expr, this->peek().position());
+    }
+    return this->block_stmt();
+}
+
+stmt_ptr Parser::if_stmt()
+{
+    const Token if_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_IF))
+    {
+        if (!this->match_symbol(Symbol::LEFT_BRACKET))
+        { throw ParserError("Expected a left bracket", if_keyword); }
+        expr_ptr cond = this->expression();
+        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
+        { throw ParserError("Expected a right bracket", *cond); }
+        stmt_ptr if_branch = this->statement();
+        return Statement::make_if_stmt(cond, if_branch, this->peek().position());
+    }
+    return this->print_stmt();
+}
+
+stmt_ptr Parser::while_stmt()
+{
+    const Token while_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_WHILE))
+    {
+        if (!this->match_symbol(Symbol::LEFT_BRACKET))
+        { throw ParserError("Expected a left bracket", while_keyword); }
+        expr_ptr cond = this->expression();
+        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
+        { throw ParserError("Expected a right bracket", *cond); }
+        stmt_ptr inner = this->statement();
+        return Statement::make_while_stmt(cond, inner, this->peek().position());
+    }
+    return this->if_stmt();
+}
+
+stmt_ptr Parser::for_stmt()
+{
+    const Token for_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_FOR))
+    {
+        if (!this->match_symbol(Symbol::LEFT_BRACKET))
+        { throw ParserError("Expected a left bracket", for_keyword); }
+        stmt_ptr init = this->statement();
+        this->consume_semicolon(init);
+        expr_ptr cond = this->expression();
+        this->consume_semicolon(cond);
+        stmt_ptr exec = this->statement();
+        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
+        {  throw ParserError("Expected a right bracket", *exec); }
+        stmt_ptr inner = this->statement();
+        return Statement::make_for_stmt(init, cond, exec, inner, this->peek().position());
+    }
+    return this->while_stmt();
+}
+
+stmt_ptr Parser::statement()
+{
+    try
+    {
+        return this->for_stmt();
+    }
+    catch (ParserError err)
+    {
+        ErrorManager::cil_parser_error(err);
+        return Statement::make_error_stmt(this->peek().position());
     }
 }

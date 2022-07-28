@@ -2,13 +2,14 @@
 #include "../cil-system.h"
 #include "Object.h"
 #include "../Parsing/Expression.h"
+#include "../Parsing/Statement.h"
 #include "../Diagnostics/Errors.h"
 #include "../Diagnostics/Diagnostics.h"
 
 class Interpreter
 {
 public:
-	Interpreter(program_t& program);
+	Interpreter(stmt_list& program);
 
 	void run();
 
@@ -24,6 +25,6 @@ private:
 	Object run_ternary_expr(std::shared_ptr<TernaryExpression> expr);
 	Object run_assignment_expr(std::shared_ptr<AssignmentExpression> expr);
 
-	program_t& program_;
+	stmt_list& program_;
 };
 

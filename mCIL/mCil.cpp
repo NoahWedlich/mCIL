@@ -1,6 +1,7 @@
 #include "cil-system.h"
 #include "Lexing/Lexer.h"
 #include "Parsing/Parser.h"
+#include "Parsing/Statement.h"
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
 #include "Tools/ASTDebugPrinter.h"
@@ -10,25 +11,31 @@
 
 int main()
 {
-	REPL repl{};
-	repl.run();
+	//REPL repl{};
+	//repl.run();
 
-	//SourceFileManager source{ "Samples/ParseTest.cil" };
-	//Lexer lexer{ source };
-	//std::vector<Token> tokens = lexer.scan_file();
-	//if (ErrorManager::error_ocurred)
-	//{
-	//	ErrorManager::report_errors(source);
-	//	exit(EXIT_FAILURE);
-	//}
-	//Parser parser{ tokens };
+	SourceFileManager source{ "Samples/ParseTest.cil" };
+	Lexer lexer{ source };
+	std::vector<Token> tokens = lexer.scan_file();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}
+	Parser parser{ tokens };
 
-	////TODO: Change to statements
-	//program_t& exprs = parser.parse();
+	//TODO: Change to statements
+	stmt_list& stmts = parser.parse();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}
+	int i = 0;
 
-	///*ASTDebugPrinter dbg{ std::cout };
-	//dbg.print_expression(exprs[0]);*/
-	//
+	/*ASTDebugPrinter dbg{ std::cout };
+	dbg.print_expression(exprs[0]);*/
+	
 	//Interpreter interpreter{ exprs };
 	//interpreter.run();
 }

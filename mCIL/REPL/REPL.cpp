@@ -25,7 +25,7 @@ void REPL::run()
 		}
 
 		Parser parser{ tokens };
-		program_t& program = parser.parse();
+		stmt_list& program = parser.parse();
 		if (ErrorManager::error_ocurred)
 		{
 			ErrorManager::report_errors(this->source_);
@@ -36,7 +36,9 @@ void REPL::run()
 
 		//TODO: Default constructor
 		Interpreter interpreter{ program };
-		Object result = interpreter.run_single_expression(program[0]);
+		//TODO: Statement
+		//Object result = interpreter.run_single_expression(program[0]);
+		Object result = Object::create_error_object();
 		if (ErrorManager::error_ocurred)
 		{
 			ErrorManager::report_errors(this->source_);

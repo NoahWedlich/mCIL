@@ -1,15 +1,16 @@
 #include "Interpreter.h"
 
-Interpreter::Interpreter(program_t& program)
+Interpreter::Interpreter(stmt_list& program)
 	: program_(program) {}
 
 void Interpreter::run()
 {
-	for (expr_ptr expr : program_)
+	for (stmt_ptr stmt : program_)
 	{
 		try
 		{
-			this->run_expr(expr);
+			//TODO: Use statement
+			//this->run_expr(stmt);
 		}
 		catch (InterpreterError& err)
 		{

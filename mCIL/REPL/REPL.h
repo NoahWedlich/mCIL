@@ -4,6 +4,8 @@
 #include "../Diagnostics/Diagnostics.h"
 #include "../Lexing/Lexer.h"
 #include "../Parsing/Parser.h"
+#include "../Parsing/Expression.h"
+#include "../Parsing/Statement.h"
 #include "../Interpreting/Interpreter.h"
 
 class REPL

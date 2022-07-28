@@ -11,17 +11,17 @@ void ErrorManager::cil_error(const Position& pos, const std::string& msg, const 
 
 void ErrorManager::cil_lexer_error(const LexerError& err)
 {
-	ErrorManager::cil_error(err.pos_, err.what(), "LexerError");
+	ErrorManager::cil_error(err.pos, err.what(), "LexerError");
 }
 
 void ErrorManager::cil_parser_error(const ParserError& err)
 {
-	ErrorManager::cil_error(err.expr_.pos(), err.what(), "ParserError");
+	ErrorManager::cil_error(err.pos, err.what(), "ParserError");
 }
 
 void ErrorManager::cil_interpreter_error(const InterpreterError& err)
 {
-	ErrorManager::cil_error(err.expr_.pos(), err.what(), "InterpreterError");
+	ErrorManager::cil_error(err.pos, err.what(), "InterpreterError");
 }
 
 void ErrorManager::cil_warning(const Position& pos, const std::string& msg)

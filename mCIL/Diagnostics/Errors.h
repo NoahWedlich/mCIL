@@ -1,6 +1,6 @@
 #pragma once
 #include "../cil-system.h"
-#include "../Parsing/Expression.h"
+#include "../Parsing/Statement.h"
 
 class CIL_Error : public std::exception
 {
@@ -17,29 +17,35 @@ private:
 	const std::string msg_;
 };
 
-class LexerError : public CIL_Error
+struct LexerError : public CIL_Error
 {
-public:
 	LexerError(const std::string& msg, Position pos)
-		: CIL_Error(msg), pos_(pos) {}
+		: CIL_Error(msg), pos(pos) {}
 
-	Position pos_;
+	Position pos;
 };
 
-class ParserError : public CIL_Error
+struct ParserError : public CIL_Error
 {
-public:
-	ParserError(const std::string& msg, Expression& expr)
-		: CIL_Error(msg), expr_(expr) {}
+	ParserError(const std::string& msg, Token token)
+		: CIL_Error(msg), pos(token.position()) {}
 
-	Expression expr_;
+	ParserError(const std::string& msg, Statement stmt)
+		: CIL_Error(msg), pos(stmt.pos()) {}
+
+	ParserError(const std::string& msg, Expression expr)
+		: CIL_Error(msg), pos(expr.pos()) {}
+
+	Position pos;
 };
 
-class InterpreterError : public CIL_Error
+struct InterpreterError : public CIL_Error
 {
-public:
-	InterpreterError(const std::string& msg, Expression& expr)
-		: CIL_Error(msg), expr_(expr) {}
+	InterpreterError(const std::string& msg, Statement& stmt)
+		: CIL_Error(msg), pos(stmt.pos()) {}
 
-	Expression expr_;
+	InterpreterError(const std::string& msg, Expression expr)
+		: CIL_Error(msg), pos(expr.pos()) {}
+
+	Position pos;
 };

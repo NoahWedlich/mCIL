@@ -10,6 +10,7 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"const"  , Keyword::KEYWORD_CONST  },
 	{"true"   , Keyword::KEYWORD_TRUE   },
 	{"false"  , Keyword::KEYWORD_FALSE  },
+	{"print"  , Keyword::KEYWORD_PRINT  },
 	{"if"     , Keyword::KEYWORD_IF     },
 	{"elif"   , Keyword::KEYWORD_ELIF   },
 	{"else"   , Keyword::KEYWORD_ELSE   },
