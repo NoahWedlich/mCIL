@@ -42,30 +42,22 @@ std::vector<Token> Lexer::scan_file()
 	this->char_off_ = 0;
 	this->line_off_ = 0;
 
-	try
-	{
-		Token currentToken = this->next_token();
+	Token currentToken = this->create_invalid_token();
 	
-		std::vector<Token> tokens{ currentToken };
-		while (!currentToken.is_EOF())
-		{
-			try
-			{
-				currentToken = this->next_token();
-				tokens.push_back(currentToken);
-			}
-			catch (LexerError& err)
-			{
-				ErrorManager::cil_lexer_error(err);
-			}
-		}
-		return tokens;
-		}
-	catch (LexerError& err)
+	std::vector<Token> tokens{ };
+	do
 	{
-		ErrorManager::cil_lexer_error(err);
-		return std::vector<Token> { Token::create_eof_token(Position{0, 0}) };
-	}
+		try
+		{
+			currentToken = this->next_token();
+			tokens.push_back(currentToken);
+		}
+		catch (LexerError& err)
+		{
+			ErrorManager::cil_lexer_error(err);
+		}
+	} while (!currentToken.is_EOF());
+	return tokens;
 }
 
 Token Lexer::next_token()
@@ -490,7 +482,8 @@ Token Lexer::get_identifier(bool& found)
 		(*current != ' ' &&
 		*current != '\t' &&
 		*current != '\r' &&
-		*current != '\n'))
+		*current != '\n' &&
+		*current != '"' ))
 	{
 		id_str += *current;
 		current++;

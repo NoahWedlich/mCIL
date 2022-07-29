@@ -26,11 +26,11 @@ void SourceFileManager::update_line_buffer()
 		char c;
 		while (this->file_.get(c))
 		{
+			this->line_buffer_.push_back(c);
 			if (c == '\n')
 			{
 				break;
 			}
-			this->line_buffer_.push_back(c);
 		}
 	}
 }

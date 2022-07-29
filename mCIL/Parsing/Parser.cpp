@@ -38,7 +38,7 @@ bool Parser::match_string()
 bool Parser::match_identifier()
 {
     const Token token = this->peek();
-    if (token.is_string())
+    if (token.is_identifier())
     {
         this->advance();
         return true;
@@ -323,7 +323,7 @@ stmt_ptr Parser::block_stmt()
                 return Statement::make_block_stmt(inner, this->peek().position());
             }
         }
-        throw ParserError("Expected closing brace", l_brace);
+        throw ParserError("Expected '}'", l_brace);
     }
     return this->expr_stmt();
 }
@@ -344,11 +344,11 @@ stmt_ptr Parser::if_stmt()
     const Token if_keyword = this->peek();
     if (this->match_keyword(Keyword::KEYWORD_IF))
     {
-        if (!this->match_symbol(Symbol::LEFT_BRACKET))
-        { throw ParserError("Expected a left bracket", if_keyword); }
+        if (!this->match_symbol(Symbol::LEFT_PAREN))
+        { throw ParserError("Expected '('", if_keyword); }
         expr_ptr cond = this->expression();
-        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
-        { throw ParserError("Expected a right bracket", *cond); }
+        if (!this->match_symbol(Symbol::RIGHT_PAREN))
+        { throw ParserError("Expected ')'", *cond); }
         stmt_ptr if_branch = this->statement();
         return Statement::make_if_stmt(cond, if_branch, this->peek().position());
     }
@@ -360,11 +360,11 @@ stmt_ptr Parser::while_stmt()
     const Token while_keyword = this->peek();
     if (this->match_keyword(Keyword::KEYWORD_WHILE))
     {
-        if (!this->match_symbol(Symbol::LEFT_BRACKET))
-        { throw ParserError("Expected a left bracket", while_keyword); }
+        if (!this->match_symbol(Symbol::LEFT_PAREN))
+        { throw ParserError("Expected '('", while_keyword); }
         expr_ptr cond = this->expression();
-        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
-        { throw ParserError("Expected a right bracket", *cond); }
+        if (!this->match_symbol(Symbol::RIGHT_PAREN))
+        { throw ParserError("Expected ')'", *cond); }
         stmt_ptr inner = this->statement();
         return Statement::make_while_stmt(cond, inner, this->peek().position());
     }
@@ -376,15 +376,14 @@ stmt_ptr Parser::for_stmt()
     const Token for_keyword = this->peek();
     if (this->match_keyword(Keyword::KEYWORD_FOR))
     {
-        if (!this->match_symbol(Symbol::LEFT_BRACKET))
-        { throw ParserError("Expected a left bracket", for_keyword); }
+        if (!this->match_symbol(Symbol::LEFT_PAREN))
+        { throw ParserError("Expected '('", for_keyword); }
         stmt_ptr init = this->statement();
-        this->consume_semicolon(init);
         expr_ptr cond = this->expression();
         this->consume_semicolon(cond);
         stmt_ptr exec = this->statement();
-        if (!this->match_symbol(Symbol::RIGHT_BRACKET))
-        {  throw ParserError("Expected a right bracket", *exec); }
+        if (!this->match_symbol(Symbol::RIGHT_PAREN))
+        {  throw ParserError("Expected ')'", *exec); }
         stmt_ptr inner = this->statement();
         return Statement::make_for_stmt(init, cond, exec, inner, this->peek().position());
     }

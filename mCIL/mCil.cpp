@@ -24,7 +24,6 @@ int main()
 	}
 	Parser parser{ tokens };
 
-	//TODO: Change to statements
 	stmt_list& stmts = parser.parse();
 	if (ErrorManager::error_ocurred)
 	{

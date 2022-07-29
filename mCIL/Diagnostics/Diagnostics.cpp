@@ -36,8 +36,9 @@ void ErrorManager::report_errors(SourceManager& source)
 		std::string line_prefix = std::to_string(error.pos.line + 1) + " | ";
 		size_t prefix_len = line_prefix.size();
 		std::string carot_prefix = std::string(prefix_len + error.pos.startChar, ' ');
+		std::string source_line = source.get_line_at_off(error.pos.line);
 		std::cout << "\n" + error.prefix + ": " << error.msg << "\n\n";
-		std::cout << "\t" << line_prefix << source.get_line_at_off(error.pos.line) << "\n";
+		std::cout << "\t" << line_prefix << source_line << (source_line.ends_with("\n") ? "" : "\n");
 		std::cout << "\t" << carot_prefix << "^" << std::endl;
 	}
 }
