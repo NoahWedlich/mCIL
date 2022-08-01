@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Parsing\Declaration.cpp" />
     <ClCompile Include="Interpreting\Interpreter.cpp" />
     <ClCompile Include="REPL\REPLFileManager.cpp" />
     <ClCompile Include="REPL\REPL.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="Tools\TokenPrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Parsing\Declaration.h" />
     <ClInclude Include="Diagnostics\Errors.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
@@ -167,6 +169,7 @@
   <ItemGroup>
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\Sample.cil" />
+    <None Include="Samples\Variables.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />

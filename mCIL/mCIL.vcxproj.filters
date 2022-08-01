@@ -60,6 +60,9 @@
     <ClCompile Include="Parsing\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Parsing\Declaration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -116,10 +119,14 @@
     <ClInclude Include="Parsing\Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Parsing\Declaration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\Sample.cil" />
     <None Include="Samples\LexerTest.cil" />
+    <None Include="Samples\Variables.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />
