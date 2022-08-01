@@ -9,13 +9,25 @@ void Interpreter::run()
 	{
 		try
 		{
-			//TODO: Use statement
-			//this->run_expr(stmt);
+			this->run_stmt(stmt);
 		}
 		catch (InterpreterError& err)
 		{
 			ErrorManager::cil_interpreter_error(err);
+			break;
 		}
+	}
+}
+
+void Interpreter::run_single_statement(stmt_ptr stmt)
+{
+	try
+	{
+		this->run_stmt(stmt);
+	}
+	catch (InterpreterError& err)
+	{
+		ErrorManager::cil_interpreter_error(err);
 	}
 }
 
@@ -30,6 +42,97 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 		ErrorManager::cil_interpreter_error(err);
 		return Object::create_error_object();
 	}
+}
+
+void Interpreter::run_stmt(stmt_ptr stmt)
+{
+	switch (stmt->type())
+	{
+	case StmtType::STATEMENT_BLOCK:
+		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatment, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_PRINT:
+		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_IF:
+		this->run_if_stmt(std::dynamic_pointer_cast<IfStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_WHILE:
+		this->run_while_stmt(std::dynamic_pointer_cast<WhileStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_FOR:
+		this->run_for_stmt(std::dynamic_pointer_cast<ForStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_EXPR:
+		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
+		break;
+	default:
+		throw InterpreterError("Unreachable!", *stmt);
+	}
+}
+
+void Interpreter::run_block_stmt(std::shared_ptr<BlockStatment> stmt)
+{
+	for (stmt_ptr inner : stmt->inner())
+	{
+		this->run_stmt(inner);
+	}
+}
+
+void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
+{
+	Object val = this->run_expr(stmt->expr());
+	switch (val.type())
+	{
+	case ObjType::BOOL:
+		std::cout << (val.bool_value() ? "true" : "false") << std::endl;
+		break;
+	case ObjType::NONE:
+		std::cout << "None" << std::endl;
+		break;
+	case ObjType::NUM:
+		std::cout << val.num_value() << std::endl;
+		break;
+	case ObjType::STR:
+		std::cout << val.str_value() << std::endl;
+		break;
+	default:
+		throw InterpreterError("Trying to print invalid value", *stmt);
+	}
+}
+
+void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
+{
+	Object val = this->run_expr(stmt->cond());
+	if (val.to_bool().bool_value())
+	{
+		this->run_stmt(stmt->if_branch());
+	}
+}
+
+void Interpreter::run_while_stmt(std::shared_ptr<WhileStatement> stmt)
+{
+	while (this->run_expr(stmt->cond()).to_bool().bool_value())
+	{
+		this->run_stmt(stmt->inner());
+	}
+}
+
+void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
+{
+	for (
+		this->run_stmt(stmt->init());
+		this->run_expr(stmt->cond()).to_bool().bool_value();
+		this->run_stmt(stmt->exec())
+		)
+	{
+		this->run_stmt(stmt->inner());
+	}
+}
+
+void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)
+{
+	this->run_expr(stmt->expr());
 }
 
 Object Interpreter::run_expr(expr_ptr expr)

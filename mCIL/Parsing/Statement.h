@@ -127,7 +127,7 @@ public:
 	const expr_ptr cond() const
 	{ return cond_; }
 
-	const stmt_ptr if_branch() const
+	const stmt_ptr inner() const
 	{ return inner_; }
 private:
 	expr_ptr cond_;
@@ -149,7 +149,7 @@ public:
 	const stmt_ptr exec() const
 	{ return exec_; }
 
-	const stmt_ptr if_branch() const
+	const stmt_ptr inner() const
 	{ return inner_; }
 private:
 	stmt_ptr init_;

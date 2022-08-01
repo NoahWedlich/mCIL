@@ -30,11 +30,15 @@ int main()
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
 	}
-	int i = 0;
 
 	/*ASTDebugPrinter dbg{ std::cout };
 	dbg.print_expression(exprs[0]);*/
 	
-	//Interpreter interpreter{ exprs };
-	//interpreter.run();
+	Interpreter interpreter{ stmts };
+	interpreter.run();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}
 }
