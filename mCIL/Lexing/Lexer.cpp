@@ -100,6 +100,13 @@ Token Lexer::next_token()
 	}
 }
 
+bool Lexer::char_is_alpha(char c)
+{
+	return ((c >= 'A' && c <= 'Z') ||
+			(c >= 'a' && c <= 'z') ||
+			(c == '_'));
+}
+
 int Lexer::read_line()
 {
 	if (this->source_.is_at_end())
@@ -436,15 +443,11 @@ Token Lexer::get_keyword(bool& found)
 
 	std::string key_str = "";
 
-	if (*current < 'a' || *current > 'z')
+	if (!this->char_is_alpha(*current))
 	{
 		return this->create_invalid_token();
 	}
-	while ( current < end &&
-		(*current != ' '  &&
-		 *current != '\t' &&
-		 *current != '\r' &&
-		 *current != '\n'))
+	while (this->char_is_alpha(*current))
 	{
 		key_str += *current;
 		current++;
@@ -472,18 +475,11 @@ Token Lexer::get_identifier(bool& found)
 
 	std::string id_str = "";
 
-	if ((*current < 'A' || *current > 'Z') &&
-		(*current < 'a' || *current > 'z') &&
-		(*current != '_'))
+	if (!this->char_is_alpha(*current))
 	{
 		return this->create_invalid_token();
 	}
-	while (current < end &&
-		(*current != ' ' &&
-		*current != '\t' &&
-		*current != '\r' &&
-		*current != '\n' &&
-		*current != '"' ))
+	while (this->char_is_alpha(*current))
 	{
 		id_str += *current;
 		current++;

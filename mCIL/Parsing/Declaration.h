@@ -28,7 +28,7 @@ public:
 	virtual ~Declaration() {}
 
 	static decl_ptr make_error_decl(Position pos);
-	static decl_ptr make_var_decl(ObjType type, const std::string& name, expr_ptr val, Position pos);
+	static decl_ptr make_var_decl(bool is_const, ObjType type, const std::string& name, expr_ptr val, Position pos);
 	//TODO: Add functions
 	//TODO: Add classes
 	static decl_ptr make_stmt_decl(stmt_ptr stmt, Position pos);
@@ -73,8 +73,11 @@ public:
 class VarDeclaration : public Declaration
 {
 public:
-	VarDeclaration(ObjType type, const std::string& name, expr_ptr val, Position pos)
-		: Declaration(DeclType::DECLARATION_VAR, pos), type_(type), name_(name), val_(val) {}
+	VarDeclaration(bool is_const, ObjType type, const std::string& name, expr_ptr val, Position pos)
+		: Declaration(DeclType::DECLARATION_VAR, pos), is_const_(is_const), type_(type), name_(name), val_(val) {}
+
+	const bool is_const() const
+	{ return this->is_const_; }
 
 	const ObjType type() const
 	{ return this->type_; }
@@ -85,6 +88,7 @@ public:
 	const expr_ptr val() const
 	{ return this->val_; }
 private:
+	bool is_const_;
 	ObjType type_;
 	const std::string& name_;
 	expr_ptr val_;

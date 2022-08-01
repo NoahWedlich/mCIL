@@ -3,12 +3,12 @@
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
-stmt_list& Parser::parse()
+decl_list& Parser::parse()
 {
-    stmt_list* program = new stmt_list();
+    decl_list* program = new decl_list();
     while (!this->atEnd())
     {
-        program->emplace_back(this->statement());
+        program->emplace_back(this->declaration());
     }
     return *program;
 }
@@ -79,6 +79,38 @@ bool Parser::match_keyword(Keyword key)
     return false;
 }
 
+bool Parser::get_type(ObjType& type, bool& is_const)
+{
+    is_const = this->match_keyword(Keyword::KEYWORD_CONST);
+
+    type = ObjType::ERROR;
+
+    const Token token = this->peek();
+    if (token.is_keyword())
+    {
+        switch (token.keyword())
+        {
+        case Keyword::KEYWORD_BOOL:
+            type = ObjType::BOOL;
+            break;
+        case Keyword::KEYWORD_NUM:
+            type = ObjType::NUM;
+            break;
+        case Keyword::KEYWORD_STR:
+            type = ObjType::STR;
+            break;
+        case Keyword::KEYWORD_AUTO:
+            type = ObjType::UNKNOWN;
+            break;
+        default:
+            return false;
+        }
+        this->advance();
+        return true;
+    }
+    return false;
+}
+
 void Parser::consume_semicolon(stmt_ptr last)
 {
     const Token token = this->peek();
@@ -94,6 +126,15 @@ void Parser::consume_semicolon(expr_ptr last)
     if (!this->match_symbol(Symbol::SEMICOLON))
     {
         throw ParserError("Expected a semicolon", *last);
+    }
+}
+
+void Parser::consume_semicolon(decl_ptr last)
+{
+    const Token token = this->peek();
+    if (!this->match_symbol(Symbol::SEMICOLON))
+    {
+        throw ParserError("Expected a semicolon", token);
     }
 }
 
@@ -402,3 +443,52 @@ stmt_ptr Parser::statement()
         return Statement::make_error_stmt(this->peek().position());
     }
 }
+
+decl_ptr Parser::stmt_decl()
+{
+    const Token token = this->peek();
+    stmt_ptr stmt = Statement::make_error_stmt(token.position());
+    try
+    {
+        stmt = this->statement();
+    }
+    catch (ParserError)
+    {
+        throw ParserError("Expected declaration", token);
+    }
+    return Declaration::make_stmt_decl(stmt, this->peek().position());
+}
+
+decl_ptr Parser::var_decl()
+{
+    bool is_const;
+    ObjType type;
+    const Token type_t = this->peek();
+    if (this->get_type(type, is_const))
+    {
+        const Token name = this->peek();
+        if(!this->match_identifier())
+        { throw ParserError("Expected a variable name", type_t); }
+        if (!this->match_operator(Operator::OPERATOR_EQUAL))
+        { throw ParserError("Variables must be initialized for now", name); }
+        expr_ptr val = this->expression();
+        this->consume_semicolon(val);
+        return Declaration::make_var_decl(is_const, type, name.identifier(), val, this->peek().position());
+    }
+    return this->stmt_decl();
+}
+
+decl_ptr Parser::declaration()
+{
+    try
+    {
+        return this->var_decl();
+    }
+    catch (ParserError err)
+    {
+        ErrorManager::cil_parser_error(err);
+        return Declaration::make_error_decl(this->peek().position());
+    }
+}
+
+//TODO: Synchronize after error

@@ -16,6 +16,8 @@ public:
 private:
 	Token next_token();
 
+	bool char_is_alpha(char);
+
 	int read_line();
 	bool read_required_line();
 	Position position(int offset = 0);
