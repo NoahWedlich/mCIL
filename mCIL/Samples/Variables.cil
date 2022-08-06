@@ -8,4 +8,10 @@ auto a = "test";
 	const num cn = 4.56;
 	const str cs = "const";
 	const auto ca = true;
+
+	print cb;
+	print cs;
 }
+
+print b;
+print n;

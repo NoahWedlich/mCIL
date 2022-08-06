@@ -96,7 +96,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	case PrimaryType::PRIMARY_STR:
 		return Object::create_str_object(*expr->val().str_val);
 	case PrimaryType::PRIMARY_IDENTIFIER:
-		//TODO: Add variables
+		return this->env_.get(*expr->val().identifier_val);
 	default:
 		throw InterpreterError("Unreachable", *expr);
 	}

@@ -317,6 +317,7 @@ expr_ptr Parser::assignment_expr()
             expr_ptr right = this->assignment_expr();
             return Expression::make_assignment_expr(id, right, Position{ token.position() });
         }
+        this->current--;
     }
     return this->ternary_expr();
 }
