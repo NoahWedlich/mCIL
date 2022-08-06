@@ -10,7 +10,6 @@ typedef std::vector<stmt_ptr> stmt_list;
 enum class StmtType
 {
 	STATEMENT_ERROR,
-	STATEMENT_BLOCK,
 	STATEMENT_BREAK,
 	STATEMENT_RETURN,
 	STATEMENT_PRINT,
@@ -29,7 +28,6 @@ public:
 	virtual ~Statement() {}
 
 	static stmt_ptr make_error_stmt(Position pos);
-	static stmt_ptr make_block_stmt(stmt_list inner, Position pos);
 	//TODO: make break stmt
 	//TODO: make return stmt
 	static stmt_ptr make_print_stmt(expr_ptr expr, Position pos);
@@ -47,9 +45,6 @@ public:
 
 	bool is_error_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_ERROR; }
-
-	bool is_block_stmt() const
-	{ return this->type_ == StmtType::STATEMENT_BLOCK; }
 
 	bool is_print_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_PRINT; }
@@ -76,18 +71,6 @@ class ErrorStatement : public Statement
 public:
 	ErrorStatement(Position pos)
 		: Statement(StmtType::STATEMENT_ERROR, pos) {}
-};
-
-class BlockStatment : public Statement
-{
-public:
-	BlockStatment(stmt_list inner, Position pos)
-		: Statement(StmtType::STATEMENT_BLOCK, pos), inner_(inner) {}
-
-	const stmt_list inner() const
-	{ return inner_; }
-private:
-	stmt_list inner_;
 };
 
 class PrintStatement : public Statement

@@ -35,11 +35,11 @@ int main()
 	/*ASTDebugPrinter dbg{ std::cout };
 	dbg.print_expression(exprs[0]);*/
 	
-	/*Interpreter interpreter{ decls };
+	Interpreter interpreter{ decls };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
-	}*/
+	}
 }

@@ -350,25 +350,6 @@ stmt_ptr Parser::expr_stmt()
     return Statement::make_expr_stmt(expr, this->peek().position());
 }
 
-stmt_ptr Parser::block_stmt()
-{
-    const Token l_brace = this->peek();
-    if (this->match_symbol(Symbol::LEFT_BRACE))
-    {
-        stmt_list inner {};
-        while (!this->atEnd())
-        {
-            inner.push_back(this->statement());
-            if (this->match_symbol(Symbol::RIGHT_BRACE))
-            {
-                return Statement::make_block_stmt(inner, this->peek().position());
-            }
-        }
-        throw ParserError("Expected '}'", l_brace);
-    }
-    return this->expr_stmt();
-}
-
 stmt_ptr Parser::print_stmt()
 {
     if (this->match_keyword(Keyword::KEYWORD_PRINT))
@@ -377,7 +358,7 @@ stmt_ptr Parser::print_stmt()
         this->consume_semicolon(expr);
         return Statement::make_print_stmt(expr, this->peek().position());
     }
-    return this->block_stmt();
+    return this->expr_stmt();
 }
 
 stmt_ptr Parser::if_stmt()
@@ -459,6 +440,25 @@ decl_ptr Parser::stmt_decl()
     return Declaration::make_stmt_decl(stmt, this->peek().position());
 }
 
+decl_ptr Parser::block_decl()
+{
+    const Token l_brace = this->peek();
+    if (this->match_symbol(Symbol::LEFT_BRACE))
+    {
+        decl_list inner{};
+        while (!this->atEnd())
+        {
+            inner.push_back(this->declaration());
+            if (this->match_symbol(Symbol::RIGHT_BRACE))
+            {
+                return Declaration::make_block_decl(inner, this->peek().position());
+            }
+        }
+        throw ParserError("Expected '}'", l_brace);
+    }
+    return this->stmt_decl();
+}
+
 decl_ptr Parser::var_decl()
 {
     bool is_const;
@@ -475,7 +475,7 @@ decl_ptr Parser::var_decl()
         this->consume_semicolon(val);
         return Declaration::make_var_decl(is_const, type, name.identifier(), val, this->peek().position());
     }
-    return this->stmt_decl();
+    return this->block_decl();
 }
 
 decl_ptr Parser::declaration()

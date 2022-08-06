@@ -14,3 +14,8 @@ decl_ptr Declaration::make_stmt_decl(stmt_ptr stmt, Position pos)
 {
 	return decl_ptr(new StmtDeclaration(stmt, pos));
 }
+
+decl_ptr Declaration::make_block_decl(decl_list inner, Position pos)
+{
+	return decl_ptr(new BlockDeclaration(inner, pos));
+}

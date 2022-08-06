@@ -3,7 +3,9 @@ num n = 1.23;
 str s = "hi";
 auto a = "test";
 
-const bool cb = false;
-const num cn = 4.56;
-const str cs = "const";
-const auto ca = true;
+{
+	const bool cb = false;
+	const num cn = 4.56;
+	const str cs = "const";
+	const auto ca = true;
+}

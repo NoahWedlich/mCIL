@@ -46,11 +46,14 @@ struct ParserError : public CIL_Error
 
 struct InterpreterError : public CIL_Error
 {
-	InterpreterError(const std::string& msg, Statement& stmt)
+	InterpreterError(const std::string& msg, Statement stmt)
 		: CIL_Error(msg), pos(stmt.pos()) {}
 
 	InterpreterError(const std::string& msg, Expression expr)
 		: CIL_Error(msg), pos(expr.pos()) {}
+
+	InterpreterError(const std::string& msg, Declaration decl)
+		: CIL_Error(msg), pos(decl.pos()) {}
 
 	Position pos;
 };

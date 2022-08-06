@@ -5,11 +5,6 @@ stmt_ptr Statement::make_error_stmt(Position pos)
     return stmt_ptr(new ErrorStatement(pos));
 }
 
-stmt_ptr Statement::make_block_stmt(stmt_list inner, Position pos)
-{
-    return stmt_ptr(new BlockStatment(inner, pos));
-}
-
 stmt_ptr Statement::make_print_stmt(expr_ptr expr, Position pos)
 {
     return stmt_ptr(new PrintStatement(expr, pos));
