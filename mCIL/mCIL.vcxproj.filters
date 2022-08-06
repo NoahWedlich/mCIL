@@ -60,9 +60,6 @@
     <ClCompile Include="Parsing\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parsing\Declaration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Interpreting\Environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,9 +117,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Parsing\Statement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Parsing\Declaration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreting\Environment.h">

@@ -3,12 +3,12 @@
 Parser::Parser(std::vector<Token>& tokens)
     : tokens_(tokens), current(0) {}
 
-decl_list& Parser::parse()
+stmt_list& Parser::parse()
 {
-    decl_list* program = new decl_list();
+    stmt_list* program = new stmt_list();
     while (!this->atEnd())
     {
-        program->emplace_back(this->declaration());
+        program->emplace_back(this->statement());
     }
     return *program;
 }
@@ -128,16 +128,6 @@ void Parser::consume_semicolon(expr_ptr last)
         throw ParserError("Expected a semicolon", *last);
     }
 }
-
-void Parser::consume_semicolon(decl_ptr last)
-{
-    const Token token = this->peek();
-    if (!this->match_symbol(Symbol::SEMICOLON))
-    {
-        throw ParserError("Expected a semicolon", token);
-    }
-}
-
 
 expr_ptr Parser::grouping_expr()
 {
@@ -351,6 +341,25 @@ stmt_ptr Parser::expr_stmt()
     return Statement::make_expr_stmt(expr, this->peek().position());
 }
 
+stmt_ptr Parser::block_stmt()
+{
+    const Token l_brace = this->peek();
+    if (this->match_symbol(Symbol::LEFT_BRACE))
+    {
+        stmt_list inner{};
+        while (!this->atEnd())
+        {
+            inner.push_back(this->statement());
+            if (this->match_symbol(Symbol::RIGHT_BRACE))
+            {
+                return Statement::make_block_stmt(inner, this->peek().position());
+            }
+        }
+        throw ParserError("Expected '}'", l_brace);
+    }
+    return this->expr_stmt();
+}
+
 stmt_ptr Parser::print_stmt()
 {
     if (this->match_keyword(Keyword::KEYWORD_PRINT))
@@ -413,54 +422,7 @@ stmt_ptr Parser::for_stmt()
     return this->while_stmt();
 }
 
-stmt_ptr Parser::statement()
-{
-    try
-    {
-        return this->for_stmt();
-    }
-    catch (ParserError err)
-    {
-        ErrorManager::cil_parser_error(err);
-        return Statement::make_error_stmt(this->peek().position());
-    }
-}
-
-decl_ptr Parser::stmt_decl()
-{
-    const Token token = this->peek();
-    stmt_ptr stmt = Statement::make_error_stmt(token.position());
-    try
-    {
-        stmt = this->statement();
-    }
-    catch (ParserError)
-    {
-        throw ParserError("Expected declaration", token);
-    }
-    return Declaration::make_stmt_decl(stmt, this->peek().position());
-}
-
-decl_ptr Parser::block_decl()
-{
-    const Token l_brace = this->peek();
-    if (this->match_symbol(Symbol::LEFT_BRACE))
-    {
-        decl_list inner{};
-        while (!this->atEnd())
-        {
-            inner.push_back(this->declaration());
-            if (this->match_symbol(Symbol::RIGHT_BRACE))
-            {
-                return Declaration::make_block_decl(inner, this->peek().position());
-            }
-        }
-        throw ParserError("Expected '}'", l_brace);
-    }
-    return this->stmt_decl();
-}
-
-decl_ptr Parser::var_decl()
+stmt_ptr Parser::var_decl_stmt()
 {
     bool is_const;
     ObjType type;
@@ -468,27 +430,31 @@ decl_ptr Parser::var_decl()
     if (this->get_type(type, is_const))
     {
         const Token name = this->peek();
-        if(!this->match_identifier())
-        { throw ParserError("Expected a variable name", type_t); }
+        if (!this->match_identifier())
+        {
+            throw ParserError("Expected a variable name", type_t);
+        }
         if (!this->match_operator(Operator::OPERATOR_EQUAL))
-        { throw ParserError("Variables must be initialized for now", name); }
+        {
+            throw ParserError("Variables must be initialized for now", name);
+        }
         expr_ptr val = this->expression();
         this->consume_semicolon(val);
-        return Declaration::make_var_decl(is_const, type, name.identifier(), val, this->peek().position());
+        return Statement::make_var_decl_stmt(is_const, type, name.identifier(), val, this->peek().position());
     }
-    return this->block_decl();
+    return this->while_stmt();
 }
 
-decl_ptr Parser::declaration()
+stmt_ptr Parser::statement()
 {
     try
     {
-        return this->var_decl();
+        return this->var_decl_stmt();
     }
     catch (ParserError err)
     {
         ErrorManager::cil_parser_error(err);
-        return Declaration::make_error_decl(this->peek().position());
+        return Statement::make_error_stmt(this->peek().position());
     }
 }
 

@@ -25,7 +25,7 @@ void REPL::run()
 		}
 
 		Parser parser{ tokens };
-		decl_list& program = parser.parse();
+		stmt_list& program = parser.parse();
 		if (ErrorManager::error_ocurred)
 		{
 			ErrorManager::report_errors(this->source_);

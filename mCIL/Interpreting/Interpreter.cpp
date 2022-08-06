@@ -1,33 +1,21 @@
 #include "Interpreter.h"
 
-Interpreter::Interpreter(decl_list& program)
+Interpreter::Interpreter(stmt_list& program)
 	: program_(program), env_() {}
 
 void Interpreter::run()
 {
-	for (decl_ptr decl : program_)
+	for (stmt_ptr stmt : program_)
 	{
 		try
 		{
-			this->run_decl(decl);
+			this->run_stmt(stmt);
 		}
 		catch (InterpreterError& err)
 		{
 			ErrorManager::cil_interpreter_error(err);
 			break;
 		}
-	}
-}
-
-void Interpreter::run_single_declaration(decl_ptr decl)
-{
-	try
-	{
-		this->run_decl(decl);
-	}
-	catch (InterpreterError& err)
-	{
-		ErrorManager::cil_interpreter_error(err);
 	}
 }
 
@@ -268,6 +256,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 {
 	switch (stmt->type())
 	{
+	case StmtType::STATEMENT_VAR_DECL:
+		this->run_var_decl_stmt(std::dynamic_pointer_cast<VarDeclStatement, Statement>(stmt));
+		break;
 	case StmtType::STATEMENT_PRINT:
 		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
 		break;
@@ -280,12 +271,26 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_FOR:
 		this->run_for_stmt(std::dynamic_pointer_cast<ForStatement, Statement>(stmt));
 		break;
+	case StmtType::STATEMENT_BLOCK:
+		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatement, Statement>(stmt));
+		break;
 	case StmtType::STATEMENT_EXPR:
 		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
 		break;
 	default:
 		throw InterpreterError("Unreachable!", *stmt);
 	}
+}
+
+void Interpreter::run_block_stmt(std::shared_ptr<BlockStatement> stmt)
+{
+	Environment previous = this->env_;
+	this->env_ = Environment(&previous);
+	for (stmt_ptr inner : stmt->inner())
+	{
+		this->run_stmt(inner);
+	}
+	this->env_ = previous;
 }
 
 void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
@@ -339,53 +344,20 @@ void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 	}
 }
 
+void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
+{
+	Object value = this->run_expr(stmt->val());
+
+	if (stmt->var_type() != ObjType::UNKNOWN && stmt->var_type() != value.type())
+	{
+		throw InterpreterError("Trying to initialize variable with invalid type", *stmt);
+	}
+
+	//TODO: Add constness
+	this->env_.define(stmt->name(), value);
+}
+
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)
 {
 	this->run_expr(stmt->expr());
-}
-
-void Interpreter::run_decl(decl_ptr decl)
-{
-	switch (decl->type())
-	{
-	case DeclType::DECLARATION_VAR:
-		this->run_var_decl(std::dynamic_pointer_cast<VarDeclaration, Declaration>(decl));
-		break;
-	case DeclType::DECLARATION_BLOCK:
-		this->run_block_decl(std::dynamic_pointer_cast<BlockDeclaration, Declaration>(decl));
-		break;
-	case DeclType::DECLARATION_STMT:
-		this->run_stmt_decl(std::dynamic_pointer_cast<StmtDeclaration, Declaration>(decl));
-		break;
-	default:
-		throw InterpreterError("Unreachable!", *decl);
-	}
-}
-
-void Interpreter::run_var_decl(std::shared_ptr<VarDeclaration> decl)
-{
-	Object value = this->run_expr(decl->val());
-
-	if (decl->var_type() != ObjType::UNKNOWN && decl->var_type() != value.type())
-	{ throw InterpreterError("Trying to initialize variable with invalid type", *decl); }
-
-	//TODO: Add constness
-	this->env_.define(decl->name(), value);
-}
-
-
-void Interpreter::run_block_decl(std::shared_ptr<BlockDeclaration> decl)
-{
-	Environment previous = this->env_;
-	this->env_ = Environment(&previous);
-	for (decl_ptr inner : decl->inner())
-	{
-		this->run_decl(inner);
-	}
-	this->env_ = previous;
-}
-
-void Interpreter::run_stmt_decl(std::shared_ptr<StmtDeclaration> decl)
-{
-	this->run_stmt(decl->inner());
 }

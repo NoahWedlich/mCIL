@@ -2,7 +2,6 @@
 #include "Lexing/Lexer.h"
 #include "Parsing/Parser.h"
 #include "Parsing/Statement.h"
-#include "Parsing/Declaration.h"
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
 #include "Tools/ASTDebugPrinter.h"
@@ -25,7 +24,7 @@ int main()
 	}
 	Parser parser{ tokens };
 
-	decl_list& decls = parser.parse();
+	stmt_list& stmts = parser.parse();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
@@ -35,7 +34,7 @@ int main()
 	/*ASTDebugPrinter dbg{ std::cout };
 	dbg.print_expression(exprs[0]);*/
 	
-	Interpreter interpreter{ decls };
+	Interpreter interpreter{ stmts };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{

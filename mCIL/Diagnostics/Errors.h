@@ -2,7 +2,6 @@
 #include "../cil-system.h"
 #include "../Parsing/Statement.h"
 #include "../Parsing/Expression.h"
-#include "../Parsing/Declaration.h"
 
 class CIL_Error : public std::exception
 {
@@ -38,9 +37,6 @@ struct ParserError : public CIL_Error
 	ParserError(const std::string& msg, Expression expr)
 		: CIL_Error(msg), pos(expr.pos()) {}
 
-	ParserError(const std::string& msg, Declaration decl)
-		: CIL_Error(msg), pos(decl.pos()) {}
-
 	Position pos;
 };
 
@@ -51,9 +47,6 @@ struct InterpreterError : public CIL_Error
 
 	InterpreterError(const std::string& msg, Expression expr)
 		: CIL_Error(msg), pos(expr.pos()) {}
-
-	InterpreterError(const std::string& msg, Declaration decl)
-		: CIL_Error(msg), pos(decl.pos()) {}
 
 	Position pos;
 };

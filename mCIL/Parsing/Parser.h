@@ -5,14 +5,13 @@
 #include "../Diagnostics/Diagnostics.h"
 #include "Expression.h"
 #include "Statement.h"
-#include "Declaration.h"
 
 class Parser
 {
 public:
 	Parser(std::vector<Token>& tokens);
 
-	decl_list& parse();
+	stmt_list& parse();
 private:
 	Token peek()
 	{ return this->tokens_[this->current]; }
@@ -37,7 +36,6 @@ private:
 	//TODO: Refactor position
 	void consume_semicolon(stmt_ptr last);
 	void consume_semicolon(expr_ptr last);
-	void consume_semicolon(decl_ptr last);
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
@@ -53,16 +51,13 @@ private:
 	expr_ptr expression();
 
 	stmt_ptr expr_stmt();
+	stmt_ptr block_stmt();
 	stmt_ptr print_stmt();
 	stmt_ptr if_stmt();
 	stmt_ptr while_stmt();
 	stmt_ptr for_stmt();
+	stmt_ptr var_decl_stmt();
 	stmt_ptr statement();
-
-	decl_ptr block_decl();
-	decl_ptr stmt_decl();
-	decl_ptr var_decl();
-	decl_ptr declaration();
 
 	std::vector<Token>& tokens_;
 	int current;

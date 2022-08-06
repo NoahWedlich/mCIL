@@ -129,7 +129,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Interpreting\Environment.cpp" />
-    <ClCompile Include="Parsing\Declaration.cpp" />
     <ClCompile Include="Interpreting\Interpreter.cpp" />
     <ClCompile Include="REPL\REPLFileManager.cpp" />
     <ClCompile Include="REPL\REPL.cpp" />
@@ -148,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interpreting\Environment.h" />
-    <ClInclude Include="Parsing\Declaration.h" />
     <ClInclude Include="Diagnostics\Errors.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
