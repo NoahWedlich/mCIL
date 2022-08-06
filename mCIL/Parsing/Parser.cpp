@@ -368,7 +368,7 @@ stmt_ptr Parser::print_stmt()
         this->consume_semicolon(expr);
         return Statement::make_print_stmt(expr, this->peek().position());
     }
-    return this->expr_stmt();
+    return this->block_stmt();
 }
 
 stmt_ptr Parser::if_stmt()
@@ -413,7 +413,7 @@ stmt_ptr Parser::for_stmt()
         stmt_ptr init = this->statement();
         expr_ptr cond = this->expression();
         this->consume_semicolon(cond);
-        stmt_ptr exec = this->statement();
+        expr_ptr exec = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         {  throw ParserError("Expected ')'", *exec); }
         stmt_ptr inner = this->statement();
@@ -442,7 +442,7 @@ stmt_ptr Parser::var_decl_stmt()
         this->consume_semicolon(val);
         return Statement::make_var_decl_stmt(is_const, type, name.identifier(), val, this->peek().position());
     }
-    return this->while_stmt();
+    return this->for_stmt();
 }
 
 stmt_ptr Parser::statement()

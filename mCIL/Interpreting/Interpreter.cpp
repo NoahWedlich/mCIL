@@ -248,8 +248,15 @@ Object Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 
 Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)
 {
-	//TODO: Add assignment
-	return Object::create_error_object();
+	Object value = this->run_expr(expr->expr());
+
+	/*TODO: if (expr->var_type() != ObjType::UNKNOWN && stmt->var_type() != value.type())
+	{
+		throw InterpreterError("Trying to initialize variable with invalid type", *stmt);
+	}*/
+
+	this->env_.assign(expr->identifier(), value);
+	return value;
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)
@@ -337,7 +344,7 @@ void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 	for (
 		this->run_stmt(stmt->init());
 		this->run_expr(stmt->cond()).to_bool().bool_value();
-		this->run_stmt(stmt->exec())
+		this->run_expr(stmt->exec())
 		)
 	{
 		this->run_stmt(stmt->inner());

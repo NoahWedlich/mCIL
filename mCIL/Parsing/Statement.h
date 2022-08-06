@@ -38,7 +38,7 @@ public:
 	//TODO: make elif and else
 	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, Position pos);
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
-	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, stmt_ptr exec, stmt_ptr inner, Position pos);
+	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(bool is_const, ObjType type, const std::string& name, expr_ptr val, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
@@ -143,7 +143,7 @@ private:
 class ForStatement : public Statement
 {
 public:
-	ForStatement(stmt_ptr init, expr_ptr cond, stmt_ptr exec, stmt_ptr inner, Position pos)
+	ForStatement(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos)
 		: Statement(StmtType::STATEMENT_FOR, pos), init_(init), cond_(cond), exec_(exec), inner_(inner) {}
 
 	const stmt_ptr init() const
@@ -152,7 +152,7 @@ public:
 	const expr_ptr cond() const
 	{ return cond_; }
 
-	const stmt_ptr exec() const
+	const expr_ptr exec() const
 	{ return exec_; }
 
 	const stmt_ptr inner() const
@@ -160,7 +160,7 @@ public:
 private:
 	stmt_ptr init_;
 	expr_ptr cond_;
-	stmt_ptr exec_;
+	expr_ptr exec_;
 	stmt_ptr inner_;
 };
 

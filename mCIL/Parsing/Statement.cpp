@@ -25,7 +25,7 @@ stmt_ptr Statement::make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos)
     return stmt_ptr(new WhileStatement(cond, inner, pos));
 }
 
-stmt_ptr Statement::make_for_stmt(stmt_ptr init, expr_ptr cond, stmt_ptr exec, stmt_ptr inner, Position pos)
+stmt_ptr Statement::make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos)
 {
     return stmt_ptr(new ForStatement(init, cond, exec, inner, pos));
 }
