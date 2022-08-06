@@ -122,6 +122,9 @@
     <ClInclude Include="Interpreting\Environment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Interpreting\Variable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\Sample.cil" />

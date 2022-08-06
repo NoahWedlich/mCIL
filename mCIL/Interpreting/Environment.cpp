@@ -10,20 +10,25 @@ Environment::~Environment()
 {
 }
 
-void Environment::define(const std::string& name, Object value)
+void Environment::define(Variable var)
 {
-	if (this->exists(name))
+	if (this->exists(var))
 	{
 		throw CIL_Error("Trying to create variable that already exists");
 	}
-	this->variables_.insert({ name, value });
+	this->variables_.insert({ var.name, var });
 }
 
 void Environment::assign(const std::string& name, Object value)
 {
-	if (this->variables_.contains(name))
+	if (this->exists(name))
 	{
-		this->variables_.at(name) = value;
+		if (value.type() != this->get(name).type)
+		{ throw CIL_Error("Trying to change type of variable"); }
+		if (this->get(name).is_const)
+		{ throw CIL_Error("Trying to change const variable"); }
+
+		this->variables_.at(name).value = value;
 	}
 	else if (this->enclosing_ && this->enclosing_->exists(name))
 	{
@@ -35,7 +40,7 @@ void Environment::assign(const std::string& name, Object value)
 	}
 }
 
-Object Environment::get(const std::string& name)
+Variable Environment::get(const std::string& name)
 {
 	if (this->variables_.contains(name))
 	{
@@ -57,6 +62,16 @@ bool Environment::exists(const std::string& name)
 	{ return true; }
 	if (this->enclosing_ != nullptr)
 	{ return this->enclosing_->exists(name); }
+	else
+	{ return false; }
+}
+
+bool Environment::exists(Variable var)
+{
+	if (this->variables_.contains(var.name))
+	{ return true; }
+	if (this->enclosing_ != nullptr)
+	{ return this->enclosing_->exists(var.name); }
 	else
 	{ return false; }
 }

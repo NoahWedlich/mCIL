@@ -16,6 +16,11 @@ void Interpreter::run()
 			ErrorManager::cil_interpreter_error(err);
 			break;
 		}
+		catch (CIL_Error& err)
+		{
+			ErrorManager::cil_interpreter_error(InterpreterError(err.what(), *stmt));
+			break;
+		}
 	}
 }
 
@@ -29,6 +34,10 @@ void Interpreter::run_single_statement(stmt_ptr stmt)
 	{
 		ErrorManager::cil_interpreter_error(err);
 	}
+	catch (CIL_Error& err)
+	{
+		ErrorManager::cil_interpreter_error(InterpreterError(err.what(), *stmt));
+	}
 }
 
 Object Interpreter::run_single_expression(expr_ptr expr)
@@ -41,6 +50,10 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 	{
 		ErrorManager::cil_interpreter_error(err);
 		return Object::create_error_object();
+	}
+	catch (CIL_Error& err)
+	{
+		ErrorManager::cil_interpreter_error(InterpreterError(err.what(), *expr));
 	}
 }
 
@@ -84,7 +97,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	case PrimaryType::PRIMARY_STR:
 		return Object::create_str_object(*expr->val().str_val);
 	case PrimaryType::PRIMARY_IDENTIFIER:
-		return this->env_.get(*expr->val().identifier_val);
+		return this->env_.get(*expr->val().identifier_val).value;
 	default:
 		throw InterpreterError("Unreachable", *expr);
 	}
@@ -249,12 +262,7 @@ Object Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)
 {
 	Object value = this->run_expr(expr->expr());
-
-	/*TODO: if (expr->var_type() != ObjType::UNKNOWN && stmt->var_type() != value.type())
-	{
-		throw InterpreterError("Trying to initialize variable with invalid type", *stmt);
-	}*/
-
+	
 	this->env_.assign(expr->identifier(), value);
 	return value;
 }
@@ -359,9 +367,10 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 	{
 		throw InterpreterError("Trying to initialize variable with invalid type", *stmt);
 	}
+	
+	Variable var{ stmt->name(), stmt->var_type(), stmt->is_const(), value };
 
-	//TODO: Add constness
-	this->env_.define(stmt->name(), value);
+	this->env_.define(var);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)

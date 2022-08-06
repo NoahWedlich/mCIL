@@ -149,6 +149,7 @@
     <ClInclude Include="Interpreting\Environment.h" />
     <ClInclude Include="Diagnostics\Errors.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
+    <ClInclude Include="Interpreting\Variable.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
     <ClInclude Include="REPL\REPL.h" />
     <ClInclude Include="Parsing\Statement.h" />
