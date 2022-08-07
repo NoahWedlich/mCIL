@@ -3,7 +3,7 @@
 #include "../Diagnostics/Diagnostics.h"
 #include "../Diagnostics/Position.h"
 #include "../Diagnostics/SourceManager.h"
-#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/CILError.h"
 #include "Token.h"
 
 class Lexer
@@ -20,16 +20,16 @@ private:
 
 	int read_line();
 	bool read_required_line();
-	Position position(int offset = 0);
+	Position pos(size_t len);
 
 	Token create_invalid_token();
 	Token create_eof_token();
-	Token create_keyword_token(Keyword type, std::string lexeme);
-	Token create_string_token(const std::string& text, std::string lexeme);
-	Token create_number_token(double value, std::string lexeme);
-	Token create_identifier_token(const std::string& value, std::string lexeme);
-	Token create_operator_token(Operator type, std::string lexeme);
-	Token create_symbol_token(Symbol type, std::string lexeme);
+	Token create_keyword_token(Keyword type, std::string lexeme, size_t len = 1);
+	Token create_string_token(const std::string& text, std::string lexeme, size_t len = 1);
+	Token create_number_token(double value, std::string lexeme, size_t len = 1);
+	Token create_identifier_token(const std::string& value, std::string lexeme, size_t len = 1);
+	Token create_operator_token(Operator type, std::string lexeme, size_t len = 1);
+	Token create_symbol_token(Symbol type, std::string lexeme, size_t len = 1);
 
 	void  skip_spaces();
 
@@ -47,6 +47,7 @@ private:
 	size_t char_off_;
 	size_t line_off_;
 
+	size_t start_char_;
 
 	static std::map<std::string, Keyword> keyword_map;
 };

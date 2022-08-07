@@ -4,7 +4,7 @@
 #include "Environment.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"
-#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
 
 class Interpreter
@@ -18,6 +18,8 @@ public:
 	Object run_single_expression(expr_ptr expr);
 
 private:
+	void assert_binary_types(Operator op, Object left, Object right, ObjType left_t, ObjType right_t, Position pos);
+
 	Object run_expr(expr_ptr expr);
 
 	Object run_grouping_expr(std::shared_ptr<GroupingExpression> expr);

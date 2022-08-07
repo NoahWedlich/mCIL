@@ -1,6 +1,6 @@
 #pragma once
 #include "../cil-system.h"
-#include "TokenPrinter.h"
+#include "../Diagnostics/TokenPrinter.h"
 #include "../Parsing/Expression.h"
 
 class ASTDebugPrinter

@@ -14,20 +14,24 @@ void Environment::define(Variable var)
 {
 	if (this->exists(var))
 	{
-		throw CIL_Error("Trying to create variable that already exists");
+		CILError::error("Redifinition of variable '$'", var.name.c_str());
 	}
 	this->variables_.insert({ var.name, var });
 }
 
-void Environment::assign(const std::string& name, Object value)
+void Environment::assign(const std::string name, Object value)
 {
 	if (this->exists(name))
 	{
 		if (value.type() != this->get(name).type)
-		{ throw CIL_Error("Trying to change type of variable"); }
+		{
+			CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
+				value.type(), name.c_str(), this->get(name).type);
+		}
 		if (this->get(name).is_const)
-		{ throw CIL_Error("Trying to change const variable"); }
-
+		{
+			CILError::error("Cannot assign to const variable '$'", name.c_str());
+		}
 		this->variables_.at(name).value = value;
 	}
 	else if (this->enclosing_ && this->enclosing_->exists(name))
@@ -36,11 +40,11 @@ void Environment::assign(const std::string& name, Object value)
 	}
 	else
 	{
-		throw CIL_Error("Trying to assign to a variable that doesn't exist");
+		CILError::error("Assigning to undefined variable '$'", name.c_str());
 	}
 }
 
-Variable Environment::get(const std::string& name)
+Variable Environment::get(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{
@@ -52,11 +56,11 @@ Variable Environment::get(const std::string& name)
 	}
 	else
 	{
-		throw CIL_Error("Trying to get a variable that doesn't exist");
+		CILError::error("Undefined variable '$'", name.c_str());
 	}
 }
 
-bool Environment::exists(const std::string& name)
+bool Environment::exists(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{ return true; }

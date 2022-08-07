@@ -1,7 +1,7 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Lexing/Token.h"
-#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
 #include "Expression.h"
 #include "Statement.h"
@@ -22,6 +22,10 @@ private:
 	bool atEnd()
 	{ return this->peek().is_EOF(); }
 
+	Position pos_from_tokens(Token start, Token end);
+	Position pos_from_exprs(expr_ptr start, expr_ptr end);
+	Position pos_from_stmts(stmt_ptr start, stmt_ptr end);
+
 	bool match_number();
 	bool match_string();
 	bool match_identifier();
@@ -33,9 +37,7 @@ private:
 	
 	bool get_type(ObjType& type, bool& is_const);
 
-	//TODO: Refactor position
-	void consume_semicolon(stmt_ptr last);
-	void consume_semicolon(expr_ptr last);
+	void consume_semicolon(Position pos);
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();

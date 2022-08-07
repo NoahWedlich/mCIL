@@ -207,8 +207,8 @@ const std::string Token::to_string() const
 	std::string typeRepr;
 	std::string valueRepr;
 	std::string posRepr =
-		std::to_string(this->pos_.line) + ":"
-		+ std::to_string(this->pos_.startChar);
+		std::to_string(this->pos_.start_pos().line_off) + ":"
+		+ std::to_string(this->pos_.start_pos().char_off);
 
 	switch (this->type_)
 	{

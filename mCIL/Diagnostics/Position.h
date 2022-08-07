@@ -25,7 +25,7 @@ struct SourceRange
 
 	SourceRange(SourcePos start, SourcePos end);
 
-	bool includes(SourceRange other);
+	bool includes(SourceRange other) const;
 
 	SourcePos start;
 	SourcePos end;
@@ -39,13 +39,15 @@ public:
 	Position(const SourcePos& pos);
 	Position(const SourcePos& start, const SourcePos& end);
 	Position(const SourceRange& range);
-	Position(const SourceRange& range, const SourceRange& focus);
+	Position(const Position& pos);
+	Position(const Position& start, const Position& end);
 
 	const SourceRange range() const;
-	const SourceRange focus() const;
-	const SourcePos start() const;
-	const SourcePos end() const;
+	const SourcePos start_pos() const;
+	const SourcePos end_pos() const;
+	
+	size_t begin();
+	size_t end();
 private:
 	SourceRange range_;
-	SourceRange focus_;
 };

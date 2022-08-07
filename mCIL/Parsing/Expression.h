@@ -44,14 +44,14 @@ public:
 
 	static expr_ptr make_error_expr(Position);
 	static expr_ptr make_grouping_expr(expr_ptr, Position);
-	static expr_ptr make_bool_expr(bool, Position);
-	static expr_ptr make_num_expr(double, Position);
-	static expr_ptr make_str_expr(const std::string&, Position);
-	static expr_ptr make_identifier_expr(const std::string&, Position);
-	static expr_ptr make_unary_expr(Operator, expr_ptr, Position);
-	static expr_ptr make_binary_expr(Operator, expr_ptr, expr_ptr, Position);
-	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr, Position);
-	static expr_ptr make_assignment_expr(Token, expr_ptr, Position);
+	static expr_ptr make_bool_expr(Token);
+	static expr_ptr make_num_expr(Token);
+	static expr_ptr make_str_expr(Token);
+	static expr_ptr make_identifier_expr(Token);
+	static expr_ptr make_unary_expr(Token, expr_ptr);
+	static expr_ptr make_binary_expr(Token, expr_ptr, expr_ptr);
+	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr);
+	static expr_ptr make_assignment_expr(Token, expr_ptr);
 
 	Position pos() const
 	{ return this->pos_; }

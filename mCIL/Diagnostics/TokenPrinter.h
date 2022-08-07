@@ -12,4 +12,6 @@ namespace TokenPrinter
 	std::string print_keyword(Keyword k);
 
 	std::string print_token(Token t);
+
+	std::string print_token_type(TokenType type);
 }

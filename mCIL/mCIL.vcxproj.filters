@@ -42,7 +42,7 @@
     <ClCompile Include="Tools\ASTDebugPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\TokenPrinter.cpp">
+    <ClCompile Include="Diagnostics\TokenPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tools\ASTPrettyPrinter.cpp">
@@ -64,6 +64,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Diagnostics\Position.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Diagnostics\CILError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +104,7 @@
     <ClInclude Include="Tools\ASTDebugPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\TokenPrinter.h">
+    <ClInclude Include="Diagnostics\TokenPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\ASTPrettyPrinter.h">
@@ -116,9 +119,6 @@
     <ClInclude Include="REPL\REPLFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostics\Errors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Parsing\Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -126,6 +126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreting\Variable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Diagnostics\CILError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

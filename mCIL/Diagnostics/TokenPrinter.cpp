@@ -2,7 +2,6 @@
 
 namespace TokenPrinter
 {
-
 	std::string print_symbol(Symbol s)
 	{
 		switch (s)
@@ -142,4 +141,30 @@ namespace TokenPrinter
 			return "INVALID_TOKEN";
 		}
 	}
+
+	std::string print_token_type(TokenType type)
+	{
+		switch (type)
+		{
+		case TokenType::TOKEN_INVALID:
+			return "invalid";
+		case TokenType::TOKEN_EOF:
+			return "eof";
+		case TokenType::TOKEN_SYMBOL:
+			return "symbol";
+		case TokenType::TOKEN_OPERATOR:
+			return "operator";
+		case TokenType::TOKEN_KEYWORD:
+			return "keyword";
+		case TokenType::TOKEN_STRING:
+			return "string";
+		case TokenType::TOKEN_NUMBER:
+			return "number";
+		case TokenType::TOKEN_IDENTIFIER:
+			return "identifier";
+		default:
+			return "?";
+		}
+	}
+
 }

@@ -9,6 +9,17 @@
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 
+void test(int count, ...)
+{
+	va_list args;
+	va_start(args, count);
+	for (int i = 0; i < count; i++)
+	{
+		std::cout << va_arg(args, const char*) << std::endl;
+	}
+	va_end(args);
+}
+
 int main()
 {
 	//REPL repl{};
@@ -31,8 +42,8 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/*ASTDebugPrinter dbg{ std::cout };
-	dbg.print_expression(exprs[0]);*/
+	///*ASTDebugPrinter dbg{ std::cout };
+	//dbg.print_expression(exprs[0]);*/
 	
 	Interpreter interpreter{ stmts };
 	interpreter.run();

@@ -48,7 +48,7 @@ SourceRange::SourceRange(SourcePos start, SourcePos end)
 	}
 }
 
-bool SourceRange::includes(SourceRange other)
+bool SourceRange::includes(SourceRange other) const
 {
 	return start <= other.start && end >= other.start;
 }
@@ -57,39 +57,40 @@ Position::Position(size_t line_off, size_t char_off)
 {
 	SourcePos pos{ line_off, char_off };
 	range_ = SourceRange{ pos, pos };
-	focus_ = SourceRange{ pos, pos };
-	if (!range_.includes(focus_))
-	{ throw std::invalid_argument("Focus is outside of range"); }
 }
 
 Position::Position(const SourcePos& pos)
-	: range_(pos, pos), focus_(pos, pos) {}
+	: range_(pos, pos) {}
 
 Position::Position(const SourcePos& start, const SourcePos& end)
-	: range_(start, end), focus_(start, end) {}
+	: range_(start, end) {}
 
 Position::Position(const SourceRange& range)
-	: range_(range), focus_(range) {}
+	: range_(range) {}
 
-Position::Position(const SourceRange& range, const SourceRange& focus)
-	: range_(range), focus_(focus) {}
+Position::Position(const Position& pos)
+	: range_(pos.range()) {}
+
+Position::Position(const Position& start, const Position& end)
+	: range_(start.start_pos(), end.end_pos()) {}
 
 const SourceRange Position::range() const
 {
 	return this->range_;
 }
 
-const SourceRange Position::focus() const
-{
-	return this->focus_;
-}
-
-const SourcePos Position::start() const
+const SourcePos Position::start_pos() const
 {
 	return this->range_.start;
 }
 
-const SourcePos Position::end() const
+const SourcePos Position::end_pos() const
 {
 	return this->range_.end;
 }
+
+size_t Position::begin()
+{ return this->range_.start.char_off; }
+
+size_t Position::end()
+{ return this->range_.end.char_off + 1; }

@@ -1,7 +1,7 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Diagnostics/SourceManager.h"
-#include "../Diagnostics/Errors.h"
+#include "../Diagnostics/CILError.h"
 
 class REPLFileManager : public SourceManager
 {
