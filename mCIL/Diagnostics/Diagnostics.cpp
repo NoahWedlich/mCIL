@@ -20,9 +20,17 @@ void ErrorManager::report_errors(SourceManager& source)
 	{
 		std::string line_prefix = std::to_string(error.range().start_pos().line_off + 1) + " | ";
 		size_t prefix_len = line_prefix.size();
-		std::string carot_prefix = std::string(prefix_len + error.focus().start_pos().char_off, ' ');
-		std::string underline = std::string(error.focus().end_pos().char_off - error.focus().start_pos().char_off + 1, '^');
 		std::string source_line = source.get_line_at_off(error.range().start_pos().line_off);
+
+		int num_space_prefix = prefix_len + error.focus().start_pos().char_off;
+		for (char c : source_line)
+		{
+			if (c == '\t')
+			{ num_space_prefix += 3; }
+		}
+
+		std::string carot_prefix = std::string(num_space_prefix, ' ');
+		std::string underline = std::string(error.focus().end_pos().char_off - error.focus().start_pos().char_off + 1, '^');
 
 		std::cout << "\nError: " << error.what() << "\n\n";
 		std::cout << "\t" << line_prefix << source_line << (source_line.ends_with("\n") ? "" : "\n");
