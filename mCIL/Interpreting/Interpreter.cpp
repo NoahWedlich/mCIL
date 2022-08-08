@@ -259,7 +259,7 @@ Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> ex
 	{
 		if (!err.has_pos())
 		{ err.add_range(expr->pos()); }
-		ErrorManager::cil_error(err);
+		throw err;
 	}
 	return value;
 }

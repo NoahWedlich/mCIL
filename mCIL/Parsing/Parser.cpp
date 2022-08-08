@@ -126,8 +126,6 @@ bool Parser::get_type(ObjType& type, bool& is_const)
     return false;
 }
 
-
-
 void Parser::consume_semicolon(Position pos)
 {
     const Token token = this->peek();
@@ -338,7 +336,7 @@ stmt_ptr Parser::expr_stmt()
         CILError::error(token.position(), "Expected a statement");
     }
     const Token semicolon = this->peek();
-    this->consume_semicolon(semicolon.position());
+    this->consume_semicolon(expr->pos());
     return Statement::make_expr_stmt(expr, Position{ expr->pos(), semicolon.position() });
 }
 
@@ -370,7 +368,7 @@ stmt_ptr Parser::print_stmt()
     {
         expr_ptr expr = this->expression();
         const Token semicolon = this->peek();
-        this->consume_semicolon(semicolon.position());
+        this->consume_semicolon(expr->pos());
         return Statement::make_print_stmt(expr, this->pos_from_tokens(print_keyword, semicolon));
     }
     return this->block_stmt();
@@ -447,7 +445,7 @@ stmt_ptr Parser::var_decl_stmt()
         }
         expr_ptr val = this->expression();
         const Token semicolon = this->peek();
-        this->consume_semicolon(semicolon.position());
+        this->consume_semicolon(val->pos());
         return Statement::make_var_decl_stmt(is_const, type, name.identifier(), val, this->pos_from_tokens(type_t, semicolon));
     }
     return this->for_stmt();
