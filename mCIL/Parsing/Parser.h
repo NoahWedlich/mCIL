@@ -12,6 +12,11 @@ public:
 	Parser(std::vector<Token>& tokens);
 
 	stmt_list& parse();
+
+	expr_ptr parse_single_expr();
+	stmt_ptr parse_single_stmt();
+
+	void reset();
 private:
 	Token peek()
 	{ return this->tokens_[this->current]; }

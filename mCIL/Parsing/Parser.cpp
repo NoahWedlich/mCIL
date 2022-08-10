@@ -13,6 +13,26 @@ stmt_list& Parser::parse()
     return *program;
 }
 
+expr_ptr Parser::parse_single_expr()
+{
+    expr_ptr expr = this->expression();
+    if (!this->peek().is_EOF())
+    {
+        return Expression::make_error_expr(Position(0, 0));
+    }
+    return expr;
+}
+
+stmt_ptr Parser::parse_single_stmt()
+{
+    return this->statement();
+}
+
+void Parser::reset()
+{
+    this->current = 0;
+}
+
 Position Parser::pos_from_tokens(Token start, Token end)
 {
     return Position(start.position().start_pos(), end.position().end_pos());

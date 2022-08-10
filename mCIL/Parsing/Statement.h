@@ -51,9 +51,6 @@ public:
 	bool is_error_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_ERROR; }
 
-	bool is_error_decl() const
-	{ return this->type_ == StmtType::STATEMENT_BLOCK; }
-
 	bool is_print_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_PRINT; }
 

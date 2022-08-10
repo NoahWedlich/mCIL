@@ -10,6 +10,7 @@
 class Interpreter
 {
 public:
+	Interpreter();
 	Interpreter(stmt_list& program);
 
 	void run();
@@ -39,7 +40,7 @@ private:
 	void run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 
-	stmt_list& program_;
+	stmt_list program_;
 
 	Environment env_;
 };

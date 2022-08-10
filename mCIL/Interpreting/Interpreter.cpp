@@ -1,5 +1,8 @@
 #include "Interpreter.h"
 
+Interpreter::Interpreter()
+	: program_(), env_() {}
+
 Interpreter::Interpreter(stmt_list& program)
 	: program_(program), env_() {}
 
@@ -321,6 +324,8 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 		break;
 	case ObjType::STR:
 		std::cout << val.str_value() << std::endl;
+		break;
+	case ObjType::ERROR:
 		break;
 	default:
 		CILError::error(stmt->pos(), "Cannot print value of type '$'", val.type());

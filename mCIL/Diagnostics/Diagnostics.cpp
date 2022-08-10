@@ -22,7 +22,7 @@ void ErrorManager::report_errors(SourceManager& source)
 		size_t prefix_len = line_prefix.size();
 		std::string source_line = source.get_line_at_off(error.range().start_pos().line_off);
 
-		int num_space_prefix = prefix_len + error.focus().start_pos().char_off;
+		size_t num_space_prefix = prefix_len + error.focus().start_pos().char_off;
 		for (char c : source_line)
 		{
 			if (c == '\t')

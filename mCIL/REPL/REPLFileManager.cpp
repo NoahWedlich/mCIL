@@ -33,7 +33,7 @@ bool REPLFileManager::get_next_line(char* line_buffer, size_t max_size, size_t& 
 		this->curr_line_++;
 		return true;
 	}
-	CILError::error("Error reading line '$i'", (int)this->curr_line_);
+	CILError::error("Error reading line '$'", (int)this->curr_line_);
 }
 
 std::string REPLFileManager::get_line_at_off(size_t line_off)
@@ -42,7 +42,7 @@ std::string REPLFileManager::get_line_at_off(size_t line_off)
 	{
 		return this->source_[line_off];
 	}
-	CILError::error("Invalid line offset '$i'", (int)line_off);
+	CILError::error("Invalid line offset '$'", (int)line_off);
 }
 
 bool REPLFileManager::is_at_end()

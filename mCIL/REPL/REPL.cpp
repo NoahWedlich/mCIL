@@ -7,6 +7,8 @@ void REPL::run()
 {
 	std::cout << "mCIL's REPL:\n";
 
+	Interpreter interpreter{};
+
 	bool run = true;
 	while (run)
 	{
@@ -25,7 +27,28 @@ void REPL::run()
 		}
 
 		Parser parser{ tokens };
-		stmt_list& program = parser.parse();
+
+		expr_ptr expr = parser.parse_single_expr();
+		if (!expr->is_error_expr())
+		{
+			Object value = interpreter.run_single_expression(expr);
+			if (!value.is_err())
+			{
+				std::cout << value.to_string() << std::endl;
+				continue;
+			}
+		}
+		else
+		{
+			parser.reset();
+			ErrorManager::clear_errors();
+			stmt_ptr stmt = parser.parse_single_stmt();
+			if (!stmt->is_error_stmt())
+			{
+				interpreter.run_single_statement(stmt);
+			}
+		}
+
 		if (ErrorManager::error_ocurred)
 		{
 			ErrorManager::report_errors(this->source_);
@@ -34,20 +57,6 @@ void REPL::run()
 			continue;
 		}
 
-		//TODO: Default constructor
-		//Interpreter interpreter{ program };
-		//TODO: Statement
-		//Object result = interpreter.run_single_expression(program[0]);
-		Object result = Object::create_error_object();
-		if (ErrorManager::error_ocurred)
-		{
-			ErrorManager::report_errors(this->source_);
-			ErrorManager::clear_errors();
-			this->source_.clear();
-			continue;
-		}
-
-		std::cout << result.to_string() << std::endl;
 		this->source_.clear();
 	}
 }
