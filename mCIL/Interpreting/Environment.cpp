@@ -14,7 +14,7 @@ void Environment::define(Variable var)
 {
 	if (this->exists(var))
 	{
-		CILError::error("Redifinition of variable '$'", var.name.c_str());
+		throw CILError::error("Redifinition of variable '$'", var.name.c_str());
 	}
 	this->variables_.insert({ var.name, var });
 }
@@ -25,12 +25,12 @@ void Environment::assign(const std::string name, Object value)
 	{
 		if (value.type() != this->get(name).type)
 		{
-			CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
+			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
 				value.type(), name.c_str(), this->get(name).type);
 		}
 		if (this->get(name).is_const)
 		{
-			CILError::error("Cannot assign to const variable '$'", name.c_str());
+			throw CILError::error("Cannot assign to const variable '$'", name.c_str());
 		}
 		this->variables_.at(name).value = value;
 	}
@@ -40,7 +40,7 @@ void Environment::assign(const std::string name, Object value)
 	}
 	else
 	{
-		CILError::error("Assigning to undefined variable '$'", name.c_str());
+		throw CILError::error("Assigning to undefined variable '$'", name.c_str());
 	}
 }
 
@@ -56,7 +56,7 @@ Variable Environment::get(const std::string name)
 	}
 	else
 	{
-		CILError::error("Undefined variable '$'", name.c_str());
+		throw CILError::error("Undefined variable '$'", name.c_str());
 	}
 }
 

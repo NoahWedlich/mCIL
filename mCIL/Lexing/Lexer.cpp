@@ -97,7 +97,7 @@ Token Lexer::next_token()
 		next = this->get_identifier(found);
 		if (found) { return next; }
 
-		CILError::error(this->pos(1), "Invalid character '$'", this->current_line_ + this->char_off_);
+		throw CILError::error(this->pos(1), "Invalid character '$'", this->current_line_ + this->char_off_);
 		this->char_off_++;
 		return next;
 	}
@@ -426,7 +426,7 @@ Token Lexer::get_string(bool& found)
 		{
 			this->char_off_ = current - this->current_line_;
 			found = true;
-			CILError::error(this->pos(1), "Unterminated string");
+			throw CILError::error(this->pos(1), "Unterminated string");
 			return this->create_invalid_token();
 		}
 		str += *current;

@@ -59,15 +59,15 @@ void Interpreter::assert_binary_types(Operator op, Object left, Object right, Ob
 	{
 		if (right.type() != right_t)
 		{
-			CILError::error(pos, "Operands of binary '$' must be '$' and '$'. Got '$' and '$'",
+			throw CILError::error(pos, "Operands of binary '$' must be '$' and '$'. Got '$' and '$'",
 				op, left_t, right_t, left.type(), right.type());
 		}
-		CILError::error(pos, "left operand of binary '$' must be '$' not '$'.",
+		throw CILError::error(pos, "left operand of binary '$' must be '$' not '$'.",
 			op, left_t, left.type());
 	}
 	if (right.type() != right_t)
 	{
-		CILError::error(pos, "right operand of binary '$' must be '$' not '$'.",
+		throw CILError::error(pos, "right operand of binary '$' must be '$' not '$'.",
 			op, right_t, right.type());
 	}
 }
@@ -91,7 +91,7 @@ Object Interpreter::run_expr(expr_ptr expr)
 	case ExprType::EXPRESSION_ASSIGNMENT:
 		return this->run_assignment_expr(std::dynamic_pointer_cast<AssignmentExpression, Expression>(expr));
 	default:
-		CILError::error(expr->pos(), "Incomplete handling of expressions");
+		throw CILError::error(expr->pos(), "Incomplete handling of expressions");
 	}
 }
 
@@ -125,7 +125,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 		}
 	}
 	default:
-		CILError::error(expr->pos(), "Incomplete handling of primary expressions");
+		throw CILError::error(expr->pos(), "Incomplete handling of primary expressions");
 	}
 }
 
@@ -145,11 +145,11 @@ Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 		}
 		else
 		{ 
-			CILError::error(expr->pos(), "Operand of unary '$' must be '$' not '$'",
+			throw CILError::error(expr->pos(), "Operand of unary '$' must be '$' not '$'",
 				expr->op(), ObjType::NUM, inner.type());
 		}
 	default:
-		CILError::error(expr->pos(), "Incomplete handling of unary expressions");
+		throw CILError::error(expr->pos(), "Incomplete handling of unary expressions");
 	}
 }
 
@@ -192,7 +192,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 	{
 		if (left.type() != right.type())
 		{
-			CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
+			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
 				expr->op(), left.type(), right.type());
 		}
 		switch (left.type())
@@ -211,7 +211,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 	{
 		if (left.type() != right.type())
 		{
-			CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
+			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
 				expr->op(), left.type(), right.type());
 		}
 		switch (left.type())
@@ -231,7 +231,7 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 	case Operator::OPERATOR_OR:
 		return Object::create_bool_object(left.to_bool().bool_value() || right.to_bool().bool_value());
 	default:
-		CILError::error(expr->pos(), "Incomplete handling of binary expressions");
+		throw CILError::error(expr->pos(), "Incomplete handling of binary expressions");
 	}
 }
 
@@ -293,7 +293,7 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
 		break;
 	default:
-		CILError::error(stmt->pos(), "Incomplete handling of statements");
+		throw CILError::error(stmt->pos(), "Incomplete handling of statements");
 	}
 }
 
@@ -328,7 +328,7 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 	case ObjType::ERROR:
 		break;
 	default:
-		CILError::error(stmt->pos(), "Cannot print value of type '$'", val.type());
+		throw CILError::error(stmt->pos(), "Cannot print value of type '$'", val.type());
 	}
 }
 
@@ -367,7 +367,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 
 	if (stmt->var_type() != ObjType::UNKNOWN && stmt->var_type() != value.type())
 	{
-		CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
+		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
 			stmt->var_type(), value.type());
 	}
 	

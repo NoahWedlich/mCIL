@@ -11,24 +11,24 @@ public:
 	CILError(const std::string& msg, Position range, Position focus, bool has_pos = true);
 
 	template <typename... Targs>
-	static void error(const std::string fmt, Targs... Fargs)
+	static CILError error(const std::string fmt, Targs... Fargs)
 	{
 		const std::string msg = CILError::format_msg(fmt.c_str(), Fargs...);
-		throw CILError(msg, Position(0, 0), Position(0, 0), false);
+		return CILError(msg, Position(0, 0), Position(0, 0), false);
 	}
 
 	template <typename... Targs>
-	static void error(Position range, const std::string fmt, Targs... Fargs)
+	static CILError error(Position range, const std::string fmt, Targs... Fargs)
 	{
 		const std::string msg = CILError::format_msg(fmt.c_str(), Fargs...);
-		throw CILError(msg, range, range);
+		return CILError(msg, range, range);
 	}
 
 	template <typename... Targs>
-	static void error(Position range, Position focus, const std::string fmt, Targs... Fargs)
+	static CILError error(Position range, Position focus, const std::string fmt, Targs... Fargs)
 	{
 		const std::string msg = CILError::format_msg(fmt.c_str(), Fargs...);
-		throw CILError(msg, range, focus);
+		return CILError(msg, range, focus);
 	}
 
 	const char* what() const override;
