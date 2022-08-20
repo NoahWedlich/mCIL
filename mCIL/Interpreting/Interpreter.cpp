@@ -312,6 +312,12 @@ void Interpreter::run_block_stmt(std::shared_ptr<BlockStatement> stmt)
 	this->env_ = previous;
 }
 
+void Interpreter::run_return_stmt(std::shared_ptr<ReturnStatement> stmt)
+{
+	Object val = this->run_expr(stmt->expr());
+	throw Return(val);
+}
+
 void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 {
 	Object val = this->run_expr(stmt->expr());

@@ -9,6 +9,18 @@
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
 
+class Return : public std::exception
+{
+public:
+	Return(Object ret_val)
+		: ret_val_(ret_val) {}
+
+	Object ret_val()
+	{ return this->ret_val_; }
+private:
+	Object ret_val_;
+};
+
 class Interpreter
 {
 public:
@@ -35,6 +47,7 @@ private:
 	void run_stmt(stmt_ptr stmt);
 
 	void run_block_stmt(std::shared_ptr<BlockStatement> stmt);
+	void run_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	void run_print_stmt(std::shared_ptr<PrintStatement> stmt);
 	void run_if_stmt(std::shared_ptr<IfStatement> stmt);
 	void run_while_stmt(std::shared_ptr<WhileStatement> stmt);
