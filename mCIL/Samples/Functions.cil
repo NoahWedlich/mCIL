@@ -1,0 +1,8 @@
+
+
+def sum(num a, num b) -> num
+{
+	return (a + b);
+}
+
+print sum(1, 2);

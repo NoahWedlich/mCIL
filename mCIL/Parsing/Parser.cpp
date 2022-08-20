@@ -455,9 +455,7 @@ stmt_ptr Parser::var_decl_stmt()
     {
         const Token name = this->peek();
         if (!this->match_identifier())
-        {
-            throw CILError::error(name.position(), "Expected variable name");
-        }
+        { throw CILError::error(name.position(), "Expected variable name"); }
         if (!this->match_operator(Operator::OPERATOR_EQUAL))
         {
             //TODO: Change this
@@ -466,7 +464,13 @@ stmt_ptr Parser::var_decl_stmt()
         expr_ptr val = this->expression();
         const Token semicolon = this->peek();
         this->consume_semicolon(val->pos());
-        return Statement::make_var_decl_stmt(is_const, type, name.identifier(), val, this->pos_from_tokens(type_t, semicolon));
+        VarInfo info
+        {
+            .name = name.identifier(),
+            .type = type,
+            .is_const = is_const
+        };
+        return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
     }
     return this->for_stmt();
 }

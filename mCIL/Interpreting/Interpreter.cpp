@@ -49,6 +49,7 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 		if (!err.has_pos())
 		{ err.add_range(expr->pos()); }
 		ErrorManager::cil_error(err);
+		return Object::create_error_object();
 	}
 }
 
@@ -365,13 +366,13 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
 	Object value = this->run_expr(stmt->val());
 
-	if (stmt->var_type() != ObjType::UNKNOWN && stmt->var_type() != value.type())
+	if (stmt->info().type != ObjType::UNKNOWN && stmt->info().type != value.type())
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
-			stmt->var_type(), value.type());
+			stmt->info().type, value.type());
 	}
 	
-	Variable var{ stmt->name(), stmt->var_type(), stmt->is_const(), value };
+	Variable var{ stmt->info(), value};
 
 	this->env_.define(var);
 }

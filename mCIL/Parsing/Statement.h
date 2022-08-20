@@ -2,6 +2,7 @@
 #include "../cil-system.h"
 #include "../Diagnostics/Position.h"
 #include "../Interpreting/Object.h"
+#include "../Interpreting/Variable.h"
 #include "Expression.h"
 
 class Statement;
@@ -39,7 +40,7 @@ public:
 	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, Position pos);
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
-	static stmt_ptr make_var_decl_stmt(bool is_const, ObjType type, const std::string& name, expr_ptr val, Position pos);
+	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
 	Position pos() const
@@ -164,24 +165,16 @@ private:
 class VarDeclStatement : public Statement
 {
 public:
-	VarDeclStatement(bool is_const, ObjType type, const std::string& name, expr_ptr val, Position pos)
-		: Statement(StmtType::STATEMENT_VAR_DECL, pos), is_const_(is_const), var_type_(type), name_(name), val_(val) {}
+	VarDeclStatement(VarInfo info, expr_ptr val, Position pos)
+		: Statement(StmtType::STATEMENT_VAR_DECL, pos), info_(info), val_(val) {}
 
-	const bool is_const() const
-	{ return this->is_const_; }
-
-	const ObjType var_type() const
-	{ return this->var_type_; }
-
-	const std::string& name() const
-	{ return this->name_; }
+	const VarInfo info() const
+	{ return this->info_; }
 
 	const expr_ptr val() const
 	{ return this->val_; }
 private:
-	bool is_const_;
-	ObjType var_type_;
-	const std::string& name_;
+	VarInfo info_;
 	expr_ptr val_;
 };
 

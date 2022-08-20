@@ -14,21 +14,21 @@ void Environment::define(Variable var)
 {
 	if (this->exists(var))
 	{
-		throw CILError::error("Redifinition of variable '$'", var.name.c_str());
+		throw CILError::error("Redifinition of variable '$'", var.info.name.c_str());
 	}
-	this->variables_.insert({ var.name, var });
+	this->variables_.insert({ var.info.name, var });
 }
 
 void Environment::assign(const std::string name, Object value)
 {
 	if (this->exists(name))
 	{
-		if (value.type() != this->get(name).type)
+		if (value.type() != this->get(name).info.type)
 		{
 			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
-				value.type(), name.c_str(), this->get(name).type);
+				value.type(), name.c_str(), this->get(name).info.type);
 		}
-		if (this->get(name).is_const)
+		if (this->get(name).info.is_const)
 		{
 			throw CILError::error("Cannot assign to const variable '$'", name.c_str());
 		}
@@ -72,10 +72,10 @@ bool Environment::exists(const std::string name)
 
 bool Environment::exists(Variable var)
 {
-	if (this->variables_.contains(var.name))
+	if (this->variables_.contains(var.info.name))
 	{ return true; }
 	if (this->enclosing_ != nullptr)
-	{ return this->enclosing_->exists(var.name); }
+	{ return this->enclosing_->exists(var.info.name); }
 	else
 	{ return false; }
 }
