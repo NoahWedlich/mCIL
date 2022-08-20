@@ -64,6 +64,7 @@ private:
 	stmt_ptr while_stmt();
 	stmt_ptr for_stmt();
 	stmt_ptr var_decl_stmt();
+	stmt_ptr func_decl_stmt();
 	stmt_ptr statement();
 
 	std::vector<Token>& tokens_;

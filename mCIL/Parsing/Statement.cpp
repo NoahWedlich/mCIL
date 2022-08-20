@@ -35,6 +35,11 @@ stmt_ptr Statement::make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos)
     return stmt_ptr(new VarDeclStatement(info, val, pos));
 }
 
+stmt_ptr Statement::make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos)
+{
+    return stmt_ptr(new FuncDeclStatement(info, body, pos));
+}
+
 stmt_ptr Statement::make_expr_stmt(expr_ptr expr, Position pos)
 {
     return stmt_ptr(new ExprStatement(expr, pos));

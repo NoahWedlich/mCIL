@@ -2,7 +2,5 @@
 
 def sum(num a, num b) -> num
 {
-	return (a + b);
+	(a + b);
 }
-
-print sum(1, 2);

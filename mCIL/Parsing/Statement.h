@@ -3,6 +3,7 @@
 #include "../Diagnostics/Position.h"
 #include "../Interpreting/Object.h"
 #include "../Interpreting/Variable.h"
+#include "../Interpreting/Function.h"
 #include "Expression.h"
 
 class Statement;
@@ -20,6 +21,7 @@ enum class StmtType
 	STATEMENT_WHILE,
 	STATEMENT_FOR,
 	STATEMENT_VAR_DECL,
+	STATEMENT_FUNC_DECL,
 	STATEMENT_EXPR
 };
 
@@ -41,6 +43,7 @@ public:
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
+	static stmt_ptr make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
 	Position pos() const
@@ -66,6 +69,9 @@ public:
 
 	bool is_var_decl() const
 	{ return this->type_ == StmtType::STATEMENT_VAR_DECL; }
+
+	bool is_func_decl() const
+	{ return this->type_ == StmtType::STATEMENT_FUNC_DECL; }
 
 	bool is_expr_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_EXPR; }
@@ -176,6 +182,22 @@ public:
 private:
 	VarInfo info_;
 	expr_ptr val_;
+};
+
+class FuncDeclStatement : public Statement
+{
+public:
+	FuncDeclStatement(FuncInfo info, stmt_ptr body, Position pos)
+		: Statement(StmtType::STATEMENT_FUNC_DECL, pos), info_(info), body_(body) {}
+
+	const FuncInfo info() const
+	{ return this->info_; }
+
+	const stmt_ptr body() const
+	{ return this->body_; }
+private:
+	FuncInfo info_;
+	stmt_ptr body_;
 };
 
 class ExprStatement : public Statement

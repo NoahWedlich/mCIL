@@ -26,7 +26,8 @@ enum class Symbol
 	COMMA,
 	DOT,
 	COLON,
-	QUERY
+	QUERY,
+	ARROW
 };
 
 enum class Operator

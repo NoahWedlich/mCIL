@@ -251,6 +251,15 @@ Token Lexer::get_symbol(bool& found)
 	case '.':
 		sym = this->create_symbol_token(Symbol::DOT, ".");
 		break;
+	case '-':
+		current++;
+		if (*current == '>')
+		{
+			sym = this->create_symbol_token(Symbol::ARROW, "->", 2);
+			this->char_off_++;
+			break;
+		}
+		break;
 	default:
 		found = false;
 		return sym;

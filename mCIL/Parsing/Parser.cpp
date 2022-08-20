@@ -475,11 +475,65 @@ stmt_ptr Parser::var_decl_stmt()
     return this->for_stmt();
 }
 
+stmt_ptr Parser::func_decl_stmt()
+{
+    const Token def_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_DEF))
+    {
+        const Token name = this->peek();
+        if (!this->match_identifier())
+        { throw CILError::error(name.position(), "Expected function name"); }
+        if (!this->match_symbol(Symbol::LEFT_PAREN))
+        { throw CILError::error(name.position(), "Expected '('"); }
+        std::vector<VarInfo> args{};
+        while (!this->match_symbol(Symbol::RIGHT_PAREN))
+        {
+            if(this->atEnd())
+            { throw CILError::error(this->peek().position(), "Expected '}'"); }
+            bool arg_is_const;
+            ObjType arg_type;
+            const Token arg_type_t = this->peek();
+            if (!this->get_type(arg_type, arg_is_const))
+            { throw CILError::error(arg_type_t.position(), "Expected argument type"); }
+            const Token arg_name = this->peek();
+            if (!this->match_identifier())
+            { throw CILError::error(arg_name.position(), "Expected argument name"); }
+            args.push_back(VarInfo{ arg_name.identifier(), arg_type, arg_is_const});
+            if (!this->match_symbol(Symbol::COMMA))
+            {
+                if (this->get_type(arg_type, arg_is_const))
+                { throw CILError::error(this->peek().position(), "Expected ','"); }
+                break;
+            }
+        }
+        if (!this->match_symbol(Symbol::RIGHT_PAREN))
+        { throw CILError::error(name.position(), "Expected ')'"); }
+        ObjType ret_type = ObjType::NONE;
+        bool ret_is_const = false;
+        if (this->match_symbol(Symbol::ARROW))
+        {
+            if(!this->get_type(ret_type, ret_is_const))
+            { throw CILError::error(this->peek().position(), "Expected return type"); }
+        }
+
+        FuncInfo info
+        {
+            .name = name.identifier(),
+            .args = args,
+            .ret_type = ret_type,
+            .ret_is_const = ret_is_const
+        };
+        stmt_ptr body = this->statement();
+        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.position(), body->pos() });
+    }
+    return this->var_decl_stmt();
+}
+
 stmt_ptr Parser::statement()
 {
     try
     {
-        return this->var_decl_stmt();
+        return this->func_decl_stmt();
     }
     catch (CILError& err)
     {

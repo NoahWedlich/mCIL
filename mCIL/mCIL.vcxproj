@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="Diagnostics\CILError.h" />
     <ClInclude Include="Interpreting\Environment.h" />
+    <ClInclude Include="Interpreting\Function.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
     <ClInclude Include="Interpreting\Variable.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
