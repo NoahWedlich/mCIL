@@ -18,6 +18,7 @@ void ErrorManager::report_errors(SourceManager& source)
 {
 	for (const CILError& error : ErrorManager::errors)
 	{
+		//TODO: Report multiline-errors correctly
 		std::string line_prefix = std::to_string(error.range().start_pos().line_off + 1) + " | ";
 		size_t prefix_len = line_prefix.size();
 		std::string source_line = source.get_line_at_off(error.range().start_pos().line_off);

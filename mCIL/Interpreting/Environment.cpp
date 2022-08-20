@@ -10,33 +10,33 @@ Environment::~Environment()
 {
 }
 
-void Environment::define(Variable var)
+void Environment::define_var(Variable var)
 {
-	if (this->exists(var))
+	if (this->var_exists(var))
 	{
 		throw CILError::error("Redifinition of variable '$'", var.info.name.c_str());
 	}
 	this->variables_.insert({ var.info.name, var });
 }
 
-void Environment::assign(const std::string name, Object value)
+void Environment::assign_var(const std::string name, Object value)
 {
-	if (this->exists(name))
+	if (this->var_exists(name))
 	{
-		if (value.type() != this->get(name).info.type)
+		if (value.type() != this->get_var(name).info.type)
 		{
 			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
-				value.type(), name.c_str(), this->get(name).info.type);
+				value.type(), name.c_str(), this->get_var(name).info.type);
 		}
-		if (this->get(name).info.is_const)
+		if (this->get_var(name).info.is_const)
 		{
 			throw CILError::error("Cannot assign to const variable '$'", name.c_str());
 		}
 		this->variables_.at(name).value = value;
 	}
-	else if (this->enclosing_ && this->enclosing_->exists(name))
+	else if (this->enclosing_ && this->enclosing_->var_exists(name))
 	{
-		this->enclosing_->assign(name, value);
+		this->enclosing_->assign_var(name, value);
 	}
 	else
 	{
@@ -44,15 +44,24 @@ void Environment::assign(const std::string name, Object value)
 	}
 }
 
-Variable Environment::get(const std::string name)
+void Environment::define_func(Function func)
+{
+	if (this->func_exists(func))
+	{
+		throw CILError::error("Redifinition of function '$'", func.info.name.c_str());
+	}
+	this->functions_.insert({ func.info.name, func });
+}
+
+Variable Environment::get_var(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{
 		return this->variables_.at(name);
 	}
-	else if (this->enclosing_ && this->enclosing_->exists(name))
+	else if (this->enclosing_ && this->enclosing_->var_exists(name))
 	{
-		return this->enclosing_->get(name);
+		return this->enclosing_->get_var(name);
 	}
 	else
 	{
@@ -60,22 +69,58 @@ Variable Environment::get(const std::string name)
 	}
 }
 
-bool Environment::exists(const std::string name)
+Function Environment::get_func(const std::string name)
+{
+	if (this->functions_.contains(name))
+	{
+		return this->functions_.at(name);
+	}
+	else if (this->enclosing_ && this->enclosing_->func_exists(name))
+	{
+		return this->enclosing_->get_func(name);
+	}
+	else
+	{
+		throw CILError::error("Undefined function '$'", name.c_str());
+	}
+}
+
+bool Environment::var_exists(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{ return true; }
 	if (this->enclosing_ != nullptr)
-	{ return this->enclosing_->exists(name); }
+	{ return this->enclosing_->var_exists(name); }
 	else
 	{ return false; }
 }
 
-bool Environment::exists(Variable var)
+bool Environment::var_exists(Variable var)
 {
 	if (this->variables_.contains(var.info.name))
 	{ return true; }
 	if (this->enclosing_ != nullptr)
-	{ return this->enclosing_->exists(var.info.name); }
+	{ return this->enclosing_->var_exists(var); }
+	else
+	{ return false; }
+}
+
+bool Environment::func_exists(const std::string name)
+{
+	if (this->functions_.contains(name))
+	{ return true; }
+	if (this->enclosing_ != nullptr)
+	{ return this->enclosing_->func_exists(name); }
+	else
+	{ return false; }
+}
+
+bool Environment::func_exists(Function func)
+{
+	if (this->functions_.contains(func.info.name))
+	{ return true; }
+	if (this->enclosing_ != nullptr)
+	{ return this->enclosing_->func_exists(func); }
 	else
 	{ return false; }
 }

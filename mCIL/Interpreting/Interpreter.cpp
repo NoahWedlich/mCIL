@@ -115,7 +115,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	{
 		try
 		{
-			return this->env_.get(*expr->val().identifier_val).value;
+			return this->env_.get_var(*expr->val().identifier_val).value;
 		}
 		catch (CILError& err)
 		{
@@ -257,7 +257,7 @@ Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> ex
 
 	try
 	{
-		this->env_.assign(expr->identifier(), value);
+		this->env_.assign_var(expr->identifier(), value);
 	}
 	catch (CILError& err)
 	{
@@ -272,8 +272,8 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 {
 	switch (stmt->type())
 	{
-	case StmtType::STATEMENT_VAR_DECL:
-		this->run_var_decl_stmt(std::dynamic_pointer_cast<VarDeclStatement, Statement>(stmt));
+	case StmtType::STATEMENT_BLOCK:
+		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatement, Statement>(stmt));
 		break;
 	case StmtType::STATEMENT_PRINT:
 		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
@@ -287,8 +287,11 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_FOR:
 		this->run_for_stmt(std::dynamic_pointer_cast<ForStatement, Statement>(stmt));
 		break;
-	case StmtType::STATEMENT_BLOCK:
-		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatement, Statement>(stmt));
+	case StmtType::STATEMENT_VAR_DECL:
+		this->run_var_decl_stmt(std::dynamic_pointer_cast<VarDeclStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_FUNC_DECL:
+		this->run_func_decl_stmt(std::dynamic_pointer_cast<FuncDeclStatement, Statement>(stmt));
 		break;
 	case StmtType::STATEMENT_EXPR:
 		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
@@ -374,7 +377,13 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 	
 	Variable var{ stmt->info(), value};
 
-	this->env_.define(var);
+	this->env_.define_var(var);
+}
+
+void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
+{
+	Function func{ stmt->info(), stmt->body() };
+	this->env_.define_func(func);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)

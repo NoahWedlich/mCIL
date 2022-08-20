@@ -2,6 +2,8 @@
 #include "../cil-system.h"
 #include "Object.h"
 #include "Environment.h"
+#include "Variable.h"
+#include "Function.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"
 #include "../Diagnostics/CILError.h"
@@ -38,6 +40,7 @@ private:
 	void run_while_stmt(std::shared_ptr<WhileStatement> stmt);
 	void run_for_stmt(std::shared_ptr<ForStatement> stmt);
 	void run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
+	void run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 
 	stmt_list program_;
