@@ -2,5 +2,5 @@
 
 def sum(num a, num b) -> num
 {
-	(a + b);
+	return (a + b);
 }

@@ -59,6 +59,7 @@ private:
 
 	stmt_ptr expr_stmt();
 	stmt_ptr block_stmt();
+	stmt_ptr return_stmt();
 	stmt_ptr print_stmt();
 	stmt_ptr if_stmt();
 	stmt_ptr while_stmt();
@@ -69,5 +70,7 @@ private:
 
 	std::vector<Token>& tokens_;
 	int current;
+
+	int func_level;
 };
 

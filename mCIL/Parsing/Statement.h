@@ -36,7 +36,7 @@ public:
 	static stmt_ptr make_error_stmt(Position pos);
 	static stmt_ptr make_block_stmt(stmt_list inner, Position pos);
 	//TODO: make break stmt
-	//TODO: make return stmt
+	static stmt_ptr make_return_stmt(expr_ptr expr, Position pos);
 	static stmt_ptr make_print_stmt(expr_ptr expr, Position pos);
 	//TODO: make elif and else
 	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, Position pos);
@@ -54,6 +54,12 @@ public:
 
 	bool is_error_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_ERROR; }
+
+	bool is_block_stmt() const
+	{ return this->type_ == StmtType::STATEMENT_BLOCK; }
+
+	bool is_return_stmt() const
+	{ return this->type_ == StmtType::STATEMENT_RETURN; }
 
 	bool is_print_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_PRINT; }
@@ -98,6 +104,18 @@ public:
 	{ return inner_; }
 private:
 	stmt_list inner_;
+};
+
+class ReturnStatement : public Statement
+{
+public:
+	ReturnStatement(expr_ptr expr, Position pos)
+		: Statement(StmtType::STATEMENT_RETURN, pos), expr_(expr) {}
+
+	const expr_ptr expr() const
+	{ return this->expr_; }
+private:
+	expr_ptr expr_;
 };
 
 class PrintStatement : public Statement

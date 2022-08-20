@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(std::vector<Token>& tokens)
-    : tokens_(tokens), current(0) {}
+    : tokens_(tokens), current(0), func_level(0) {}
 
 stmt_list& Parser::parse()
 {
@@ -381,6 +381,21 @@ stmt_ptr Parser::block_stmt()
     return this->expr_stmt();
 }
 
+stmt_ptr Parser::return_stmt()
+{
+    const Token ret_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_RETURN))
+    {
+        if(this->func_level < 1)
+        { throw CILError::error(ret_keyword.position(), "'return' can only be used inside a function body"); }
+        expr_ptr expr = this->expression();
+        const Token semicolon = this->peek();
+        this->consume_semicolon(expr->pos());
+        return Statement::make_return_stmt(expr, this->pos_from_tokens(ret_keyword, semicolon));
+    }
+    return this->block_stmt();
+}
+
 stmt_ptr Parser::print_stmt()
 {
     const Token print_keyword = this->peek();
@@ -391,7 +406,7 @@ stmt_ptr Parser::print_stmt()
         this->consume_semicolon(expr->pos());
         return Statement::make_print_stmt(expr, this->pos_from_tokens(print_keyword, semicolon));
     }
-    return this->block_stmt();
+    return this->return_stmt();
 }
 
 stmt_ptr Parser::if_stmt()
@@ -523,7 +538,11 @@ stmt_ptr Parser::func_decl_stmt()
             .ret_type = ret_type,
             .ret_is_const = ret_is_const
         };
+
+        this->func_level++;
         stmt_ptr body = this->statement();
+        this->func_level--;
+
         return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.position(), body->pos() });
     }
     return this->var_decl_stmt();
