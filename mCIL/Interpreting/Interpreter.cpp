@@ -81,6 +81,8 @@ Object Interpreter::run_expr(expr_ptr expr)
 		return Object::create_error_object();
 	case ExprType::EXPRESSION_GROUPING:
 		return this->run_grouping_expr(std::dynamic_pointer_cast<GroupingExpression, Expression>(expr));
+	case ExprType::EXPRESSION_CALL:
+		return this->run_call_expr(std::dynamic_pointer_cast<CallExpression, Expression>(expr));
 	case ExprType::EXPRESSION_PRIMARY:
 		return this->run_primary_expr(std::dynamic_pointer_cast<PrimaryExpression, Expression>(expr));
 	case ExprType::EXPRESSION_UNARY:
@@ -127,6 +129,58 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	}
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of primary expressions");
+	}
+}
+
+Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
+{
+	try
+	{
+		Function func = this->env_.get_func(expr->identifier());
+		std::vector<Variable> args {};
+		if (expr->args().size() != func.info.args.size())
+		{
+			throw CILError::error(expr->pos(), "Function '$' expects $ arguments, got $",
+				func.info.name.c_str(), func.info.args.size(), expr->args().size());
+		}
+		for (int i = 0; i < func.info.args.size(); i++)
+		{
+			Object arg_val = this->run_expr(expr->args()[i]);
+			VarInfo arg_info = func.info.args[i];
+			if (arg_val.type() != arg_info.type)
+			{
+				throw CILError::error(expr->pos(), "Argument '$' of function '$' must be '$' not '$'",
+					arg_info.name.c_str(), func.info.name.c_str(), arg_info.type, arg_val.type());
+			}
+			Variable arg{ arg_info, arg_val};
+			args.push_back(arg);
+		}
+
+		Environment previous = this->env_;
+		this->env_ = Environment(&previous);
+		for (Variable arg : args)
+		{
+			this->env_.define_var(arg);
+		}
+
+		try
+		{
+			this->run_stmt(func.body);
+		}
+		catch (Return& ret)
+		{
+			this->env_ = previous;
+			return ret.ret_val();
+		}
+
+		this->env_ = previous;
+	}
+	catch (CILError& err)
+	{
+		if (!err.has_pos())
+		{ err.add_range(expr->pos()); }
+		ErrorManager::cil_error(err);
+		return Object::create_error_object();
 	}
 }
 
@@ -274,6 +328,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	{
 	case StmtType::STATEMENT_BLOCK:
 		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_RETURN:
+		this->run_return_stmt(std::dynamic_pointer_cast<ReturnStatement, Statement>(stmt));
 		break;
 	case StmtType::STATEMENT_PRINT:
 		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));

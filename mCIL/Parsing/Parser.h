@@ -46,6 +46,7 @@ private:
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
+	expr_ptr call_expr();
 	expr_ptr unary_expr();
 	expr_ptr factor_expr();
 	expr_ptr sum_expr();

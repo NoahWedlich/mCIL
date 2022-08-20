@@ -4,3 +4,12 @@ def sum(num a, num b) -> num
 {
 	return (a + b);
 }
+
+def print_sum(num a, num b)
+{
+	print sum(a, b);
+}
+
+print_sum(1, 2);
+print_sum(2, 3);
+print_sum(2, 5);

@@ -43,6 +43,7 @@ private:
 	static void insert(std::stringstream& ss, int value);
 	static void insert(std::stringstream& ss, double value);
 	static void insert(std::stringstream& ss, char value);
+	static void insert(std::stringstream& ss, size_t value);
 	static void insert(std::stringstream& ss, std::string value);
 	static void insert(std::stringstream& ss, ObjType value);
 	static void insert(std::stringstream& ss, TokenType value);

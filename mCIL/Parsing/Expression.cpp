@@ -38,6 +38,11 @@ expr_ptr Expression::make_identifier_expr(Token token)
 	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_IDENTIFIER, value, token.position()));
 }
 
+expr_ptr Expression::make_call_expr(Token token, expr_list args, Position pos)
+{
+	return expr_ptr(new CallExpression(token.identifier(), args, pos));
+}
+
 expr_ptr Expression::make_unary_expr(Token token, expr_ptr expr)
 {
 	Position pos{ token.position(), expr->pos() };

@@ -53,6 +53,11 @@ void CILError::insert(std::stringstream& ss, char value)
 	ss << value;
 }
 
+void CILError::insert(std::stringstream& ss, size_t value)
+{
+	ss << value;
+}
+
 void CILError::insert(std::stringstream& ss, std::string value)
 {
 	ss << value;

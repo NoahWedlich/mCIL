@@ -171,6 +171,7 @@
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Samples\Functions.cil" />
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\Sample.cil" />
     <None Include="Samples\Variables.cil" />

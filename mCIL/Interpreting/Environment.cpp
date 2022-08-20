@@ -1,10 +1,10 @@
 #include "Environment.h"
 
 Environment::Environment()
-	: variables_(), enclosing_(nullptr) {}
+	: variables_(), functions_(), enclosing_(nullptr) {}
 
 Environment::Environment(Environment* enclosing)
-	: variables_(), enclosing_(enclosing) {}
+	: variables_(), functions_(), enclosing_(enclosing) {}
 
 Environment::~Environment()
 {
@@ -12,7 +12,7 @@ Environment::~Environment()
 
 void Environment::define_var(Variable var)
 {
-	if (this->var_exists(var))
+	if (this->variables_.contains(var.info.name))
 	{
 		throw CILError::error("Redifinition of variable '$'", var.info.name.c_str());
 	}

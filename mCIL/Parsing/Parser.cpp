@@ -163,9 +163,7 @@ expr_ptr Parser::grouping_expr()
         expr_ptr expr = this->expression();
         const Token right_paren = this->peek();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
-        {
-            throw CILError::error(right_paren.position(), "Expected ')'");
-        }
+        { throw CILError::error(right_paren.position(), "Expected ')'"); }
         return Expression::make_grouping_expr(expr, this->pos_from_tokens(left_paren, right_paren));
     }
     throw CILError::error(left_paren.position(), "Expected an expression");
@@ -199,7 +197,37 @@ expr_ptr Parser::primary_expr()
     return this->grouping_expr();
 }
 
-//TODO: Add the 'call' rule
+expr_ptr Parser::call_expr()
+{
+    const Token id = this->peek();
+    if (this->match_identifier())
+    {
+        const Token l_paren = this->peek();
+        if (this->match_symbol(Symbol::LEFT_PAREN))
+        {
+            expr_list args;
+            Token r_paren = this->peek();
+            while (true)
+            {
+                if (this->atEnd())
+                { throw CILError::error(l_paren.position(), "Exptected ')'"); }
+                expr_ptr arg = this->expression();
+                args.push_back(arg);
+                const Token comma = this->peek();
+                r_paren = this->peek();
+                if (!this->match_symbol(Symbol::COMMA))
+                {
+                    if(this->match_symbol(Symbol::RIGHT_PAREN))
+                    { break; }
+                    throw CILError::error(comma.position(), "Exptected ','");
+                }
+            }
+            return Expression::make_call_expr(id, args, this->pos_from_tokens(id, r_paren));
+        }
+        this->current--;
+    }
+    return this->primary_expr();
+}
 
 expr_ptr Parser::unary_expr()
 {
@@ -209,8 +237,7 @@ expr_ptr Parser::unary_expr()
         expr_ptr right = this->unary_expr();
         return Expression::make_unary_expr(op_token, right);
     }
-    //TODO: Change to 'call'
-    return this->primary_expr();
+    return this->call_expr();
 }
 
 expr_ptr Parser::factor_expr()

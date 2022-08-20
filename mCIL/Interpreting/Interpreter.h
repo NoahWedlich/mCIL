@@ -39,6 +39,7 @@ private:
 
 	Object run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
 	Object run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
+	Object run_call_expr(std::shared_ptr<CallExpression> expr);
 	Object run_unary_expr(std::shared_ptr<UnaryExpression> expr);
 	Object run_binary_expr(std::shared_ptr<BinaryExpression> expr);
 	Object run_ternary_expr(std::shared_ptr<TernaryExpression> expr);
