@@ -1,4 +1,8 @@
-//Functions
+//Single comment
+
+/*
+mult-line comment
+*/
 
 def sum(num a, num b) -> num
 {

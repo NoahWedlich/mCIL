@@ -213,10 +213,35 @@ void Lexer::skip_spaces()
 void Lexer::skip_comments()
 {
 	const char* current = this->current_line_ + this->char_off_;
-	if (*current == '/' && *(++current) == '/')
+	if (*current == '/')
 	{
-		while(*current != '\n')
-		{ current++; }
+		current++;
+		if (*current == '/')
+		{
+			while (*current != '\n')
+			{
+				current++;
+			}
+		}
+		else if (*current == '*')
+		{
+			while (true)
+			{
+				current++;
+				if (*current == '\n')
+				{
+					this->char_off_ = (++current) - this->current_line_;
+					if (!this->read_required_line())
+					{ throw CILError::error(this->pos(1), "Expected '*/'"); }
+					current = this->current_line_ + this->char_off_;
+				}
+				if (*current == '*' && *(++current) == '/')
+				{
+					current++;
+					break;
+				}
+			}
+		}
 	}
 	this->char_off_ = current - this->current_line_;
 }
