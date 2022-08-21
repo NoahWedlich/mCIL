@@ -628,5 +628,3 @@ stmt_ptr Parser::statement()
         return Statement::make_error_stmt(err.range());
     }
 }
-
-//TODO: Synchronize after error
