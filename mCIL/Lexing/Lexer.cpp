@@ -70,6 +70,8 @@ Token Lexer::next_token()
 			return this->create_eof_token();
 		}
 
+		this->skip_comments();
+
 		if (*(this->current_line_ + this->char_off_) == '\n')
 		{
 			this->char_off_++;
@@ -193,7 +195,6 @@ Token Lexer::create_symbol_token(Symbol type, std::string lexeme, size_t len)
 void Lexer::skip_spaces()
 {
 	const char* start = this->current_line_ + this->char_off_;
-	const char* end = this->current_line_ + this->cur_line_size_;
 
 	const char* current = start;
 
@@ -207,6 +208,17 @@ void Lexer::skip_spaces()
 		this->char_off_ = current - this->current_line_;
 		return;
 	}
+}
+
+void Lexer::skip_comments()
+{
+	const char* current = this->current_line_ + this->char_off_;
+	if (*current == '/' && *(++current) == '/')
+	{
+		while(*current != '\n')
+		{ current++; }
+	}
+	this->char_off_ = current - this->current_line_;
 }
 
 Token Lexer::get_symbol(bool& found)
