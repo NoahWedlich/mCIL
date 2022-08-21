@@ -182,6 +182,11 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		{
 			delete this->env_;
 			this->env_ = previous;
+			if (ret.ret_val().type() != func.info.ret_type)
+			{
+				throw CILError::error(func.body->pos(), "Function '$' should return '$' not '$'",
+					func.info.name, func.info.ret_type, ret.ret_val().type());
+			}
 			return ret.ret_val();
 		}
 		delete this->env_;
