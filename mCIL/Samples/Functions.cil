@@ -1,7 +1,12 @@
-//Single comment
-
 /*
-mult-line comment
+for (num i = 0; true; i = i+1)
+{
+	print i;
+	if (i >= 5)
+	{
+		break;
+	}
+}
 */
 
 def sum(num a, num b) -> num

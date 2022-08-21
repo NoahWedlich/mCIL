@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(std::vector<Token>& tokens)
-    : tokens_(tokens), current(0), func_level(0) {}
+    : tokens_(tokens), current(0), func_level(0), loop_level(0) {}
 
 stmt_list& Parser::parse()
 {
@@ -408,6 +408,20 @@ stmt_ptr Parser::block_stmt()
     return this->expr_stmt();
 }
 
+stmt_ptr Parser::break_stmt()
+{
+    const Token break_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_BREAK))
+    {
+        if (this->loop_level < 1)
+        { throw CILError::error(break_keyword.position(), "'break' can only be used inside a loop body"); }
+        const Token semicolon = this->peek();
+        this->consume_semicolon(break_keyword.position());
+        return Statement::make_break_stmt(this->pos_from_tokens(break_keyword, semicolon));
+    }
+    return this->block_stmt();
+}
+
 stmt_ptr Parser::return_stmt()
 {
     const Token ret_keyword = this->peek();
@@ -420,7 +434,7 @@ stmt_ptr Parser::return_stmt()
         this->consume_semicolon(expr->pos());
         return Statement::make_return_stmt(expr, this->pos_from_tokens(ret_keyword, semicolon));
     }
-    return this->block_stmt();
+    return this->break_stmt();
 }
 
 stmt_ptr Parser::print_stmt()
@@ -463,7 +477,9 @@ stmt_ptr Parser::while_stmt()
         expr_ptr cond = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         { throw CILError::error(cond->pos(), "Expected ')'"); }
+        this->loop_level++;
         stmt_ptr inner = this->statement();
+        this->loop_level--;
         return Statement::make_while_stmt(cond, inner, Position{ while_keyword.position(), inner->pos() });
     }
     return this->if_stmt();
@@ -482,7 +498,9 @@ stmt_ptr Parser::for_stmt()
         expr_ptr exec = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         { throw CILError::error(exec->pos(), "Expected ')'"); }
+        this->loop_level++;
         stmt_ptr inner = this->statement();
+        this->loop_level--;
         return Statement::make_for_stmt(init, cond, exec, inner, Position{ for_keyword.position(), inner->pos() });
     }
     return this->while_stmt();

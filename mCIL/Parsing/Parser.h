@@ -60,6 +60,7 @@ private:
 
 	stmt_ptr expr_stmt();
 	stmt_ptr block_stmt();
+	stmt_ptr break_stmt();
 	stmt_ptr return_stmt();
 	stmt_ptr print_stmt();
 	stmt_ptr if_stmt();
@@ -73,5 +74,6 @@ private:
 	int current;
 
 	int func_level;
+	int loop_level;
 };
 

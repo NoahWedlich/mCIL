@@ -70,7 +70,8 @@ Token Lexer::next_token()
 			return this->create_eof_token();
 		}
 
-		this->skip_comments();
+		if(this->skip_comments())
+		{ continue; }
 
 		if (*(this->current_line_ + this->char_off_) == '\n')
 		{
@@ -85,7 +86,6 @@ Token Lexer::next_token()
 
 		this->start_char_ = this->char_off_;
 		
-		//TODO: Add comments
 		next = this->get_symbol(found);
 		if (found) { return next; }
 		next = this->get_operator(found);
@@ -210,7 +210,7 @@ void Lexer::skip_spaces()
 	}
 }
 
-void Lexer::skip_comments()
+bool Lexer::skip_comments()
 {
 	const char* current = this->current_line_ + this->char_off_;
 	if (*current == '/')
@@ -242,8 +242,13 @@ void Lexer::skip_comments()
 				}
 			}
 		}
+		else
+		{ return false; }
 	}
+	else
+	{ return false; }
 	this->char_off_ = current - this->current_line_;
+	return true;
 }
 
 Token Lexer::get_symbol(bool& found)

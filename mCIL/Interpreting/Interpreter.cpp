@@ -1,10 +1,21 @@
 #include "Interpreter.h"
 
 Interpreter::Interpreter()
-	: program_(), env_() {}
+	: program_(), env_() 
+{
+	this->env_ = new Environment();
+}
 
 Interpreter::Interpreter(stmt_list& program)
-	: program_(program), env_() {}
+	: program_(program), env_()
+{
+	this->env_ = new Environment();
+}
+
+Interpreter::~Interpreter()
+{
+	delete this->env_;
+}
 
 void Interpreter::run()
 {
@@ -117,7 +128,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	{
 		try
 		{
-			return this->env_.get_var(*expr->val().identifier_val).value;
+			return this->env_->get_var(*expr->val().identifier_val).value;
 		}
 		catch (CILError& err)
 		{
@@ -136,7 +147,7 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 {
 	try
 	{
-		Function func = this->env_.get_func(expr->identifier());
+		Function func = this->env_->get_func(expr->identifier());
 		std::vector<Variable> args {};
 		if (expr->args().size() != func.info.args.size())
 		{
@@ -156,11 +167,11 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 			args.push_back(arg);
 		}
 
-		Environment previous = this->env_;
-		this->env_ = Environment(&previous);
+		Environment* previous = this->env_;
+		this->env_ = new Environment(previous);
 		for (Variable arg : args)
 		{
-			this->env_.define_var(arg);
+			this->env_->define_var(arg);
 		}
 
 		try
@@ -169,10 +180,11 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		catch (Return& ret)
 		{
+			delete this->env_;
 			this->env_ = previous;
 			return ret.ret_val();
 		}
-
+		delete this->env_;
 		this->env_ = previous;
 	}
 	catch (CILError& err)
@@ -311,7 +323,7 @@ Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> ex
 
 	try
 	{
-		this->env_.assign_var(expr->identifier(), value);
+		this->env_->assign_var(expr->identifier(), value);
 	}
 	catch (CILError& err)
 	{
@@ -328,6 +340,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	{
 	case StmtType::STATEMENT_BLOCK:
 		this->run_block_stmt(std::dynamic_pointer_cast<BlockStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_BREAK:
+		this->run_break_stmt(std::dynamic_pointer_cast<BreakStatement, Statement>(stmt));
 		break;
 	case StmtType::STATEMENT_RETURN:
 		this->run_return_stmt(std::dynamic_pointer_cast<ReturnStatement, Statement>(stmt));
@@ -360,13 +375,29 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 
 void Interpreter::run_block_stmt(std::shared_ptr<BlockStatement> stmt)
 {
-	Environment previous = this->env_;
-	this->env_ = Environment(&previous);
+	Environment* previous = this->env_;
+	this->env_ = new Environment(previous);
 	for (stmt_ptr inner : stmt->inner())
 	{
-		this->run_stmt(inner);
+		//TODO: Change this
+		try
+		{
+			this->run_stmt(inner);
+		}
+		catch (Return& ret)
+		{
+			delete this->env_;
+			this->env_ = previous;
+			throw ret;
+		}
 	}
+	delete this->env_;
 	this->env_ = previous;
+}
+
+void Interpreter::run_break_stmt(std::shared_ptr<BreakStatement> stmt)
+{
+	throw Break();
 }
 
 void Interpreter::run_return_stmt(std::shared_ptr<ReturnStatement> stmt)
@@ -410,21 +441,33 @@ void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 
 void Interpreter::run_while_stmt(std::shared_ptr<WhileStatement> stmt)
 {
-	while (this->run_expr(stmt->cond()).to_bool().bool_value())
+	try
 	{
-		this->run_stmt(stmt->inner());
+		while (this->run_expr(stmt->cond()).to_bool().bool_value())
+		{
+			this->run_stmt(stmt->inner());
+		}
+	}
+	catch (Break& b)
+	{
 	}
 }
 
 void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 {
-	for (
-		this->run_stmt(stmt->init());
-		this->run_expr(stmt->cond()).to_bool().bool_value();
-		this->run_expr(stmt->exec())
-		)
+	try
 	{
-		this->run_stmt(stmt->inner());
+		for (
+			this->run_stmt(stmt->init());
+			this->run_expr(stmt->cond()).to_bool().bool_value();
+			this->run_expr(stmt->exec())
+			)
+		{
+			this->run_stmt(stmt->inner());
+		}
+	}
+	catch (Break& b)
+	{
 	}
 }
 
@@ -440,13 +483,13 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 	
 	Variable var{ stmt->info(), value};
 
-	this->env_.define_var(var);
+	this->env_->define_var(var);
 }
 
 void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
 {
 	Function func{ stmt->info(), stmt->body() };
-	this->env_.define_func(func);
+	this->env_->define_func(func);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)
