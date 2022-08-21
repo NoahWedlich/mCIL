@@ -191,6 +191,7 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		delete this->env_;
 		this->env_ = previous;
+		return Object::create_none_object();
 	}
 	catch (CILError& err)
 	{
@@ -453,7 +454,7 @@ void Interpreter::run_while_stmt(std::shared_ptr<WhileStatement> stmt)
 			this->run_stmt(stmt->inner());
 		}
 	}
-	catch (Break& b)
+	catch (Break)
 	{
 	}
 }
@@ -471,7 +472,7 @@ void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 			this->run_stmt(stmt->inner());
 		}
 	}
-	catch (Break& b)
+	catch (Break)
 	{
 	}
 }
