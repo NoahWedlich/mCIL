@@ -10,6 +10,11 @@ stmt_ptr Statement::make_block_stmt(stmt_list inner, Position pos)
     return stmt_ptr(new BlockStatement(inner, pos));
 }
 
+stmt_ptr Statement::make_break_stmt(Position pos)
+{
+    return stmt_ptr(new BreakStatement(pos));
+}
+
 stmt_ptr Statement::make_return_stmt(expr_ptr expr, Position pos)
 {
     return stmt_ptr(new ReturnStatement(expr, pos));

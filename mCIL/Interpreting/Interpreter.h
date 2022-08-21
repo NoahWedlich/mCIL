@@ -21,11 +21,17 @@ private:
 	Object ret_val_;
 };
 
+class Break : public std::exception
+{
+};
+
 class Interpreter
 {
 public:
 	Interpreter();
 	Interpreter(stmt_list& program);
+
+	~Interpreter();
 
 	void run();
 
@@ -48,6 +54,7 @@ private:
 	void run_stmt(stmt_ptr stmt);
 
 	void run_block_stmt(std::shared_ptr<BlockStatement> stmt);
+	void run_break_stmt(std::shared_ptr<BreakStatement> stmt);
 	void run_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	void run_print_stmt(std::shared_ptr<PrintStatement> stmt);
 	void run_if_stmt(std::shared_ptr<IfStatement> stmt);
@@ -59,6 +66,6 @@ private:
 
 	stmt_list program_;
 
-	Environment env_;
+	Environment* env_;
 };
 

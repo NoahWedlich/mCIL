@@ -1,10 +1,14 @@
 #include "Environment.h"
 
 Environment::Environment()
-	: variables_(), functions_(), enclosing_(nullptr) {}
+	: variables_(), functions_(), enclosing_(nullptr)
+{
+}
 
 Environment::Environment(Environment* enclosing)
-	: variables_(), functions_(), enclosing_(enclosing) {}
+	: variables_(), functions_(), enclosing_(enclosing)
+{
+}
 
 Environment::~Environment()
 {
