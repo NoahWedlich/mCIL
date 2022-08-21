@@ -33,6 +33,29 @@ void Parser::reset()
     this->current = 0;
 }
 
+void Parser::synchronize()
+{
+    while (true)
+    {
+        if (this->match_symbol(Symbol::SEMICOLON))
+        {
+            break;
+        }
+        if (this->match_keyword(Keyword::KEYWORD_PRINT) ||
+            this->match_keyword(Keyword::KEYWORD_IF   ) ||
+            this->match_keyword(Keyword::KEYWORD_FOR  ) ||
+            this->match_keyword(Keyword::KEYWORD_WHILE) ||
+            this->match_keyword(Keyword::KEYWORD_DEF  ) ||
+            this->match_keyword(Keyword::KEYWORD_CLASS) ||
+            this->atEnd())
+        {
+            this->current--;
+            break;
+        }
+        this->current++;
+    }
+}
+
 Position Parser::pos_from_tokens(Token start, Token end)
 {
     return Position(start.position().start_pos(), end.position().end_pos());
@@ -375,7 +398,7 @@ stmt_ptr Parser::expr_stmt()
     expr_ptr expr = Expression::make_error_expr(token.position());
     try
     {
-        expr = this->expression();
+        expr = this->assignment_expr();
     }
     catch(CILError)
     {
@@ -600,6 +623,7 @@ stmt_ptr Parser::statement()
     }
     catch (CILError& err)
     {
+        this->synchronize();
         ErrorManager::cil_error(err);
         return Statement::make_error_stmt(err.range());
     }

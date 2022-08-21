@@ -27,6 +27,8 @@ private:
 	bool atEnd()
 	{ return this->peek().is_EOF(); }
 
+	void synchronize();
+
 	Position pos_from_tokens(Token start, Token end);
 	Position pos_from_exprs(expr_ptr start, expr_ptr end);
 	Position pos_from_stmts(stmt_ptr start, stmt_ptr end);
