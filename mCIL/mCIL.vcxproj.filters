@@ -69,6 +69,9 @@
     <ClCompile Include="Diagnostics\CILError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Types\cil-types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -125,13 +128,13 @@
     <ClInclude Include="Interpreting\Environment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interpreting\Variable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Diagnostics\CILError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interpreting\Function.h">
+    <ClInclude Include="Types\cil-types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\RuntimeObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

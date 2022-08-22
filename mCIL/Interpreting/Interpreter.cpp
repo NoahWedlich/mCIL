@@ -65,7 +65,7 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 }
 
 
-void Interpreter::assert_binary_types(Operator op, Object left, Object right, ObjType left_t, ObjType right_t, Position pos)
+void Interpreter::assert_binary_types(Operator op, Object left, Object right, cilType left_t, cilType right_t, Position pos)
 {
 	if (left.type() != left_t)
 	{
@@ -219,7 +219,7 @@ Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 		else
 		{ 
 			throw CILError::error(expr->pos(), "Operand of unary '$' must be '$' not '$'",
-				expr->op(), ObjType::NUM, inner.type());
+				expr->op(), cilType(Type::NUM), inner.type());
 		}
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of unary expressions");
@@ -238,28 +238,28 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 	switch (expr->op())
 	{
 	case Operator::OPERATOR_ADD:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_num_object(left.num_value() + right.num_value());
 	case Operator::OPERATOR_SUBTRACT:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_num_object(left.num_value() - right.num_value());
 	case Operator::OPERATOR_MULTIPLY:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_num_object(left.num_value() * right.num_value());
 	case Operator::OPERATOR_DIVIDE:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_num_object(left.num_value() / right.num_value());
 	case Operator::OPERATOR_GREATER:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_bool_object(left.num_value() > right.num_value());
 	case Operator::OPERATOR_LESS:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_bool_object(left.num_value() < right.num_value());
 	case Operator::OPERATOR_GREATER_EQUAL:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_bool_object(left.num_value() >= right.num_value());
 	case Operator::OPERATOR_LESS_EQUAL:
-		this->assert_binary_types(expr->op(), left, right, ObjType::NUM, ObjType::NUM, expr->pos());
+		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
 		return Object::create_bool_object(left.num_value() <= right.num_value());
 	case Operator::OPERATOR_EQUAL_EQUAL:
 	{
@@ -268,13 +268,13 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
 				expr->op(), left.type(), right.type());
 		}
-		switch (left.type())
+		switch (left.type().type)
 		{
-		case ObjType::BOOL:
+		case Type::BOOL:
 			return Object::create_bool_object(left.bool_value() == right.bool_value());
-		case ObjType::NUM:
+		case Type::NUM:
 			return Object::create_bool_object(left.num_value() == right.num_value());
-		case ObjType::STR:
+		case Type::STR:
 			return Object::create_bool_object(left.str_value() == right.str_value());
 		default:
 			return Object::create_bool_object(true);
@@ -287,13 +287,13 @@ Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
 				expr->op(), left.type(), right.type());
 		}
-		switch (left.type())
+		switch (left.type().type)
 		{
-		case ObjType::BOOL:
+		case Type::BOOL:
 			return Object::create_bool_object(left.bool_value() != right.bool_value());
-		case ObjType::NUM:
+		case Type::NUM:
 			return Object::create_bool_object(left.num_value() != right.num_value());
-		case ObjType::STR:
+		case Type::STR:
 			return Object::create_bool_object(left.str_value() != right.str_value());
 		default:
 			return Object::create_bool_object(false);
@@ -415,21 +415,21 @@ void Interpreter::run_return_stmt(std::shared_ptr<ReturnStatement> stmt)
 void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 {
 	Object val = this->run_expr(stmt->expr());
-	switch (val.type())
+	switch (val.type().type)
 	{
-	case ObjType::BOOL:
+	case Type::BOOL:
 		std::cout << (val.bool_value() ? "true" : "false") << std::endl;
 		break;
-	case ObjType::NONE:
+	case Type::NONE:
 		std::cout << "None" << std::endl;
 		break;
-	case ObjType::NUM:
+	case Type::NUM:
 		std::cout << val.num_value() << std::endl;
 		break;
-	case ObjType::STR:
+	case Type::STR:
 		std::cout << val.str_value() << std::endl;
 		break;
-	case ObjType::ERROR:
+	case Type::ERROR:
 		break;
 	default:
 		throw CILError::error(stmt->pos(), "Cannot print value of type '$'", val.type());
@@ -481,7 +481,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
 	Object value = this->run_expr(stmt->val());
 
-	if (stmt->info().type != ObjType::UNKNOWN && stmt->info().type != value.type())
+	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value.type())
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
 			stmt->info().type, value.type());

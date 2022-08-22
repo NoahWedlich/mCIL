@@ -137,11 +137,11 @@ bool Parser::match_keyword(Keyword key)
     return false;
 }
 
-bool Parser::get_type(ObjType& type, bool& is_const)
+bool Parser::get_type(cilType& type)
 {
-    is_const = this->match_keyword(Keyword::KEYWORD_CONST);
+    bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
 
-    type = ObjType::ERROR;
+    type = cilType(Type::ERROR);
 
     const Token token = this->peek();
     if (token.is_keyword())
@@ -149,16 +149,16 @@ bool Parser::get_type(ObjType& type, bool& is_const)
         switch (token.keyword())
         {
         case Keyword::KEYWORD_BOOL:
-            type = ObjType::BOOL;
+            type = cilType(Type::BOOL, is_const);
             break;
         case Keyword::KEYWORD_NUM:
-            type = ObjType::NUM;
+            type = cilType(Type::NUM, is_const);
             break;
         case Keyword::KEYWORD_STR:
-            type = ObjType::STR;
+            type = cilType(Type::STR, is_const);
             break;
         case Keyword::KEYWORD_AUTO:
-            type = ObjType::UNKNOWN;
+            type = cilType(Type::UNKNOWN, is_const);
             break;
         default:
             return false;
@@ -530,10 +530,9 @@ stmt_ptr Parser::for_stmt()
 
 stmt_ptr Parser::var_decl_stmt()
 {
-    bool is_const;
-    ObjType type;
+    cilType type;
     const Token type_t = this->peek();
-    if (this->get_type(type, is_const))
+    if (this->get_type(type))
     {
         const Token name = this->peek();
         if (!this->match_identifier())
@@ -549,8 +548,7 @@ stmt_ptr Parser::var_decl_stmt()
         VarInfo info
         {
             .name = name.identifier(),
-            .type = type,
-            .is_const = is_const
+            .type = type
         };
         return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
     }
@@ -572,29 +570,28 @@ stmt_ptr Parser::func_decl_stmt()
         {
             if(this->atEnd())
             { throw CILError::error(this->peek().position(), "Expected '}'"); }
-            bool arg_is_const;
-            ObjType arg_type;
+            cilType arg_type;
             const Token arg_type_t = this->peek();
-            if (!this->get_type(arg_type, arg_is_const))
+            if (!this->get_type(arg_type))
             { throw CILError::error(arg_type_t.position(), "Expected argument type"); }
             const Token arg_name = this->peek();
             if (!this->match_identifier())
             { throw CILError::error(arg_name.position(), "Expected argument name"); }
-            args.push_back(VarInfo{ arg_name.identifier(), arg_type, arg_is_const});
+            args.push_back(VarInfo{ arg_name.identifier(), arg_type});
             if (!this->match_symbol(Symbol::COMMA))
             {
-                if (this->get_type(arg_type, arg_is_const))
+                if (!this->match_symbol(Symbol::RIGHT_PAREN))
                 { throw CILError::error(this->peek().position(), "Expected ','"); }
+                this->current--;
                 break;
             }
         }
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         { throw CILError::error(name.position(), "Expected ')'"); }
-        ObjType ret_type = ObjType::NONE;
-        bool ret_is_const = false;
+        cilType ret_type = cilType(Type::NONE);
         if (this->match_symbol(Symbol::ARROW))
         {
-            if(!this->get_type(ret_type, ret_is_const))
+            if(!this->get_type(ret_type))
             { throw CILError::error(this->peek().position(), "Expected return type"); }
         }
 
@@ -602,8 +599,7 @@ stmt_ptr Parser::func_decl_stmt()
         {
             .name = name.identifier(),
             .args = args,
-            .ret_type = ret_type,
-            .ret_is_const = ret_is_const
+            .ret_type = ret_type
         };
 
         this->func_level++;

@@ -63,26 +63,30 @@ void CILError::insert(std::stringstream& ss, std::string value)
 	ss << value;
 }
 
-void CILError::insert(std::stringstream& ss, ObjType value)
+void CILError::insert(std::stringstream& ss, cilType value)
 {
-	switch (value)
+	if (value.is_const)
 	{
-	case ObjType::BOOL:
+		ss << "const ";
+	}
+	switch (value.type)
+	{
+	case Type::BOOL:
 		ss << "bool";
 		break;
-	case ObjType::NUM:
+	case Type::NUM:
 		ss << "num";
 		break;
-	case ObjType::STR:
+	case Type::STR:
 		ss << "str";
 		break;
-	case ObjType::NONE:
+	case Type::NONE:
 		ss << "none";
 		break;
-	case ObjType::UNKNOWN:
+	case Type::UNKNOWN:
 		ss << "auto";
 		break;
-	case ObjType::ERROR:
+	case Type::ERROR:
 		ss << "error";
 		break;
 	default:

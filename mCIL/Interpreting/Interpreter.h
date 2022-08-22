@@ -1,9 +1,8 @@
 #pragma once
 #include "../cil-system.h"
+#include "../Types/cil-types.h"
 #include "Object.h"
 #include "Environment.h"
-#include "Variable.h"
-#include "Function.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"
 #include "../Diagnostics/CILError.h"
@@ -39,7 +38,7 @@ public:
 	Object run_single_expression(expr_ptr expr);
 
 private:
-	void assert_binary_types(Operator op, Object left, Object right, ObjType left_t, ObjType right_t, Position pos);
+	void assert_binary_types(Operator op, Object left, Object right, cilType left_t, cilType right_t, Position pos);
 
 	Object run_expr(expr_ptr expr);
 

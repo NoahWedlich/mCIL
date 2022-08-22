@@ -1,5 +1,6 @@
 #pragma once
 #include "../cil-system.h"
+#include "../Types/cil-types.h"
 #include "Position.h"
 #include "TokenPrinter.h"
 #include "../Interpreting/Object.h"
@@ -45,7 +46,7 @@ private:
 	static void insert(std::stringstream& ss, char value);
 	static void insert(std::stringstream& ss, size_t value);
 	static void insert(std::stringstream& ss, std::string value);
-	static void insert(std::stringstream& ss, ObjType value);
+	static void insert(std::stringstream& ss, cilType value);
 	static void insert(std::stringstream& ss, TokenType value);
 	static void insert(std::stringstream& ss, Symbol value);
 	static void insert(std::stringstream& ss, Operator value);

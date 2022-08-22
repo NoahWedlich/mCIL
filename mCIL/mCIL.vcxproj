@@ -146,13 +146,12 @@
     <ClCompile Include="Diagnostics\SourceFileManager.cpp" />
     <ClCompile Include="Lexing\Token.cpp" />
     <ClCompile Include="Diagnostics\TokenPrinter.cpp" />
+    <ClCompile Include="Types\cil-types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Diagnostics\CILError.h" />
     <ClInclude Include="Interpreting\Environment.h" />
-    <ClInclude Include="Interpreting\Function.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
-    <ClInclude Include="Interpreting\Variable.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
     <ClInclude Include="REPL\REPL.h" />
     <ClInclude Include="Parsing\Statement.h" />
@@ -169,6 +168,8 @@
     <ClInclude Include="Diagnostics\SourceManager.h" />
     <ClInclude Include="Lexing\Token.h" />
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
+    <ClInclude Include="Types\cil-types.h" />
+    <ClInclude Include="Types\RuntimeObjects.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\Functions.cil" />

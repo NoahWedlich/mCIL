@@ -1,9 +1,8 @@
 #pragma once
 #include "../cil-system.h"
+#include "../Types/RuntimeObjects.h"
 #include "../Diagnostics/CILError.h"
 #include "Object.h"
-#include "Variable.h"
-#include "Function.h"
 
 class Environment
 {

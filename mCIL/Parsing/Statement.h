@@ -1,9 +1,7 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Diagnostics/Position.h"
-#include "../Interpreting/Object.h"
-#include "../Interpreting/Variable.h"
-#include "../Interpreting/Function.h"
+#include "../Types/cil-types.h"
 #include "Expression.h"
 
 class Statement;

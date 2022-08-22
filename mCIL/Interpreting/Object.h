@@ -1,15 +1,6 @@
 #pragma once
 #include "../cil-system.h"
-
-enum class ObjType
-{
-	NONE,
-	BOOL,
-	NUM,
-	STR,
-	UNKNOWN,
-	ERROR
-};
+#include "../Types/cil-types.h"
 
 class Object
 {
@@ -17,7 +8,7 @@ public:
 	Object(const Object&);
 	Object& operator=(const Object&);
 
-	ObjType type() const;
+	cilType type() const;
 
 	bool is_none() const;
 	bool is_bool() const;
@@ -41,9 +32,9 @@ public:
 	Object to_bool();
 
 private:
-	Object(ObjType type);
+	Object(cilType type);
 
-	ObjType type_;
+	cilType type_;
 
 	union {
 		bool bool_value;

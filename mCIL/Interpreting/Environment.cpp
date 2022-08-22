@@ -32,7 +32,7 @@ void Environment::assign_var(const std::string name, Object value)
 			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
 				value.type(), name.c_str(), this->get_var(name).info.type);
 		}
-		if (this->get_var(name).info.is_const)
+		if (this->get_var(name).info.type.is_const)
 		{
 			throw CILError::error("Cannot assign to const variable '$'", name.c_str());
 		}

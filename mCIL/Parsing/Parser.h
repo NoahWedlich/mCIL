@@ -1,5 +1,6 @@
 #pragma once
 #include "../cil-system.h"
+#include "../Types/cil-types.h"
 #include "../Lexing/Token.h"
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
@@ -42,7 +43,7 @@ private:
 	{ return this->match_operator(a) || this->match_operator(b); }
 	bool match_keyword(Keyword key);
 	
-	bool get_type(ObjType& type, bool& is_const);
+	bool get_type(cilType& type);
 
 	void consume_semicolon(Position pos);
 
