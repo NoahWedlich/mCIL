@@ -252,6 +252,24 @@ expr_ptr Parser::call_expr()
     return this->primary_expr();
 }
 
+expr_ptr Parser::array_access_expr()
+{
+    const Token id = this->peek();
+    if (this->match_identifier())
+    {
+        const Token l_bracket = this->peek();
+        if (this->match_symbol(Symbol::LEFT_BRACKET))
+        {
+            expr_ptr index = this->expression();
+            if(!this->match_symbol(Symbol::RIGHT_BRACKET))
+            { throw CILError::error(index->pos(), "Expected ']'"); }
+            return Expression::make_array_access_expr(id, index, this->pos_from_tokens(id, this->peek()));
+        }
+        this->current--;
+    }
+    return this->call_expr();
+}
+
 expr_ptr Parser::unary_expr()
 {
     const Token op_token = this->peek();
@@ -260,7 +278,7 @@ expr_ptr Parser::unary_expr()
         expr_ptr right = this->unary_expr();
         return Expression::make_unary_expr(op_token, right);
     }
-    return this->call_expr();
+    return this->array_access_expr();
 }
 
 expr_ptr Parser::factor_expr()
@@ -555,6 +573,60 @@ stmt_ptr Parser::var_decl_stmt()
     return this->for_stmt();
 }
 
+stmt_ptr Parser::arr_decl_stmt()
+{
+    cilType type;
+    const Token type_t = this->peek();
+    if (this->get_type(type))
+    {
+        if (this->match_symbol(Symbol::LEFT_BRACKET))
+        {
+            const Token size = this->peek();
+            if(!this->match_number())
+            { throw CILError::error(size.position(), "Expected size of the array"); }
+            if(!this->match_symbol(Symbol::RIGHT_BRACKET))
+            { throw CILError::error(size.position(), "Expected ']'"); }
+            const Token name = this->peek();
+            if (!this->match_identifier())
+            { throw CILError::error(size.position(), "Expected name of the array"); }
+            if (!this->match_operator(Operator::OPERATOR_EQUAL))
+            {
+                //TODO: Change this
+                CILError::error(name.position(), "Arrays must be initialized for now");
+            }
+            if (!this->match_symbol(Symbol::LEFT_BRACE))
+            { throw CILError::error(size.position(), "Expected '{'"); }
+            expr_list vals{};
+            while (!this->match_symbol(Symbol::RIGHT_BRACE))
+            {
+                if (this->atEnd())
+                { throw CILError::error(this->peek().position(), "Expected '}'"); }
+                expr_ptr val = this->expression();
+                vals.push_back(val);
+                if (!this->match_symbol(Symbol::COMMA))
+                {
+                    if (!this->match_symbol(Symbol::RIGHT_BRACE))
+                    { throw CILError::error(this->peek().position(), "Expected ','"); }
+                    break;
+                }
+            }
+            const Token semicolon = this->peek();
+            this->consume_semicolon(this->peek().position());
+
+            ArrInfo info
+            {
+                .name = name.identifier(),
+                .type = type,
+                .size = (int)size.number_val()
+            };
+            return Statement::make_arr_decl_stmt(info, vals, this->pos_from_tokens(type_t, semicolon));
+        }
+        else
+        { this->current -= (type.is_const ? 2 : 1); }
+    }
+    return this->var_decl_stmt();
+}
+
 stmt_ptr Parser::func_decl_stmt()
 {
     const Token def_keyword = this->peek();
@@ -569,7 +641,7 @@ stmt_ptr Parser::func_decl_stmt()
         while (!this->match_symbol(Symbol::RIGHT_PAREN))
         {
             if(this->atEnd())
-            { throw CILError::error(this->peek().position(), "Expected '}'"); }
+            { throw CILError::error(this->peek().position(), "Expected ')'"); }
             cilType arg_type;
             const Token arg_type_t = this->peek();
             if (!this->get_type(arg_type))
@@ -582,7 +654,6 @@ stmt_ptr Parser::func_decl_stmt()
             {
                 if (!this->match_symbol(Symbol::RIGHT_PAREN))
                 { throw CILError::error(this->peek().position(), "Expected ','"); }
-                this->current--;
                 break;
             }
         }
@@ -608,7 +679,7 @@ stmt_ptr Parser::func_decl_stmt()
 
         return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.position(), body->pos() });
     }
-    return this->var_decl_stmt();
+    return this->arr_decl_stmt();
 }
 
 stmt_ptr Parser::statement()

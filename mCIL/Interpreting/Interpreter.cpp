@@ -94,6 +94,8 @@ Object Interpreter::run_expr(expr_ptr expr)
 		return this->run_grouping_expr(std::dynamic_pointer_cast<GroupingExpression, Expression>(expr));
 	case ExprType::EXPRESSION_CALL:
 		return this->run_call_expr(std::dynamic_pointer_cast<CallExpression, Expression>(expr));
+	case ExprType::EXPRESSION_ARRAY_ACCESS:
+		return this->run_array_access_expr(std::dynamic_pointer_cast<ArrayAccessExpression, Expression>(expr));
 	case ExprType::EXPRESSION_PRIMARY:
 		return this->run_primary_expr(std::dynamic_pointer_cast<PrimaryExpression, Expression>(expr));
 	case ExprType::EXPRESSION_UNARY:
@@ -200,6 +202,18 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		ErrorManager::cil_error(err);
 		return Object::create_error_object();
 	}
+}
+
+Object Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
+{
+	Object index_num = this->run_expr(expr->index());
+	if(!index_num.is_num())
+	{ throw CILError::error(expr->pos(), "Index must be 'num' not '$'", index_num.type()); }
+	int index = (int)index_num.num_value();
+	Array arr = this->env_->get_arr(expr->identifier());
+	if (index < 0 || index >= arr.info.size)
+	{ throw CILError::error(expr->pos(), "Index must be in the range [$,$[", 0, arr.info.size); }
+	return arr.arr[index];
 }
 
 Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
@@ -368,6 +382,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_VAR_DECL:
 		this->run_var_decl_stmt(std::dynamic_pointer_cast<VarDeclStatement, Statement>(stmt));
 		break;
+	case StmtType::STATEMENT_ARR_DECL:
+		this->run_arr_decl_stmt(std::dynamic_pointer_cast<ArrDeclStatement, Statement>(stmt));
+		break;
 	case StmtType::STATEMENT_FUNC_DECL:
 		this->run_func_decl_stmt(std::dynamic_pointer_cast<FuncDeclStatement, Statement>(stmt));
 		break;
@@ -490,6 +507,29 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 	Variable var{ stmt->info(), value};
 
 	this->env_->define_var(var);
+}
+
+void Interpreter::run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt)
+{
+	if (stmt->info().size != stmt->vals().size())
+	{
+		throw CILError::error(stmt->pos(), "Array of size '$' cannot be initialized with '$' elements",
+			stmt->info().size, stmt->vals().size());
+	}
+	std::vector<Object> vals{};
+	for (expr_ptr expr : stmt->vals())
+	{
+		Object val = this->run_expr(expr);
+		if (val.type() != stmt->info().type)
+		{
+			throw CILError::error(stmt->pos(), "Cannot initizalize array of type '$' with value of type '$'",
+				stmt->info().type, val.type());
+		}
+		vals.push_back(val);
+	}
+	
+	Array arr{ stmt->info(), vals };
+	this->env_->define_arr(arr);
 }
 
 void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)

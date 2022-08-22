@@ -1,12 +1,12 @@
 #include "Environment.h"
 
 Environment::Environment()
-	: variables_(), functions_(), enclosing_(nullptr)
+	: variables_(), arrays_(), functions_(), enclosing_(nullptr)
 {
 }
 
 Environment::Environment(Environment* enclosing)
-	: variables_(), functions_(), enclosing_(enclosing)
+	: variables_(), arrays_(), functions_(), enclosing_(enclosing)
 {
 }
 
@@ -48,6 +48,15 @@ void Environment::assign_var(const std::string name, Object value)
 	}
 }
 
+void Environment::define_arr(Array arr)
+{
+	if (this->arrays_.contains(arr.info.name))
+	{
+		throw CILError::error("Redifinition of array '$'", arr.info.name.c_str());
+	}
+	this->arrays_.insert({ arr.info.name, arr });
+}
+
 void Environment::define_func(Function func)
 {
 	if (this->func_exists(func))
@@ -70,6 +79,22 @@ Variable Environment::get_var(const std::string name)
 	else
 	{
 		throw CILError::error("Undefined variable '$'", name.c_str());
+	}
+}
+
+Array Environment::get_arr(const std::string name)
+{
+	if (this->arrays_.contains(name))
+	{
+		return this->arrays_.at(name);
+	}
+	else if (this->enclosing_ && this->enclosing_->arr_exists(name))
+	{
+		return this->enclosing_->get_arr(name);
+	}
+	else
+	{
+		throw CILError::error("Undefined array '$'", name.c_str());
 	}
 }
 
@@ -107,6 +132,21 @@ bool Environment::var_exists(Variable var)
 	{ return this->enclosing_->var_exists(var); }
 	else
 	{ return false; }
+}
+
+bool Environment::arr_exists(const std::string name)
+{
+	if (this->arrays_.contains(name))
+	{ return true; }
+	if (this->enclosing_ != nullptr)
+	{ return this->enclosing_->arr_exists(name); }
+	else
+	{ return false; }
+}
+
+bool Environment::arr_exists(Array arr)
+{
+	return this->arr_exists(arr.info.name);
 }
 
 bool Environment::func_exists(const std::string name)

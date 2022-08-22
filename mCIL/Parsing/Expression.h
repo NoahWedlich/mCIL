@@ -9,10 +9,12 @@ typedef std::vector<expr_ptr> expr_list;
 
 enum class ExprType
 {
+	//TODO: Make trailing operators for () and [] and maybe ? and !
 	EXPRESSION_ERROR,
 	EXPRESSION_GROUPING,
 	EXPRESSION_PRIMARY,
 	EXPRESSION_CALL,
+	EXPRESSION_ARRAY_ACCESS,
 	EXPRESSION_UNARY,
 	EXPRESSION_BINARY,
 	EXPRESSION_TERNARY,
@@ -50,6 +52,7 @@ public:
 	static expr_ptr make_str_expr(Token);
 	static expr_ptr make_identifier_expr(Token);
 	static expr_ptr make_call_expr(Token, expr_list, Position);
+	static expr_ptr make_array_access_expr(Token, expr_ptr, Position);
 	static expr_ptr make_unary_expr(Token, expr_ptr);
 	static expr_ptr make_binary_expr(Token, expr_ptr, expr_ptr);
 	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr);
@@ -72,6 +75,9 @@ public:
 
 	bool is_call_expr()
 	{ return this->type_ == ExprType::EXPRESSION_CALL; }
+
+	bool is_array_access_expr()
+	{ return this->type_ == ExprType::EXPRESSION_ARRAY_ACCESS; }
 
 	bool is_unary_expr()
 	{ return this->type_ == ExprType::EXPRESSION_UNARY; }
@@ -132,17 +138,29 @@ public:
 		: Expression(ExprType::EXPRESSION_CALL, pos), identifier_(identifier), args_(args) {}
 
 	const std::string& identifier() const
-	{
-		return identifier_;
-	}
+	{ return identifier_; }
 
 	const expr_list args() const
-	{
-		return args_;
-	}
+	{ return args_; }
 private:
 	const std::string& identifier_;
 	expr_list args_;
+};
+
+class ArrayAccessExpression : public Expression
+{
+public:
+	ArrayAccessExpression(const std::string& identifier, expr_ptr index, Position pos)
+		: Expression(ExprType::EXPRESSION_ARRAY_ACCESS, pos), identifier_(identifier), index_(index) {}
+
+	const std::string& identifier() const
+	{ return identifier_; }
+
+	const expr_ptr index() const
+	{ return index_; }
+private:
+	const std::string& identifier_;
+	expr_ptr index_;
 };
 
 class UnaryExpression : public Expression

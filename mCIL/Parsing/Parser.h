@@ -50,6 +50,7 @@ private:
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
 	expr_ptr call_expr();
+	expr_ptr array_access_expr();
 	expr_ptr unary_expr();
 	expr_ptr factor_expr();
 	expr_ptr sum_expr();
@@ -70,6 +71,7 @@ private:
 	stmt_ptr while_stmt();
 	stmt_ptr for_stmt();
 	stmt_ptr var_decl_stmt();
+	stmt_ptr arr_decl_stmt();
 	stmt_ptr func_decl_stmt();
 	stmt_ptr statement();
 

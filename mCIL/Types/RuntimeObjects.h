@@ -16,3 +16,9 @@ struct Function
 	FuncInfo info;
 	stmt_ptr body;
 };
+
+struct Array
+{
+	ArrInfo info;
+	std::vector<Object> arr;
+};

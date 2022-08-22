@@ -14,7 +14,7 @@ int main()
 	/*REPL repl{};
 	repl.run();*/
 
-	SourceFileManager source{ "Samples/Functions.cil" };
+	SourceFileManager source{ "Samples/Arrays.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)

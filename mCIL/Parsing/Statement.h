@@ -19,6 +19,7 @@ enum class StmtType
 	STATEMENT_WHILE,
 	STATEMENT_FOR,
 	STATEMENT_VAR_DECL,
+	STATEMENT_ARR_DECL,
 	STATEMENT_FUNC_DECL,
 	STATEMENT_EXPR
 };
@@ -41,6 +42,7 @@ public:
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
+	static stmt_ptr make_arr_decl_stmt(ArrInfo info, expr_list vals, Position pos);
 	static stmt_ptr make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
@@ -76,6 +78,9 @@ public:
 
 	bool is_var_decl() const
 	{ return this->type_ == StmtType::STATEMENT_VAR_DECL; }
+
+	bool is_arr_decl() const
+	{ return this->type_ == StmtType::STATEMENT_ARR_DECL; }
 
 	bool is_func_decl() const
 	{ return this->type_ == StmtType::STATEMENT_FUNC_DECL; }
@@ -208,6 +213,22 @@ public:
 private:
 	VarInfo info_;
 	expr_ptr val_;
+};
+
+class ArrDeclStatement : public Statement
+{
+public:
+	ArrDeclStatement(ArrInfo info, expr_list vals, Position pos)
+		: Statement(StmtType::STATEMENT_ARR_DECL, pos), info_(info), vals_(vals) {}
+
+	const ArrInfo info() const
+	{ return this->info_; }
+
+	const expr_list vals() const
+	{ return this->vals_; }
+private:
+	ArrInfo info_;
+	expr_list vals_;
 };
 
 class FuncDeclStatement : public Statement

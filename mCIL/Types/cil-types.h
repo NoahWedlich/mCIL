@@ -37,6 +37,13 @@ struct FuncInfo
 	cilType ret_type;
 };
 
+struct ArrInfo
+{
+	std::string name;
+	cilType type;
+	int size;
+};
+
 bool operator==(cilType a, cilType b);
 
 bool operator!=(cilType a, cilType b);

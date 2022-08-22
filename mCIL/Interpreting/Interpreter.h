@@ -45,6 +45,7 @@ private:
 	Object run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
 	Object run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
 	Object run_call_expr(std::shared_ptr<CallExpression> expr);
+	Object run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr);
 	Object run_unary_expr(std::shared_ptr<UnaryExpression> expr);
 	Object run_binary_expr(std::shared_ptr<BinaryExpression> expr);
 	Object run_ternary_expr(std::shared_ptr<TernaryExpression> expr);
@@ -60,6 +61,7 @@ private:
 	void run_while_stmt(std::shared_ptr<WhileStatement> stmt);
 	void run_for_stmt(std::shared_ptr<ForStatement> stmt);
 	void run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
+	void run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt);
 	void run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 

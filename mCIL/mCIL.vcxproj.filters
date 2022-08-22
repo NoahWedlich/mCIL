@@ -143,6 +143,7 @@
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\Variables.cil" />
     <None Include="Samples\Functions.cil" />
+    <None Include="Samples\Arrays.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />
