@@ -386,12 +386,22 @@ expr_ptr Parser::assignment_expr()
     //TODO: Implement call.identifier
     if (this->match_identifier())
     {
+        expr_ptr index = Expression::make_error_expr(this->peek().position());
+        int temp_current = this->current;
+        if (this->match_symbol(Symbol::LEFT_BRACKET))
+        {
+            index = this->expression();
+            if(!this->match_symbol(Symbol::RIGHT_BRACKET))
+            { throw CILError::error(this->peek().position(), "Expected ']'"); }
+        }
         const Token token = this->peek();
         while (this->match_operator(Operator::OPERATOR_EQUAL))
         {
             expr_ptr right = this->assignment_expr();
-            return Expression::make_assignment_expr(id, right);
+            return Expression::make_assignment_expr(id, index, right);
         }
+        if(!index->is_error_expr())
+        { this->current = temp_current; }
         this->current--;
     }
     return this->ternary_expr();

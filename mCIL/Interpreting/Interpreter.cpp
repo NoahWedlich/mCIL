@@ -343,7 +343,15 @@ Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> ex
 
 	try
 	{
-		this->env_->assign_var(expr->identifier(), value);
+		if (this->env_->var_exists(expr->identifier()))
+		{
+			this->env_->assign_var(expr->identifier(), value);
+		}
+		else
+		{
+			int index = (int)this->run_expr(expr->index()).num_value();
+			this->env_->assign_arr_val(expr->identifier(), index, value);
+		}
 	}
 	catch (CILError& err)
 	{

@@ -57,6 +57,33 @@ void Environment::define_arr(Array arr)
 	this->arrays_.insert({ arr.info.name, arr });
 }
 
+void Environment::assign_arr_val(const std::string name, int index, Object value)
+{
+	if (this->arr_exists(name))
+	{
+		if (value.type() != this->get_arr(name).info.type)
+		{
+			throw CILError::error("Cannot assign value of type '$' to array '$' of type '$'",
+				value.type(), name.c_str(), this->get_arr(name).info.type);
+		}
+		if (this->get_arr(name).info.type.is_const)
+		{
+			throw CILError::error("Cannot assign to const array '$'", name.c_str());
+		}
+		if(index < 0 || index >= this->get_arr(name).info.size)
+		{ throw CILError::error("Index must be in the range [$, $[", 0, this->get_arr(name).info.size); }
+		this->arrays_.at(name).arr[index] = value;
+	}
+	else if (this->enclosing_ && this->enclosing_->arr_exists(name))
+	{
+		this->enclosing_->assign_arr_val(name, index, value);
+	}
+	else
+	{
+		throw CILError::error("Assigning to undefined array '$'", name.c_str());
+	}
+}
+
 void Environment::define_func(Function func)
 {
 	if (this->func_exists(func))

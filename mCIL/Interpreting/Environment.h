@@ -16,6 +16,7 @@ public:
 	void assign_var(const std::string name, Object value);
 
 	void define_arr(Array arr);
+	void assign_arr_val(const std::string name, int index, Object value);
 
 	void define_func(Function func);
 
