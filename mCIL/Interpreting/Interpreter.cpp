@@ -443,16 +443,22 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 	switch (val.type().type)
 	{
 	case Type::BOOL:
-		std::cout << (val.bool_value() ? "true" : "false") << std::endl;
+		std::cout << (val.bool_value() ? "true" : "false");
 		break;
 	case Type::NONE:
-		std::cout << "None" << std::endl;
+		std::cout << "None";
 		break;
 	case Type::NUM:
-		std::cout << val.num_value() << std::endl;
+		std::cout << val.num_value();
 		break;
 	case Type::STR:
-		std::cout << val.str_value() << std::endl;
+
+		if (val.str_value() == "\\n")
+		{ 
+			std::cout << std::endl;
+			break;
+		}
+		std::cout << val.str_value();
 		break;
 	case Type::ERROR:
 		break;
