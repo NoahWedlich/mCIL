@@ -452,7 +452,6 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 		std::cout << val.num_value();
 		break;
 	case Type::STR:
-
 		if (val.str_value() == "\\n")
 		{ 
 			std::cout << std::endl;

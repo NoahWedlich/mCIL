@@ -25,7 +25,7 @@ void Environment::define_var(Variable var)
 
 void Environment::assign_var(const std::string name, Object value)
 {
-	if (this->var_exists(name))
+	if (this->variables_.contains(name))
 	{
 		if (value.type() != this->get_var(name).info.type)
 		{
@@ -59,7 +59,7 @@ void Environment::define_arr(Array arr)
 
 void Environment::assign_arr_val(const std::string name, int index, Object value)
 {
-	if (this->arr_exists(name))
+	if (this->arrays_.contains(name))
 	{
 		if (value.type() != this->get_arr(name).info.type)
 		{
