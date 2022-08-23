@@ -301,7 +301,9 @@ Token Lexer::get_symbol(bool& found)
 			this->char_off_++;
 			break;
 		}
-		break;
+		current--;
+		found = false;
+		return sym;
 	default:
 		found = false;
 		return sym;
