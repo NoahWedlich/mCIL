@@ -71,5 +71,7 @@ std::string ASTPrettyPrinter::repr_ternary(std::shared_ptr<TernaryExpression> ex
 
 std::string ASTPrettyPrinter::repr_assignment(std::shared_ptr<AssignmentExpression> expr)
 {
-	return expr->identifier() + "=" + this->repr_expr(expr->expr());
+	//TODO: Fix this
+	// return expr->identifier() + "=" + this->repr_expr(expr->expr());
+	return "TODO";
 }

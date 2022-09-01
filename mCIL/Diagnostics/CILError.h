@@ -3,7 +3,6 @@
 #include "../Types/cil-types.h"
 #include "Position.h"
 #include "TokenPrinter.h"
-#include "../Interpreting/Object.h"
 #include "../Lexing/Token.h"
 
 class CILError : std::exception

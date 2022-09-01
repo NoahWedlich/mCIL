@@ -56,7 +56,7 @@ public:
 	static expr_ptr make_unary_expr(Token, expr_ptr);
 	static expr_ptr make_binary_expr(Token, expr_ptr, expr_ptr);
 	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr);
-	static expr_ptr make_assignment_expr(Token, expr_ptr, expr_ptr);
+	static expr_ptr make_assignment_expr(expr_ptr, expr_ptr);
 
 	Position pos() const
 	{ return this->pos_; }
@@ -223,19 +223,15 @@ private:
 class AssignmentExpression : public Expression
 {
 public:
-	AssignmentExpression(const std::string& identifier, expr_ptr index, expr_ptr right, Position pos)
-		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), identifier_(identifier), index_(index), expr_(right) {}
+	AssignmentExpression(expr_ptr target, expr_ptr right, Position pos)
+		: Expression(ExprType::EXPRESSION_ASSIGNMENT, pos), target_(target), expr_(right) {}
 
-	const std::string& identifier() const
-	{ return identifier_; }
-
-	const expr_ptr index() const
-	{ return index_; }
+	expr_ptr target() const
+	{ return target_; }
 
 	const expr_ptr expr() const
 	{ return expr_; }
 private:
-	const std::string& identifier_;
-	expr_ptr index_;
+	expr_ptr target_;
 	expr_ptr expr_;
 };

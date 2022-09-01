@@ -23,31 +23,6 @@ void Environment::define_var(Variable var)
 	this->variables_.insert({ var.info.name, var });
 }
 
-void Environment::assign_var(const std::string name, Object value)
-{
-	if (this->var_exists(name))
-	{
-		if (value.type() != this->get_var(name).info.type)
-		{
-			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
-				value.type(), name.c_str(), this->get_var(name).info.type);
-		}
-		if (this->get_var(name).info.type.is_const)
-		{
-			throw CILError::error("Cannot assign to const variable '$'", name.c_str());
-		}
-		this->variables_.at(name).value = value;
-	}
-	else if (this->enclosing_ && this->enclosing_->var_exists(name))
-	{
-		this->enclosing_->assign_var(name, value);
-	}
-	else
-	{
-		throw CILError::error("Assigning to undefined variable '$'", name.c_str());
-	}
-}
-
 void Environment::define_arr(Array arr)
 {
 	if (this->arrays_.contains(arr.info.name))
@@ -55,33 +30,6 @@ void Environment::define_arr(Array arr)
 		throw CILError::error("Redifinition of array '$'", arr.info.name.c_str());
 	}
 	this->arrays_.insert({ arr.info.name, arr });
-}
-
-void Environment::assign_arr_val(const std::string name, int index, Object value)
-{
-	if (this->arr_exists(name))
-	{
-		if (value.type() != this->get_arr(name).info.type)
-		{
-			throw CILError::error("Cannot assign value of type '$' to array '$' of type '$'",
-				value.type(), name.c_str(), this->get_arr(name).info.type);
-		}
-		if (this->get_arr(name).info.type.is_const)
-		{
-			throw CILError::error("Cannot assign to const array '$'", name.c_str());
-		}
-		if(index < 0 || index >= this->get_arr(name).info.size)
-		{ throw CILError::error("Index must be in the range [$, $[", 0, this->get_arr(name).info.size); }
-		this->arrays_.at(name).arr[index] = value;
-	}
-	else if (this->enclosing_ && this->enclosing_->arr_exists(name))
-	{
-		this->enclosing_->assign_arr_val(name, index, value);
-	}
-	else
-	{
-		throw CILError::error("Assigning to undefined array '$'", name.c_str());
-	}
 }
 
 void Environment::define_func(Function func)
@@ -93,7 +41,7 @@ void Environment::define_func(Function func)
 	this->functions_.insert({ func.info.name, func });
 }
 
-Variable Environment::get_var(const std::string name)
+Variable& Environment::get_var(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{
@@ -109,7 +57,7 @@ Variable Environment::get_var(const std::string name)
 	}
 }
 
-Array Environment::get_arr(const std::string name)
+Array& Environment::get_arr(const std::string name)
 {
 	if (this->arrays_.contains(name))
 	{
@@ -125,7 +73,7 @@ Array Environment::get_arr(const std::string name)
 	}
 }
 
-Function Environment::get_func(const std::string name)
+Function& Environment::get_func(const std::string name)
 {
 	if (this->functions_.contains(name))
 	{

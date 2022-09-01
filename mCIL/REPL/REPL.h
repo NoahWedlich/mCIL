@@ -6,6 +6,7 @@
 #include "../Parsing/Parser.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"
+#include "../Types/BuiltinTypes.h"
 #include "../Interpreting/Interpreter.h"
 
 class REPL

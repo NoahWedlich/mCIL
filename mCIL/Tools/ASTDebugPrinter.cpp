@@ -71,5 +71,7 @@ std::string ASTDebugPrinter::repr_ternary(std::shared_ptr<TernaryExpression> exp
 
 std::string ASTDebugPrinter::repr_assignment(std::shared_ptr<AssignmentExpression> expr)
 {
-	return "( = " + expr->identifier() + " " + this->repr_expr(expr->expr()) + " )";
+	//TODO: Fix this
+	// return "( = " + expr->identifier() + " " + this->repr_expr(expr->expr()) + " )";
+	return "TODO";
 }

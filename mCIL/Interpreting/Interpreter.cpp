@@ -49,7 +49,7 @@ void Interpreter::run_single_statement(stmt_ptr stmt)
 	}
 }
 
-Object Interpreter::run_single_expression(expr_ptr expr)
+value_ptr Interpreter::run_single_expression(expr_ptr expr)
 {
 	try
 	{
@@ -60,36 +60,16 @@ Object Interpreter::run_single_expression(expr_ptr expr)
 		if (!err.has_pos())
 		{ err.add_range(expr->pos()); }
 		ErrorManager::cil_error(err);
-		return Object::create_error_object();
+		return CIL::ErrorValue::create();
 	}
 }
 
-
-void Interpreter::assert_binary_types(Operator op, Object left, Object right, cilType left_t, cilType right_t, Position pos)
-{
-	if (left.type() != left_t)
-	{
-		if (right.type() != right_t)
-		{
-			throw CILError::error(pos, "Operands of binary '$' must be '$' and '$'. Got '$' and '$'",
-				op, left_t, right_t, left.type(), right.type());
-		}
-		throw CILError::error(pos, "left operand of binary '$' must be '$' not '$'.",
-			op, left_t, left.type());
-	}
-	if (right.type() != right_t)
-	{
-		throw CILError::error(pos, "right operand of binary '$' must be '$' not '$'.",
-			op, right_t, right.type());
-	}
-}
-
-Object Interpreter::run_expr(expr_ptr expr)
+value_ptr Interpreter::run_expr(expr_ptr expr)
 {
 	switch (expr->type())
 	{
 	case ExprType::EXPRESSION_ERROR:
-		return Object::create_error_object();
+		return CIL::ErrorValue::create();
 	case ExprType::EXPRESSION_GROUPING:
 		return this->run_grouping_expr(std::dynamic_pointer_cast<GroupingExpression, Expression>(expr));
 	case ExprType::EXPRESSION_CALL:
@@ -111,21 +91,21 @@ Object Interpreter::run_expr(expr_ptr expr)
 	}
 }
 
-Object Interpreter::run_grouping_expr(std::shared_ptr<GroupingExpression> expr)
+value_ptr Interpreter::run_grouping_expr(std::shared_ptr<GroupingExpression> expr)
 {
 	return this->run_expr(expr->expr());
 }
 
-Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
+value_ptr Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 {
 	switch (expr->primary_type())
 	{
 	case PrimaryType::PRIMARY_BOOL:
-		return Object::create_bool_object(expr->val().bool_val);
+		return CIL::Bool::create(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
-		return Object::create_num_object(expr->val().num_val);
+		return CIL::Number::create(expr->val().num_val);
 	case PrimaryType::PRIMARY_STR:
-		return Object::create_str_object(*expr->val().str_val);
+		return CIL::String::create(*expr->val().str_val);
 	case PrimaryType::PRIMARY_IDENTIFIER:
 	{
 		try
@@ -137,7 +117,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 			if (!err.has_pos())
 			{ err.add_range(expr->pos()); }
 			ErrorManager::cil_error(err);
-			return Object::create_error_object();
+			return CIL::ErrorValue::create();
 		}
 	}
 	default:
@@ -145,7 +125,7 @@ Object Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	}
 }
 
-Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
+value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 {
 	try
 	{
@@ -158,12 +138,12 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		for (int i = 0; i < func.info.args.size(); i++)
 		{
-			Object arg_val = this->run_expr(expr->args()[i]);
+			value_ptr arg_val = this->run_expr(expr->args()[i]);
 			VarInfo arg_info = func.info.args[i];
-			if (arg_val.type() != arg_info.type)
+			if (arg_val->type() != arg_info.type)
 			{
 				throw CILError::error(expr->pos(), "Argument '$' of function '$' must be '$' not '$'",
-					arg_info.name.c_str(), func.info.name.c_str(), arg_info.type, arg_val.type());
+					arg_info.name.c_str(), func.info.name.c_str(), arg_info.type, arg_val->type());
 			}
 			Variable arg{ arg_info, arg_val};
 			args.push_back(arg);
@@ -184,182 +164,116 @@ Object Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		{
 			delete this->env_;
 			this->env_ = previous;
-			if (ret.ret_val().type() != func.info.ret_type)
+			if (ret.ret_val()->type() != func.info.ret_type)
 			{
 				throw CILError::error(func.body->pos(), "Function '$' should return '$' not '$'",
-					func.info.name, func.info.ret_type, ret.ret_val().type());
+					func.info.name, func.info.ret_type, ret.ret_val()->type());
 			}
 			return ret.ret_val();
 		}
 		delete this->env_;
 		this->env_ = previous;
-		return Object::create_none_object();
+		//Change to none
+		return CIL::ErrorValue::create();
 	}
 	catch (CILError& err)
 	{
 		if (!err.has_pos())
 		{ err.add_range(expr->pos()); }
 		ErrorManager::cil_error(err);
-		return Object::create_error_object();
+		return CIL::ErrorValue::create();
 	}
 }
 
-Object Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
+value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
 {
-	Object index_num = this->run_expr(expr->index());
-	if(!index_num.is_num())
-	{ throw CILError::error(expr->pos(), "Index must be 'num' not '$'", index_num.type()); }
-	int index = (int)index_num.num_value();
+	value_ptr index_num = this->run_expr(expr->index());
+	if(index_num->type() != Type::NUM)
+	{ throw CILError::error(expr->pos(), "Index must be 'num' not '$'", index_num->type()); }
+	int index = (int)std::dynamic_pointer_cast<CIL::Number>(index_num)->value();
 	Array arr = this->env_->get_arr(expr->identifier());
 	if (index < 0 || index >= arr.info.size)
 	{ throw CILError::error(expr->pos(), "Index must be in the range [$,$[", 0, arr.info.size); }
 	return arr.arr[index];
 }
 
-Object Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
+value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
-	Object inner = this->run_expr(expr->expr());
-	if (inner.is_err())
-	{ return Object::create_error_object(); }
+	value_ptr inner = this->run_expr(expr->expr());
+	if (inner->type() == Type::ERROR)
+	{ return CIL::ErrorValue::create(); }
 	switch (expr->op())
 	{
 	case Operator::OPERATOR_BANG:
-		return Object::create_bool_object(!inner.to_bool().bool_value());
+		TRY_OP(return inner->invert(), expr->pos());
 	case Operator::OPERATOR_SUBTRACT:
-		if (inner.is_num())
-		{
-			return Object::create_num_object(-inner.num_value());
-		}
-		else
-		{ 
-			throw CILError::error(expr->pos(), "Operand of unary '$' must be '$' not '$'",
-				expr->op(), cilType(Type::NUM), inner.type());
-		}
+		TRY_OP(return inner->invert(), expr->pos());
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of unary expressions");
 	}
 }
 
-Object Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
+value_ptr Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 {
-	Object left = this->run_expr(expr->left());
-	if (left.is_err())
-	{ return Object::create_error_object(); }
-	Object right = this->run_expr(expr->right());
-	if (right.is_err())
-	{ return Object::create_error_object(); }
+	value_ptr left = this->run_expr(expr->left());
+	if (left->type() == Type::ERROR)
+	{ return CIL::ErrorValue::create(); }
+	value_ptr right = this->run_expr(expr->right());
+	if (right->type() == Type::ERROR)
+	{ return CIL::ErrorValue::create(); }
 
 	switch (expr->op())
 	{
 	case Operator::OPERATOR_ADD:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_num_object(left.num_value() + right.num_value());
+		TRY_OP(return left->add(right), expr->pos());
 	case Operator::OPERATOR_SUBTRACT:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_num_object(left.num_value() - right.num_value());
+		TRY_OP(return left->subtract(right), expr->pos());
 	case Operator::OPERATOR_MULTIPLY:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_num_object(left.num_value() * right.num_value());
+		TRY_OP(return left->multiply(right), expr->pos());
 	case Operator::OPERATOR_DIVIDE:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_num_object(left.num_value() / right.num_value());
+		TRY_OP(return left->divide(right), expr->pos());
 	case Operator::OPERATOR_GREATER:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_bool_object(left.num_value() > right.num_value());
+		TRY_OP(return left->greater(right), expr->pos());
 	case Operator::OPERATOR_LESS:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_bool_object(left.num_value() < right.num_value());
+		TRY_OP(return left->less(right), expr->pos());
 	case Operator::OPERATOR_GREATER_EQUAL:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_bool_object(left.num_value() >= right.num_value());
+		TRY_OP(return left->greater_equals(right), expr->pos());
 	case Operator::OPERATOR_LESS_EQUAL:
-		this->assert_binary_types(expr->op(), left, right, cilType(Type::NUM), cilType(Type::NUM), expr->pos());
-		return Object::create_bool_object(left.num_value() <= right.num_value());
+		TRY_OP(return left->less_equals(right), expr->pos());
 	case Operator::OPERATOR_EQUAL_EQUAL:
-	{
-		if (left.type() != right.type())
-		{
-			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
-				expr->op(), left.type(), right.type());
-		}
-		switch (left.type().type)
-		{
-		case Type::BOOL:
-			return Object::create_bool_object(left.bool_value() == right.bool_value());
-		case Type::NUM:
-			return Object::create_bool_object(left.num_value() == right.num_value());
-		case Type::STR:
-			return Object::create_bool_object(left.str_value() == right.str_value());
-		default:
-			return Object::create_bool_object(true);
-		}
-	}
+		TRY_OP(return left->equals(right), expr->pos());
 	case Operator::OPERATOR_NOT_EQUAL:
-	{
-		if (left.type() != right.type())
-		{
-			throw CILError::error(expr->pos(), "Operands for binary '$' must be the same, got '$' and '$'",
-				expr->op(), left.type(), right.type());
-		}
-		switch (left.type().type)
-		{
-		case Type::BOOL:
-			return Object::create_bool_object(left.bool_value() != right.bool_value());
-		case Type::NUM:
-			return Object::create_bool_object(left.num_value() != right.num_value());
-		case Type::STR:
-			return Object::create_bool_object(left.str_value() != right.str_value());
-		default:
-			return Object::create_bool_object(false);
-		}
-	}
+		TRY_OP(return left->not_equals(right), expr->pos());
 	case Operator::OPERATOR_AND:
-		return Object::create_bool_object(left.to_bool().bool_value() && right.to_bool().bool_value());
+		TRY_OP(return left->logical_and(right), expr->pos());
 	case Operator::OPERATOR_OR:
-		return Object::create_bool_object(left.to_bool().bool_value() || right.to_bool().bool_value());
+		TRY_OP(return left->logical_or(right), expr->pos());
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of binary expressions");
 	}
 }
 
-Object Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
+value_ptr Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 {
-	Object cond = this->run_expr(expr->cond());
-	if (cond.is_err())
-	{ return Object::create_error_object(); }
+	value_ptr cond = this->run_expr(expr->cond());
+	if (cond->type() == Type::ERROR)
+	{ return CIL::ErrorValue::create(); }
 
-	if (cond.to_bool().bool_value())
+	if (cond->to_bool())
 	{
 		return this->run_expr(expr->left());
 	}
 	return this->run_expr(expr->right());
 }
 
-Object Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)
+value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)
 {
-	Object value = this->run_expr(expr->expr());
-	if (value.is_err())
-	{ return Object::create_error_object(); }
+	value_ptr value = this->run_expr(expr->expr());
+	if (value->type() == Type::ERROR)
+	{ return CIL::ErrorValue::create(); }
 
-	try
-	{
-		if (this->env_->var_exists(expr->identifier()))
-		{
-			this->env_->assign_var(expr->identifier(), value);
-		}
-		else
-		{
-			int index = (int)this->run_expr(expr->index()).num_value();
-			this->env_->assign_arr_val(expr->identifier(), index, value);
-		}
-	}
-	catch (CILError& err)
-	{
-		if (!err.has_pos())
-		{ err.add_range(expr->pos()); }
-		throw err;
-	}
-	return value;
+	value_ptr target = this->run_expr(expr->target());
+	TRY_OP(return target->assign(value), expr->pos());
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)
@@ -433,38 +347,20 @@ void Interpreter::run_break_stmt(std::shared_ptr<BreakStatement> stmt)
 
 void Interpreter::run_return_stmt(std::shared_ptr<ReturnStatement> stmt)
 {
-	Object val = this->run_expr(stmt->expr());
+	value_ptr val = this->run_expr(stmt->expr());
 	throw Return(val);
 }
 
 void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 {
-	Object val = this->run_expr(stmt->expr());
-	switch (val.type().type)
-	{
-	case Type::BOOL:
-		std::cout << (val.bool_value() ? "true" : "false") << std::endl;
-		break;
-	case Type::NONE:
-		std::cout << "None" << std::endl;
-		break;
-	case Type::NUM:
-		std::cout << val.num_value() << std::endl;
-		break;
-	case Type::STR:
-		std::cout << val.str_value() << std::endl;
-		break;
-	case Type::ERROR:
-		break;
-	default:
-		throw CILError::error(stmt->pos(), "Cannot print value of type '$'", val.type());
-	}
+	value_ptr val = this->run_expr(stmt->expr());
+	std::cout << val->to_string() << std::endl;
 }
 
 void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 {
-	Object val = this->run_expr(stmt->cond());
-	if (val.to_bool().bool_value())
+	value_ptr val = this->run_expr(stmt->cond());
+	if (val->to_bool())
 	{
 		this->run_stmt(stmt->if_branch());
 	}
@@ -474,7 +370,7 @@ void Interpreter::run_while_stmt(std::shared_ptr<WhileStatement> stmt)
 {
 	try
 	{
-		while (this->run_expr(stmt->cond()).to_bool().bool_value())
+		while (this->run_expr(stmt->cond())->to_bool())
 		{
 			this->run_stmt(stmt->inner());
 		}
@@ -490,7 +386,7 @@ void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 	{
 		for (
 			this->run_stmt(stmt->init());
-			this->run_expr(stmt->cond()).to_bool().bool_value();
+			this->run_expr(stmt->cond())->to_bool();
 			this->run_expr(stmt->exec())
 			)
 		{
@@ -504,12 +400,12 @@ void Interpreter::run_for_stmt(std::shared_ptr<ForStatement> stmt)
 
 void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
-	Object value = this->run_expr(stmt->val());
+	value_ptr value = this->run_expr(stmt->val());
 
-	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value.type())
+	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type())
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
-			stmt->info().type, value.type());
+			stmt->info().type, value->type());
 	}
 	
 	Variable var{ stmt->info(), value};
@@ -524,14 +420,14 @@ void Interpreter::run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt)
 		throw CILError::error(stmt->pos(), "Array of size '$' cannot be initialized with '$' elements",
 			stmt->info().size, stmt->vals().size());
 	}
-	std::vector<Object> vals{};
+	std::vector<value_ptr> vals{};
 	for (expr_ptr expr : stmt->vals())
 	{
-		Object val = this->run_expr(expr);
-		if (val.type() != stmt->info().type)
+		value_ptr val = this->run_expr(expr);
+		if (val->type() != stmt->info().type)
 		{
 			throw CILError::error(stmt->pos(), "Cannot initizalize array of type '$' with value of type '$'",
-				stmt->info().type, val.type());
+				stmt->info().type, val->type());
 		}
 		vals.push_back(val);
 	}
