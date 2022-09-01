@@ -31,10 +31,10 @@ void REPL::run()
 		expr_ptr expr = parser.parse_single_expr();
 		if (!expr->is_error_expr())
 		{
-			Object value = interpreter.run_single_expression(expr);
-			if (!value.is_err())
+			value_ptr value = interpreter.run_single_expression(expr);
+			if (value->type() != Type::ERROR)
 			{
-				std::cout << value.to_string() << std::endl;
+				std::cout << value->to_string() << std::endl;
 				continue;
 			}
 		}

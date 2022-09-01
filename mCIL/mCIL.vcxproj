@@ -153,6 +153,7 @@
     <ClCompile Include="Types\Value.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Types\BuiltinTypes.h" />
     <ClInclude Include="Types\ErrorValue.h" />
     <ClInclude Include="Types\String.h" />
     <ClInclude Include="Types\Bool.h" />

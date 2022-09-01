@@ -2,7 +2,7 @@
 #include "../cil-system.h"
 #include "../Types/RuntimeObjects.h"
 #include "../Diagnostics/CILError.h"
-#include "Object.h"
+#include "../Types/Value.h"
 
 class Environment
 {
@@ -13,10 +13,10 @@ public:
 	~Environment();
 	
 	void define_var(Variable var);
-	void assign_var(const std::string name, Object value);
+	void assign_var(const std::string name, value_ptr value);
 
 	void define_arr(Array arr);
-	void assign_arr_val(const std::string name, int index, Object value);
+	void assign_arr_val(const std::string name, int index, value_ptr value);
 
 	void define_func(Function func);
 

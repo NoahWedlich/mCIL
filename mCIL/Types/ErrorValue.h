@@ -3,7 +3,7 @@
 
 namespace CIL
 {
-	class ValueError : public Value
+	class ErrorValue : public Value
 	{
 	public:
 		static value_ptr create();
@@ -12,6 +12,6 @@ namespace CIL
 		virtual std::string to_debug_string() override;
 		virtual const bool to_bool() override;
 	private:
-		ValueError();
+		ErrorValue();
 	};
 }

@@ -23,14 +23,14 @@ void Environment::define_var(Variable var)
 	this->variables_.insert({ var.info.name, var });
 }
 
-void Environment::assign_var(const std::string name, Object value)
+void Environment::assign_var(const std::string name, value_ptr value)
 {
 	if (this->var_exists(name))
 	{
-		if (value.type() != this->get_var(name).info.type)
+		if (value->type() != this->get_var(name).info.type)
 		{
 			throw CILError::error("Cannot assign value of type '$' to variable '$' of type '$'", 
-				value.type(), name.c_str(), this->get_var(name).info.type);
+				value->type(), name.c_str(), this->get_var(name).info.type);
 		}
 		if (this->get_var(name).info.type.is_const)
 		{
@@ -57,14 +57,14 @@ void Environment::define_arr(Array arr)
 	this->arrays_.insert({ arr.info.name, arr });
 }
 
-void Environment::assign_arr_val(const std::string name, int index, Object value)
+void Environment::assign_arr_val(const std::string name, int index, value_ptr value)
 {
 	if (this->arr_exists(name))
 	{
-		if (value.type() != this->get_arr(name).info.type)
+		if (value->type() != this->get_arr(name).info.type)
 		{
 			throw CILError::error("Cannot assign value of type '$' to array '$' of type '$'",
-				value.type(), name.c_str(), this->get_arr(name).info.type);
+				value->type(), name.c_str(), this->get_arr(name).info.type);
 		}
 		if (this->get_arr(name).info.type.is_const)
 		{

@@ -1,23 +1,34 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Types/cil-types.h"
-#include "Object.h"
+#include "../Types/BuiltinTypes.h"
 #include "Environment.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
 
+#define TRY_OP(op, pos) \
+try                     \
+{                       \
+	op;                 \
+}                       \
+catch(CILError& err)    \
+{                       \
+	err.add_range(pos); \
+	throw err;          \
+}                       \
+
 class Return : public std::exception
 {
 public:
-	Return(Object ret_val)
+	Return(value_ptr ret_val)
 		: ret_val_(ret_val) {}
 
-	Object ret_val()
+	value_ptr ret_val()
 	{ return this->ret_val_; }
 private:
-	Object ret_val_;
+	value_ptr ret_val_;
 };
 
 class Break : public std::exception
@@ -35,21 +46,19 @@ public:
 	void run();
 
 	void run_single_statement(stmt_ptr stmt);
-	Object run_single_expression(expr_ptr expr);
+	value_ptr run_single_expression(expr_ptr expr);
 
 private:
-	void assert_binary_types(Operator op, Object left, Object right, cilType left_t, cilType right_t, Position pos);
+	value_ptr run_expr(expr_ptr expr);
 
-	Object run_expr(expr_ptr expr);
-
-	Object run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
-	Object run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
-	Object run_call_expr(std::shared_ptr<CallExpression> expr);
-	Object run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr);
-	Object run_unary_expr(std::shared_ptr<UnaryExpression> expr);
-	Object run_binary_expr(std::shared_ptr<BinaryExpression> expr);
-	Object run_ternary_expr(std::shared_ptr<TernaryExpression> expr);
-	Object run_assignment_expr(std::shared_ptr<AssignmentExpression> expr);
+	value_ptr run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
+	value_ptr run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
+	value_ptr run_call_expr(std::shared_ptr<CallExpression> expr);
+	value_ptr run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr);
+	value_ptr run_unary_expr(std::shared_ptr<UnaryExpression> expr);
+	value_ptr run_binary_expr(std::shared_ptr<BinaryExpression> expr);
+	value_ptr run_ternary_expr(std::shared_ptr<TernaryExpression> expr);
+	value_ptr run_assignment_expr(std::shared_ptr<AssignmentExpression> expr);
 
 	void run_stmt(stmt_ptr stmt);
 
