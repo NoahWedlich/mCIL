@@ -272,25 +272,8 @@ value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression>
 	if (value->type() == Type::ERROR)
 	{ return CIL::ErrorValue::create(); }
 
-	try
-	{
-		if (this->env_->var_exists(expr->identifier()))
-		{
-			this->env_->assign_var(expr->identifier(), value);
-		}
-		else
-		{
-			int index = (int)std::dynamic_pointer_cast<CIL::Number>(this->run_expr(expr->index()))->value();
-			this->env_->assign_arr_val(expr->identifier(), index, value);
-		}
-	}
-	catch (CILError& err)
-	{
-		if (!err.has_pos())
-		{ err.add_range(expr->pos()); }
-		throw err;
-	}
-	return value;
+	value_ptr target = this->run_expr(expr->target());
+	TRY_OP(return target->assign(value), expr->pos());
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)

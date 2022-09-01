@@ -66,8 +66,8 @@ expr_ptr Expression::make_ternary_expr(expr_ptr cond, expr_ptr left, expr_ptr ri
 	return expr_ptr(new TernaryExpression(cond, left, right, pos));
 }
 
-expr_ptr Expression::make_assignment_expr(Token token, expr_ptr index, expr_ptr right)
+expr_ptr Expression::make_assignment_expr(expr_ptr target, expr_ptr right)
 {
-	Position pos{ token.position(), right->pos() };
-	return expr_ptr(new AssignmentExpression(token.identifier(), index, right, pos));
+	Position pos{target->pos(), right->pos()};
+	return expr_ptr(new AssignmentExpression(target, right, pos));
 }
