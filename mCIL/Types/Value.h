@@ -21,7 +21,8 @@ namespace CIL
 
 		virtual value_ptr invert();
 		virtual value_ptr negate();
-		//TODO: Increment and decrement
+		virtual value_ptr increment();
+		virtual value_ptr decrement();
 		//TODO: Call operator
 		//TODO: Access operator
 

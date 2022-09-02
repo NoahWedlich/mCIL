@@ -208,6 +208,10 @@ value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 		TRY_OP(return inner->invert(), expr->pos());
 	case Operator::OPERATOR_SUBTRACT:
 		TRY_OP(return inner->invert(), expr->pos());
+	case Operator::OPERATOR_INCREMENT:
+		TRY_OP(return inner->increment(), expr->pos());
+	case Operator::OPERATOR_DECREMENT:
+		TRY_OP(return inner->decrement(), expr->pos());
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of unary expressions");
 	}

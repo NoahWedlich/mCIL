@@ -322,13 +322,19 @@ expr_ptr Parser::array_access_expr()
 
 expr_ptr Parser::unary_expr()
 {
-    const Token op_token = this->peek();
+    Token op_token = this->peek();
     if (this->match_operators(Operator::OPERATOR_BANG, Operator::OPERATOR_SUBTRACT))
     {
         expr_ptr right = this->unary_expr();
         return Expression::make_unary_expr(op_token, right);
     }
-    return this->array_access_expr();
+    expr_ptr inner = array_access_expr();
+    op_token = this->peek();
+    if (match_operators(Operator::OPERATOR_INCREMENT, Operator::OPERATOR_DECREMENT))
+    {
+        return Expression::make_unary_expr(op_token, inner);
+    }
+    return inner;
 }
 
 expr_ptr Parser::factor_expr()

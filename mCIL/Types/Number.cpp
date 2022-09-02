@@ -25,6 +25,18 @@ value_ptr CIL::Number::negate()
 	return CIL::Number::create(-value_);
 }
 
+value_ptr CIL::Number::increment()
+{
+	value_++;
+	return CIL::Number::create(value_, type_.is_const);
+}
+
+value_ptr CIL::Number::decrement()
+{
+	value_--;
+	return CIL::Number::create(value_, type_.is_const);
+}
+
 value_ptr CIL::Number::add(value_ptr other)
 {
 	if (other->is_type(Type::NUM))

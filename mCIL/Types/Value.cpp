@@ -10,6 +10,16 @@ value_ptr CIL::Value::negate()
 	throw unary_op_not_implemented("-");
 }
 
+value_ptr CIL::Value::increment()
+{
+	throw unary_op_not_implemented("++");
+}
+
+value_ptr CIL::Value::decrement()
+{
+	throw unary_op_not_implemented("--");
+}
+
 value_ptr CIL::Value::add(value_ptr other)
 {
 	throw binary_op_not_implemented("+", other);

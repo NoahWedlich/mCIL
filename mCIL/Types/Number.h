@@ -13,6 +13,8 @@ namespace CIL
 
 		virtual value_ptr invert() override;
 		virtual value_ptr negate() override;
+		virtual value_ptr increment() override;
+		virtual value_ptr decrement() override;
 
 		virtual value_ptr add(value_ptr) override;
 		virtual value_ptr subtract(value_ptr) override;

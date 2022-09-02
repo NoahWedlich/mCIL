@@ -321,10 +321,22 @@ Token Lexer::get_operator(bool& found)
 	{
 	case '+':
 		current++;
+		if (*current == '+')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_INCREMENT, "++", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_ADD, "+");
 		break;
 	case '-':
 		current++;
+		if (*current == '-')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_DECREMENT, "--", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_SUBTRACT, "-");
 		break;
 	case '*':
