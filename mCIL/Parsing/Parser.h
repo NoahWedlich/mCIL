@@ -28,6 +28,13 @@ private:
 	bool atEnd()
 	{ return this->peek().is_EOF(); }
 
+	void expect_number();
+	void expect_str();
+	void expect_identifier();
+	void expect_symbol(Symbol symbol);
+	void expect_op(Operator op);
+	void expect_keyword(Keyword keyword);
+
 	void synchronize();
 
 	Position pos_from_tokens(Token start, Token end);
@@ -44,8 +51,6 @@ private:
 	bool match_keyword(Keyword key);
 	
 	bool get_type(cilType& type);
-
-	void consume_semicolon(Position pos);
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
