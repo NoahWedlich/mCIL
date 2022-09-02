@@ -58,7 +58,7 @@ void Parser::synchronize()
 
 Position Parser::pos_from_tokens(Token start, Token end)
 {
-    return Position(start.position().start_pos(), end.position().end_pos());
+    return Position(start.pos().start_pos(), end.pos().end_pos());
 }
 
 Position Parser::pos_from_exprs(expr_ptr start, expr_ptr end)
@@ -186,10 +186,10 @@ expr_ptr Parser::grouping_expr()
         expr_ptr expr = this->expression();
         const Token right_paren = this->peek();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
-        { throw CILError::error(right_paren.position(), "Expected ')'"); }
+        { throw CILError::error(right_paren.pos(), "Expected ')'"); }
         return Expression::make_grouping_expr(expr, this->pos_from_tokens(left_paren, right_paren));
     }
-    throw CILError::error(left_paren.position(), "Expected an expression");
+    throw CILError::error(left_paren.pos(), "Expected an expression");
 }
 
 expr_ptr Parser::primary_expr()
@@ -233,7 +233,7 @@ expr_ptr Parser::call_expr()
             while (true)
             {
                 if (this->atEnd())
-                { throw CILError::error(l_paren.position(), "Exptected ')'"); }
+                { throw CILError::error(l_paren.pos(), "Exptected ')'"); }
                 expr_ptr arg = this->expression();
                 args.push_back(arg);
                 const Token comma = this->peek();
@@ -242,7 +242,7 @@ expr_ptr Parser::call_expr()
                 {
                     if(this->match_symbol(Symbol::RIGHT_PAREN))
                     { break; }
-                    throw CILError::error(comma.position(), "Exptected ','");
+                    throw CILError::error(comma.pos(), "Exptected ','");
                 }
             }
             return Expression::make_call_expr(id, args, this->pos_from_tokens(id, r_paren));
@@ -408,18 +408,18 @@ expr_ptr Parser::expression()
 stmt_ptr Parser::expr_stmt()
 {
     const Token token = this->peek();
-    expr_ptr expr = Expression::make_error_expr(token.position());
+    expr_ptr expr = Expression::make_error_expr(token.pos());
     try
     {
         expr = this->assignment_expr();
     }
     catch(CILError)
     {
-        throw CILError::error(token.position(), "Expected a statement");
+        throw CILError::error(token.pos(), "Expected a statement");
     }
     const Token semicolon = this->peek();
     this->consume_semicolon(expr->pos());
-    return Statement::make_expr_stmt(expr, Position{ expr->pos(), semicolon.position() });
+    return Statement::make_expr_stmt(expr, Position{ expr->pos(), semicolon.pos() });
 }
 
 stmt_ptr Parser::block_stmt()
@@ -438,7 +438,7 @@ stmt_ptr Parser::block_stmt()
                 return Statement::make_block_stmt(inner, this->pos_from_tokens(l_brace, r_brace));
             }
         }
-        throw CILError::error(r_brace.position(), "Expected '}'");
+        throw CILError::error(r_brace.pos(), "Expected '}'");
     }
     return this->expr_stmt();
 }
@@ -449,9 +449,9 @@ stmt_ptr Parser::break_stmt()
     if (this->match_keyword(Keyword::KEYWORD_BREAK))
     {
         if (this->loop_level < 1)
-        { throw CILError::error(break_keyword.position(), "'break' can only be used inside a loop body"); }
+        { throw CILError::error(break_keyword.pos(), "'break' can only be used inside a loop body"); }
         const Token semicolon = this->peek();
-        this->consume_semicolon(break_keyword.position());
+        this->consume_semicolon(break_keyword.pos());
         return Statement::make_break_stmt(this->pos_from_tokens(break_keyword, semicolon));
     }
     return this->block_stmt();
@@ -463,7 +463,7 @@ stmt_ptr Parser::return_stmt()
     if (this->match_keyword(Keyword::KEYWORD_RETURN))
     {
         if(this->func_level < 1)
-        { throw CILError::error(ret_keyword.position(), "'return' can only be used inside a function body"); }
+        { throw CILError::error(ret_keyword.pos(), "'return' can only be used inside a function body"); }
         expr_ptr expr = this->expression();
         const Token semicolon = this->peek();
         this->consume_semicolon(expr->pos());
@@ -492,12 +492,12 @@ stmt_ptr Parser::if_stmt()
     {
         if (!this->match_symbol(Symbol::LEFT_PAREN))
             //TODO: Extract into function
-        { throw CILError::error(if_keyword.position(), "Expected '('"); }
+        { throw CILError::error(if_keyword.pos(), "Expected '('"); }
         expr_ptr cond = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         { throw CILError::error(cond->pos(), "Expected ')'"); }
         stmt_ptr if_branch = this->statement();
-        return Statement::make_if_stmt(cond, if_branch, Position{ if_keyword.position(), if_branch->pos() });
+        return Statement::make_if_stmt(cond, if_branch, Position{ if_keyword.pos(), if_branch->pos() });
     }
     return this->print_stmt();
 }
@@ -508,14 +508,14 @@ stmt_ptr Parser::while_stmt()
     if (this->match_keyword(Keyword::KEYWORD_WHILE))
     {
         if (!this->match_symbol(Symbol::LEFT_PAREN))
-        { throw CILError::error(while_keyword.position(), "Expected '('"); }
+        { throw CILError::error(while_keyword.pos(), "Expected '('"); }
         expr_ptr cond = this->expression();
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
         { throw CILError::error(cond->pos(), "Expected ')'"); }
         this->loop_level++;
         stmt_ptr inner = this->statement();
         this->loop_level--;
-        return Statement::make_while_stmt(cond, inner, Position{ while_keyword.position(), inner->pos() });
+        return Statement::make_while_stmt(cond, inner, Position{ while_keyword.pos(), inner->pos() });
     }
     return this->if_stmt();
 }
@@ -526,7 +526,7 @@ stmt_ptr Parser::for_stmt()
     if (this->match_keyword(Keyword::KEYWORD_FOR))
     {
         if (!this->match_symbol(Symbol::LEFT_PAREN))
-        { throw CILError::error(for_keyword.position(), "Expected '('"); }
+        { throw CILError::error(for_keyword.pos(), "Expected '('"); }
         stmt_ptr init = this->statement();
         expr_ptr cond = this->expression();
         this->consume_semicolon(cond->pos());
@@ -536,7 +536,7 @@ stmt_ptr Parser::for_stmt()
         this->loop_level++;
         stmt_ptr inner = this->statement();
         this->loop_level--;
-        return Statement::make_for_stmt(init, cond, exec, inner, Position{ for_keyword.position(), inner->pos() });
+        return Statement::make_for_stmt(init, cond, exec, inner, Position{ for_keyword.pos(), inner->pos() });
     }
     return this->while_stmt();
 }
@@ -549,11 +549,11 @@ stmt_ptr Parser::var_decl_stmt()
     {
         const Token name = this->peek();
         if (!this->match_identifier())
-        { throw CILError::error(name.position(), "Expected variable name"); }
+        { throw CILError::error(name.pos(), "Expected variable name"); }
         if (!this->match_operator(Operator::OPERATOR_EQUAL))
         {
             //TODO: Change this
-            CILError::error(name.position(), "Variables must be initialized for now");
+            CILError::error(name.pos(), "Variables must be initialized for now");
         }
         expr_ptr val = this->expression();
         const Token semicolon = this->peek();
@@ -578,35 +578,35 @@ stmt_ptr Parser::arr_decl_stmt()
         {
             const Token size = this->peek();
             if(!this->match_number())
-            { throw CILError::error(size.position(), "Expected size of the array"); }
+            { throw CILError::error(size.pos(), "Expected size of the array"); }
             if(!this->match_symbol(Symbol::RIGHT_BRACKET))
-            { throw CILError::error(size.position(), "Expected ']'"); }
+            { throw CILError::error(size.pos(), "Expected ']'"); }
             const Token name = this->peek();
             if (!this->match_identifier())
-            { throw CILError::error(size.position(), "Expected name of the array"); }
+            { throw CILError::error(size.pos(), "Expected name of the array"); }
             if (!this->match_operator(Operator::OPERATOR_EQUAL))
             {
                 //TODO: Change this
-                CILError::error(name.position(), "Arrays must be initialized for now");
+                CILError::error(name.pos(), "Arrays must be initialized for now");
             }
             if (!this->match_symbol(Symbol::LEFT_BRACE))
-            { throw CILError::error(size.position(), "Expected '{'"); }
+            { throw CILError::error(size.pos(), "Expected '{'"); }
             expr_list vals{};
             while (!this->match_symbol(Symbol::RIGHT_BRACE))
             {
                 if (this->atEnd())
-                { throw CILError::error(this->peek().position(), "Expected '}'"); }
+                { throw CILError::error(this->peek().pos(), "Expected '}'"); }
                 expr_ptr val = this->expression();
                 vals.push_back(val);
                 if (!this->match_symbol(Symbol::COMMA))
                 {
                     if (!this->match_symbol(Symbol::RIGHT_BRACE))
-                    { throw CILError::error(this->peek().position(), "Expected ','"); }
+                    { throw CILError::error(this->peek().pos(), "Expected ','"); }
                     break;
                 }
             }
             const Token semicolon = this->peek();
-            this->consume_semicolon(this->peek().position());
+            this->consume_semicolon(this->peek().pos());
 
             ArrInfo info
             {
@@ -629,36 +629,36 @@ stmt_ptr Parser::func_decl_stmt()
     {
         const Token name = this->peek();
         if (!this->match_identifier())
-        { throw CILError::error(name.position(), "Expected function name"); }
+        { throw CILError::error(name.pos(), "Expected function name"); }
         if (!this->match_symbol(Symbol::LEFT_PAREN))
-        { throw CILError::error(name.position(), "Expected '('"); }
+        { throw CILError::error(name.pos(), "Expected '('"); }
         std::vector<VarInfo> args{};
         while (!this->match_symbol(Symbol::RIGHT_PAREN))
         {
             if(this->atEnd())
-            { throw CILError::error(this->peek().position(), "Expected ')'"); }
+            { throw CILError::error(this->peek().pos(), "Expected ')'"); }
             cilType arg_type;
             const Token arg_type_t = this->peek();
             if (!this->get_type(arg_type))
-            { throw CILError::error(arg_type_t.position(), "Expected argument type"); }
+            { throw CILError::error(arg_type_t.pos(), "Expected argument type"); }
             const Token arg_name = this->peek();
             if (!this->match_identifier())
-            { throw CILError::error(arg_name.position(), "Expected argument name"); }
+            { throw CILError::error(arg_name.pos(), "Expected argument name"); }
             args.push_back(VarInfo{ arg_name.identifier(), arg_type});
             if (!this->match_symbol(Symbol::COMMA))
             {
                 if (!this->match_symbol(Symbol::RIGHT_PAREN))
-                { throw CILError::error(this->peek().position(), "Expected ','"); }
+                { throw CILError::error(this->peek().pos(), "Expected ','"); }
                 break;
             }
         }
         if (!this->match_symbol(Symbol::RIGHT_PAREN))
-        { throw CILError::error(name.position(), "Expected ')'"); }
+        { throw CILError::error(name.pos(), "Expected ')'"); }
         cilType ret_type = cilType(Type::NONE);
         if (this->match_symbol(Symbol::ARROW))
         {
             if(!this->get_type(ret_type))
-            { throw CILError::error(this->peek().position(), "Expected return type"); }
+            { throw CILError::error(this->peek().pos(), "Expected return type"); }
         }
 
         FuncInfo info
@@ -672,7 +672,7 @@ stmt_ptr Parser::func_decl_stmt()
         stmt_ptr body = this->statement();
         this->func_level--;
 
-        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.position(), body->pos() });
+        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
     }
     return this->arr_decl_stmt();
 }

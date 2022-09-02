@@ -79,7 +79,7 @@ public:
 	Token& operator=(const Token&);
 
 	TokenType type() const;
-	Position position() const;
+	Position pos() const;
 	const std::string& lexeme() const;
 
 	bool is_invalid() const;

@@ -64,7 +64,7 @@ TokenType Token::type() const
 	return this->type_;
 }
 
-Position Token::position() const
+Position Token::pos() const
 {
 	return this->pos_;
 }
