@@ -363,6 +363,10 @@ void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 	{
 		this->run_stmt(stmt->if_branch());
 	}
+	else if (stmt->else_branch() != nullptr)
+	{
+		run_stmt(stmt->else_branch());
+	}
 }
 
 void Interpreter::run_while_stmt(std::shared_ptr<WhileStatement> stmt)

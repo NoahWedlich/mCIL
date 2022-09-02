@@ -544,7 +544,14 @@ stmt_ptr Parser::if_stmt()
         expr_ptr cond = this->expression();
         expect_symbol(Symbol::RIGHT_PAREN);
         stmt_ptr if_branch = this->statement();
-        return Statement::make_if_stmt(cond, if_branch, Position{ if_keyword.pos(), if_branch->pos() });
+        stmt_ptr else_branch = nullptr;
+
+        if (match_keyword(Keyword::KEYWORD_ELSE))
+        {
+            else_branch = statement();
+        }
+
+        return Statement::make_if_stmt(cond, if_branch, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
     }
     return this->print_stmt();
 }

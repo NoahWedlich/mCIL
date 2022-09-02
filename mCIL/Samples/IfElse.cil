@@ -1,0 +1,12 @@
+
+
+num i = 1;
+
+if (i < 0)
+{
+	print "If";
+}
+else
+{
+	print "Else";
+}

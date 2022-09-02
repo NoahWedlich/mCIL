@@ -38,7 +38,7 @@ public:
 	static stmt_ptr make_return_stmt(expr_ptr expr, Position pos);
 	static stmt_ptr make_print_stmt(expr_ptr expr, Position pos);
 	//TODO: make elif and else
-	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, Position pos);
+	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos);
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
@@ -146,17 +146,21 @@ private:
 class IfStatement : public Statement
 {
 public:
-	IfStatement(expr_ptr cond, stmt_ptr if_branch, Position pos)
-		: Statement(StmtType::STATEMENT_IF, pos), cond_(cond), if_branch_(if_branch) {}
+	IfStatement(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos)
+		: Statement(StmtType::STATEMENT_IF, pos), cond_(cond), if_branch_(if_branch), else_branch_(else_branch) {}
 
 	const expr_ptr cond() const
 	{ return cond_; }
 
 	const stmt_ptr if_branch() const
 	{ return if_branch_; }
+
+	const stmt_ptr else_branch() const
+	{ return else_branch_; }
 private:
 	expr_ptr cond_;
 	stmt_ptr if_branch_;
+	stmt_ptr else_branch_;
 };
 
 class WhileStatement : public Statement

@@ -183,6 +183,7 @@
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\Functions.cil" />
+    <None Include="Samples\IfElse.cil" />
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\Sample.cil" />
     <None Include="Samples\Variables.cil" />
