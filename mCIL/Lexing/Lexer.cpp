@@ -408,9 +408,8 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		this->char_off_ = current - this->current_line_;
-		CILError::error(this->pos(1), "Invalid operator '&' did you mean '&&'");
-		return op;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_AND, "&");
+		break;
 	}
 	case '|':
 		current++;
@@ -420,9 +419,16 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		this->char_off_ = current - this->current_line_;
-		CILError::error(this->pos(1), "Invalid operator '|' did you mean '||'");
-		return op;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_OR, "|");
+		break;
+	case '~':
+		current++;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_NOT, "~");
+		break;
+	case '^':
+		current++;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_XOR, "^");
+		break;
 	default:
 		found = false;
 		return op;

@@ -62,6 +62,7 @@ private:
 	expr_ptr bitshift_expr();
 	expr_ptr comparison_expr();
 	expr_ptr equality_expr();
+	expr_ptr bitwise_expr();
 	expr_ptr logical_and_expr();
 	expr_ptr logical_or_expr();
 	expr_ptr ternary_expr();

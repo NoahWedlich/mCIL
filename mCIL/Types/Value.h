@@ -31,6 +31,11 @@ namespace CIL
 		virtual value_ptr multiply(value_ptr);
 		virtual value_ptr divide(value_ptr);
 
+		virtual value_ptr bitwise_not();
+		virtual value_ptr bitwise_and(value_ptr);
+		virtual value_ptr bitwise_or(value_ptr);
+		virtual value_ptr bitwise_xor(value_ptr);
+
 		virtual value_ptr left_bitshift(value_ptr);
 		virtual value_ptr right_bitshift(value_ptr);
 

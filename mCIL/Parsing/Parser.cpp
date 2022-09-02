@@ -323,7 +323,8 @@ expr_ptr Parser::array_access_expr()
 expr_ptr Parser::unary_expr()
 {
     Token op_token = this->peek();
-    if (this->match_operators(Operator::OPERATOR_BANG, Operator::OPERATOR_SUBTRACT))
+    if (this->match_operators(Operator::OPERATOR_BANG, Operator::OPERATOR_SUBTRACT) ||
+        this->match_operator(Operator::OPERATOR_BITWISE_NOT))
     {
         expr_ptr right = this->unary_expr();
         return Expression::make_unary_expr(op_token, right);
@@ -403,13 +404,27 @@ expr_ptr Parser::equality_expr()
     return left;
 }
 
-expr_ptr Parser::logical_and_expr()
+expr_ptr Parser::bitwise_expr()
 {
     expr_ptr left = this->equality_expr();
     Token token = this->peek();
-    while (this->match_operator(Operator::OPERATOR_AND))
+    while (this->match_operators(Operator::OPERATOR_BITWISE_AND, Operator::OPERATOR_BITWISE_XOR) ||
+           this->match_operator(Operator::OPERATOR_BITWISE_OR))
     {
         expr_ptr right = this->equality_expr();
+        left = Expression::make_binary_expr(token, left, right);
+        token = this->peek();
+    }
+    return left;
+}
+
+expr_ptr Parser::logical_and_expr()
+{
+    expr_ptr left = this->bitwise_expr();
+    Token token = this->peek();
+    while (this->match_operator(Operator::OPERATOR_AND))
+    {
+        expr_ptr right = this->bitwise_expr();
         left = Expression::make_binary_expr(token, left, right);
         token = this->peek();
     }

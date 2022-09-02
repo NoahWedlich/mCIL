@@ -40,6 +40,26 @@ value_ptr CIL::Value::divide(value_ptr other)
 	throw binary_op_not_implemented("/", other);
 }
 
+value_ptr CIL::Value::bitwise_not()
+{
+	throw unary_op_not_implemented("~");
+}
+
+value_ptr CIL::Value::bitwise_and(value_ptr other)
+{
+	throw binary_op_not_implemented("&", other);
+}
+
+value_ptr CIL::Value::bitwise_or(value_ptr other)
+{
+	throw binary_op_not_implemented("|", other);
+}
+
+value_ptr CIL::Value::bitwise_xor(value_ptr other)
+{
+	throw binary_op_not_implemented("^", other);
+}
+
 value_ptr CIL::Value::left_bitshift(value_ptr other)
 {
 	throw binary_op_not_implemented("<<", other);

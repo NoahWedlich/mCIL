@@ -212,6 +212,8 @@ value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 		TRY_OP(return inner->increment(), expr->pos());
 	case Operator::OPERATOR_DECREMENT:
 		TRY_OP(return inner->decrement(), expr->pos());
+	case Operator::OPERATOR_BITWISE_NOT:
+		TRY_OP(return inner->bitwise_not(), expr->pos());
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of unary expressions");
 	}
@@ -256,6 +258,12 @@ value_ptr Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		TRY_OP(return left->logical_and(right), expr->pos());
 	case Operator::OPERATOR_OR:
 		TRY_OP(return left->logical_or(right), expr->pos());
+	case Operator::OPERATOR_BITWISE_AND:
+		TRY_OP(return left->bitwise_and(right), expr->pos());
+	case Operator::OPERATOR_BITWISE_OR:
+		TRY_OP(return left->bitwise_or(right), expr->pos());
+	case Operator::OPERATOR_BITWISE_XOR:
+		TRY_OP(return left->bitwise_xor(right), expr->pos());
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of binary expressions");
 	}
