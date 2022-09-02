@@ -21,6 +21,9 @@ namespace CIL
 		virtual value_ptr multiply(value_ptr) override;
 		virtual value_ptr divide(value_ptr) override;
 
+		virtual value_ptr left_bitshift(value_ptr) override;
+		virtual value_ptr right_bitshift(value_ptr) override;
+
 		virtual value_ptr assign(value_ptr) override;
 
 		virtual value_ptr equals(value_ptr) override;

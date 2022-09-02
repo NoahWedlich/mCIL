@@ -363,14 +363,27 @@ expr_ptr Parser::sum_expr()
     return left;
 }
 
-expr_ptr Parser::comparison_expr()
+expr_ptr Parser::bitshift_expr()
 {
     expr_ptr left = this->sum_expr();
+    Token token = this->peek();
+    while (this->match_operators(Operator::OPERATOR_LEFT_BITSHIFT, Operator::OPERATOR_RIGHT_BITSHIFT))
+    {
+        expr_ptr right = this->sum_expr();
+        left = Expression::make_binary_expr(token, left, right);
+        token = this->peek();
+    }
+    return left;
+}
+
+expr_ptr Parser::comparison_expr()
+{
+    expr_ptr left = this->bitshift_expr();
     Token token = this->peek();
     while (this->match_operators(Operator::OPERATOR_GREATER, Operator::OPERATOR_GREATER_EQUAL) ||
            this->match_operators(Operator::OPERATOR_LESS   , Operator::OPERATOR_LESS_EQUAL   ))
     {
-        expr_ptr right = this->sum_expr();
+        expr_ptr right = this->bitshift_expr();
         left = Expression::make_binary_expr(token, left, right);
         token = this->peek();
     }

@@ -1,8 +1,6 @@
 
 
-num i = 0;
+num i = 2;
 
-while (i < 10)
-{
-	print i++;
-}
+print (i << 1);
+print (i >> 1);

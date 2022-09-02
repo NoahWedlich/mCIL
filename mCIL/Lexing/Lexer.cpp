@@ -375,6 +375,12 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
+		if (*current == '<')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_LEFT_BITSHIFT, "<<", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_LESS, "<");
 		break;
 	case '>':
@@ -382,6 +388,12 @@ Token Lexer::get_operator(bool& found)
 		if (*current == '=')
 		{
 			op = this->create_operator_token(Operator::OPERATOR_GREATER_EQUAL, ">=", 2);
+			current++;
+			break;
+		}
+		if (*current == '>')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_RIGHT_BITSHIFT, ">>", 2);
 			current++;
 			break;
 		}

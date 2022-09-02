@@ -59,6 +59,7 @@ private:
 	expr_ptr unary_expr();
 	expr_ptr factor_expr();
 	expr_ptr sum_expr();
+	expr_ptr bitshift_expr();
 	expr_ptr comparison_expr();
 	expr_ptr equality_expr();
 	expr_ptr logical_and_expr();

@@ -236,6 +236,10 @@ value_ptr Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 		TRY_OP(return left->multiply(right), expr->pos());
 	case Operator::OPERATOR_DIVIDE:
 		TRY_OP(return left->divide(right), expr->pos());
+	case Operator::OPERATOR_LEFT_BITSHIFT:
+		TRY_OP(return left->left_bitshift(right), expr->pos());
+	case Operator::OPERATOR_RIGHT_BITSHIFT:
+		TRY_OP(return left->right_bitshift(right), expr->pos());
 	case Operator::OPERATOR_GREATER:
 		TRY_OP(return left->greater(right), expr->pos());
 	case Operator::OPERATOR_LESS:

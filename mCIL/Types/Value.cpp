@@ -40,6 +40,16 @@ value_ptr CIL::Value::divide(value_ptr other)
 	throw binary_op_not_implemented("/", other);
 }
 
+value_ptr CIL::Value::left_bitshift(value_ptr other)
+{
+	throw binary_op_not_implemented("<<", other);
+}
+
+value_ptr CIL::Value::right_bitshift(value_ptr other)
+{
+	throw binary_op_not_implemented(">>", other);
+}
+
 value_ptr CIL::Value::assign(value_ptr other)
 {
 	throw binary_op_not_implemented("=", other);
