@@ -324,7 +324,6 @@ void Interpreter::run_block_stmt(std::shared_ptr<BlockStatement> stmt)
 	this->env_ = new Environment(previous);
 	for (stmt_ptr inner : stmt->inner())
 	{
-		//TODO: Change this
 		try
 		{
 			this->run_stmt(inner);

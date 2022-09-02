@@ -8,7 +8,6 @@ struct ErrorManager
 {
 	static void cil_error(const CILError& err);
 
-	//TODO: Add Warnings
 	static void cil_warning(const Position& pos, const std::string& msg);
 
 	static void report_errors(SourceManager& source);

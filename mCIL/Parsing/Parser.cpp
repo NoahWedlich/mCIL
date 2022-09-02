@@ -87,9 +87,9 @@ void Parser::expect_keyword(Keyword keyword)
     {
         throw CILError::error(peek().pos(), "Expected 'keyword' got '$'", peek().type());
     }
-    else if (!match_keyword(kwd))
+    else if (!match_keyword(keyword))
     {
-        throw CILError::error(peek().pos(), "Expected '$' got '$'", kwd, peek().keyword());
+        throw CILError::error(peek().pos(), "Expected '$' got '$'", keyword, peek().keyword());
     }
 }
 
