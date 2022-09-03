@@ -58,6 +58,8 @@ value_ptr CIL::String::not_equals(value_ptr other)
 
 std::string CIL::String::to_string()
 {
+	if(value_ == "\\n")
+	{ return "\n"; }
 	return value_;
 }
 

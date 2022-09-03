@@ -369,7 +369,7 @@ void Interpreter::run_return_stmt(std::shared_ptr<ReturnStatement> stmt)
 void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 {
 	value_ptr val = this->run_expr(stmt->expr());
-	std::cout << val->to_string() << std::endl;
+	std::cout << val->to_string();
 }
 
 void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
