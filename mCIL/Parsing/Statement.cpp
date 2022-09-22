@@ -25,9 +25,9 @@ stmt_ptr Statement::make_print_stmt(expr_ptr expr, Position pos)
     return stmt_ptr(new PrintStatement(expr, pos));
 }
 
-stmt_ptr Statement::make_if_stmt(expr_ptr cond, stmt_ptr if_branch, Position pos)
+stmt_ptr Statement::make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos)
 {
-    return stmt_ptr(new IfStatement(cond, if_branch, pos));
+    return stmt_ptr(new IfStatement(cond, if_branch, else_branch, pos));
 }
 
 stmt_ptr Statement::make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos)

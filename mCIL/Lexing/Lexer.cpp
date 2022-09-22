@@ -323,10 +323,22 @@ Token Lexer::get_operator(bool& found)
 	{
 	case '+':
 		current++;
+		if (*current == '+')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_INCREMENT, "++", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_ADD, "+");
 		break;
 	case '-':
 		current++;
+		if (*current == '-')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_DECREMENT, "--", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_SUBTRACT, "-");
 		break;
 	case '*':
@@ -365,6 +377,12 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
+		if (*current == '<')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_LEFT_BITSHIFT, "<<", 2);
+			current++;
+			break;
+		}
 		op = this->create_operator_token(Operator::OPERATOR_LESS, "<");
 		break;
 	case '>':
@@ -372,6 +390,12 @@ Token Lexer::get_operator(bool& found)
 		if (*current == '=')
 		{
 			op = this->create_operator_token(Operator::OPERATOR_GREATER_EQUAL, ">=", 2);
+			current++;
+			break;
+		}
+		if (*current == '>')
+		{
+			op = this->create_operator_token(Operator::OPERATOR_RIGHT_BITSHIFT, ">>", 2);
 			current++;
 			break;
 		}
@@ -386,9 +410,8 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		this->char_off_ = current - this->current_line_;
-		CILError::error(this->pos(1), "Invalid operator '&' did you mean '&&'");
-		return op;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_AND, "&");
+		break;
 	}
 	case '|':
 		current++;
@@ -398,9 +421,16 @@ Token Lexer::get_operator(bool& found)
 			current++;
 			break;
 		}
-		this->char_off_ = current - this->current_line_;
-		CILError::error(this->pos(1), "Invalid operator '|' did you mean '||'");
-		return op;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_OR, "|");
+		break;
+	case '~':
+		current++;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_NOT, "~");
+		break;
+	case '^':
+		current++;
+		op = create_operator_token(Operator::OPERATOR_BITWISE_XOR, "^");
+		break;
 	default:
 		found = false;
 		return op;

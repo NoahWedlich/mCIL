@@ -1,6 +1,6 @@
 #pragma once
 #include "cil-types.h"
-#include "../Interpreting/Object.h"
+#include "Value.h"
 
 class Statement;
 typedef std::shared_ptr<Statement> stmt_ptr;
@@ -8,7 +8,7 @@ typedef std::shared_ptr<Statement> stmt_ptr;
 struct Variable
 {
 	VarInfo info;
-	Object value;
+	value_ptr value;
 };
 
 struct Function
@@ -20,5 +20,5 @@ struct Function
 struct Array
 {
 	ArrInfo info;
-	std::vector<Object> arr;
+	std::vector<value_ptr> arr;
 };

@@ -28,6 +28,13 @@ private:
 	bool atEnd()
 	{ return this->peek().is_EOF(); }
 
+	void expect_number();
+	void expect_str();
+	void expect_identifier();
+	void expect_symbol(Symbol symbol);
+	void expect_op(Operator op);
+	void expect_keyword(Keyword keyword);
+
 	void synchronize();
 
 	Position pos_from_tokens(Token start, Token end);
@@ -45,8 +52,6 @@ private:
 	
 	bool get_type(cilType& type);
 
-	void consume_semicolon(Position pos);
-
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
 	expr_ptr call_expr();
@@ -54,8 +59,10 @@ private:
 	expr_ptr unary_expr();
 	expr_ptr factor_expr();
 	expr_ptr sum_expr();
+	expr_ptr bitshift_expr();
 	expr_ptr comparison_expr();
 	expr_ptr equality_expr();
+	expr_ptr bitwise_expr();
 	expr_ptr logical_and_expr();
 	expr_ptr logical_or_expr();
 	expr_ptr ternary_expr();

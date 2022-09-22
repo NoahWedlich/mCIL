@@ -1,0 +1,8 @@
+num a = 420;
+num b = 69;
+
+print a;
+print ~a;
+print (a & b);
+print (a | b);
+print (a ^ b);

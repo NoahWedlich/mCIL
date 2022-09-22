@@ -14,28 +14,28 @@ expr_ptr Expression::make_bool_expr(Token token)
 {
 	primary_value value{};
 	value.bool_val = (token.keyword() == Keyword::KEYWORD_TRUE);
-	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_BOOL, value, token.position()));
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_BOOL, value, token.pos()));
 }
 
 expr_ptr Expression::make_num_expr(Token token)
 {
 	primary_value value{};
 	value.num_val = token.number_val();
-	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_NUM, value, token.position()));
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_NUM, value, token.pos()));
 }
 
 expr_ptr Expression::make_str_expr(Token token)
 {
 	primary_value value{};
 	value.str_val = &token.string_val();
-	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_STR, value, token.position()));
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_STR, value, token.pos()));
 }
 
 expr_ptr Expression::make_identifier_expr(Token token)
 {
 	primary_value value{};
 	value.identifier_val = &token.identifier();
-	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_IDENTIFIER, value, token.position()));
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_IDENTIFIER, value, token.pos()));
 }
 
 expr_ptr Expression::make_call_expr(Token token, expr_list args, Position pos)
@@ -50,7 +50,7 @@ expr_ptr Expression::make_array_access_expr(Token name, expr_ptr index, Position
 
 expr_ptr Expression::make_unary_expr(Token token, expr_ptr expr)
 {
-	Position pos{ token.position(), expr->pos() };
+	Position pos{ token.pos(), expr->pos() };
 	return expr_ptr(new UnaryExpression(token.op(), expr, pos));
 }
 
@@ -66,8 +66,8 @@ expr_ptr Expression::make_ternary_expr(expr_ptr cond, expr_ptr left, expr_ptr ri
 	return expr_ptr(new TernaryExpression(cond, left, right, pos));
 }
 
-expr_ptr Expression::make_assignment_expr(Token token, expr_ptr index, expr_ptr right)
+expr_ptr Expression::make_assignment_expr(expr_ptr target, expr_ptr right)
 {
-	Position pos{ token.position(), right->pos() };
-	return expr_ptr(new AssignmentExpression(token.identifier(), index, right, pos));
+	Position pos{target->pos(), right->pos()};
+	return expr_ptr(new AssignmentExpression(target, right, pos));
 }

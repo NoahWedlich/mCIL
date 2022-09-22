@@ -128,17 +128,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Types\ErrorValue.cpp" />
+    <ClCompile Include="Types\String.cpp" />
+    <ClCompile Include="Types\Bool.cpp" />
     <ClCompile Include="Diagnostics\CILError.cpp" />
     <ClCompile Include="Diagnostics\Position.cpp" />
     <ClCompile Include="Interpreting\Environment.cpp" />
     <ClCompile Include="Interpreting\Interpreter.cpp" />
+    <ClCompile Include="Types\Number.cpp" />
     <ClCompile Include="REPL\REPLFileManager.cpp" />
     <ClCompile Include="REPL\REPL.cpp" />
     <ClCompile Include="Parsing\Statement.cpp" />
     <ClCompile Include="Tools\ASTPrettyPrinter.cpp" />
     <ClCompile Include="Tools\ASTDebugPrinter.cpp" />
     <ClCompile Include="Parsing\Expression.cpp" />
-    <ClCompile Include="Interpreting\Object.cpp" />
     <ClCompile Include="Diagnostics\Diagnostics.cpp" />
     <ClCompile Include="Lexing\Lexer.cpp" />
     <ClCompile Include="mCil.cpp" />
@@ -147,9 +150,16 @@
     <ClCompile Include="Lexing\Token.cpp" />
     <ClCompile Include="Diagnostics\TokenPrinter.cpp" />
     <ClCompile Include="Types\cil-types.cpp" />
+    <ClCompile Include="Types\Value.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Types\BuiltinTypes.h" />
+    <ClInclude Include="Types\ErrorValue.h" />
+    <ClInclude Include="Types\String.h" />
+    <ClInclude Include="Types\Bool.h" />
     <ClInclude Include="Diagnostics\CILError.h" />
+    <ClInclude Include="Types\Number.h" />
+    <ClInclude Include="Types\Value.h" />
     <ClInclude Include="Interpreting\Environment.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
     <ClInclude Include="REPL\REPLFileManager.h" />
@@ -159,7 +169,6 @@
     <ClInclude Include="Tools\ASTDebugPrinter.h" />
     <ClInclude Include="cil-system.h" />
     <ClInclude Include="Parsing\Expression.h" />
-    <ClInclude Include="Interpreting\Object.h" />
     <ClInclude Include="Diagnostics\Diagnostics.h" />
     <ClInclude Include="Lexing\Lexer.h" />
     <ClInclude Include="Parsing\Parser.h" />
@@ -174,6 +183,7 @@
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\Functions.cil" />
+    <None Include="Samples\IfElse.cil" />
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\rule110.cil" />
     <None Include="Samples\Sample.cil" />

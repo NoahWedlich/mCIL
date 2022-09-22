@@ -34,6 +34,8 @@ enum class Operator
 {
 	OPERATOR_BANG,
 	OPERATOR_ADD,
+	OPERATOR_INCREMENT,
+	OPERATOR_DECREMENT,
 	OPERATOR_SUBTRACT,
 	OPERATOR_MULTIPLY,
 	OPERATOR_DIVIDE,
@@ -45,7 +47,13 @@ enum class Operator
 	OPERATOR_LESS_EQUAL,
 	OPERATOR_GREATER_EQUAL,
 	OPERATOR_AND,
-	OPERATOR_OR
+	OPERATOR_OR,
+	OPERATOR_LEFT_BITSHIFT,
+	OPERATOR_RIGHT_BITSHIFT,
+	OPERATOR_BITWISE_NOT,
+	OPERATOR_BITWISE_AND,
+	OPERATOR_BITWISE_OR,
+	OPERATOR_BITWISE_XOR
 };
 
 enum class Keyword
@@ -79,7 +87,7 @@ public:
 	Token& operator=(const Token&);
 
 	TokenType type() const;
-	Position position() const;
+	Position pos() const;
 	const std::string& lexeme() const;
 
 	bool is_invalid() const;
