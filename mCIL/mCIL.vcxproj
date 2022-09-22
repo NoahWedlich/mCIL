@@ -175,6 +175,7 @@
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\Functions.cil" />
     <None Include="Samples\LexerTest.cil" />
+    <None Include="Samples\rule110.cil" />
     <None Include="Samples\Sample.cil" />
     <None Include="Samples\Variables.cil" />
   </ItemGroup>
