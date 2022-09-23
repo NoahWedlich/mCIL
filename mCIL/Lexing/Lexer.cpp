@@ -79,7 +79,8 @@ Token Lexer::next_token()
 			continue;
 		}
 
-		this->skip_spaces();
+		if(skip_spaces())
+		{ continue; }
 
 		Token next = this->create_invalid_token();
 		bool found = false;
@@ -192,7 +193,7 @@ Token Lexer::create_symbol_token(Symbol type, std::string lexeme, size_t len)
 	return Token::create_symbol_token(type, lexeme, this->pos(len));
 }
 
-void Lexer::skip_spaces()
+bool Lexer::skip_spaces()
 {
 	const char* start = this->current_line_ + this->char_off_;
 
@@ -206,8 +207,9 @@ void Lexer::skip_spaces()
 			current++;
 		}
 		this->char_off_ = current - this->current_line_;
-		return;
+		return true;
 	}
+	return false;
 }
 
 bool Lexer::skip_comments()
