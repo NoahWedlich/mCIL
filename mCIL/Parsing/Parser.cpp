@@ -728,7 +728,6 @@ stmt_ptr Parser::func_decl_stmt()
                 break;
             }
         }
-        expect_symbol(Symbol::RIGHT_PAREN);
         cilType ret_type = cilType(Type::NONE);
         if (this->match_symbol(Symbol::ARROW))
         {
