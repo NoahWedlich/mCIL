@@ -28,7 +28,7 @@ void ErrorManager::report_errors(SourceManager& source)
 				std::string prefix = std::string(max_num_size, ' ') + " | ";
 				prefix.insert(0, std::to_string(line + 1));
 				std::string source_line = source.get_line_at_off(line);
-				std::cout << prefix << source_line << std::endl;
+				std::cout << prefix << source_line;
 			}
 		}
 		else
