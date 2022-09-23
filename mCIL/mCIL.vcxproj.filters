@@ -172,6 +172,8 @@
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\rule110.cil" />
     <None Include="Samples\IfElse.cil" />
+    <None Include="Samples\Sample.cil" />
+    <None Include="Samples\CLasses.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />

@@ -50,6 +50,7 @@ private:
 	{ return this->match_operator(a) || this->match_operator(b); }
 	bool match_keyword(Keyword key);
 	
+	bool match_type();
 	bool get_type(cilType& type);
 
 	expr_ptr grouping_expr();
@@ -80,6 +81,7 @@ private:
 	stmt_ptr var_decl_stmt();
 	stmt_ptr arr_decl_stmt();
 	stmt_ptr func_decl_stmt();
+	stmt_ptr class_decl_stmt();
 	stmt_ptr statement();
 
 	std::vector<Token>& tokens_;

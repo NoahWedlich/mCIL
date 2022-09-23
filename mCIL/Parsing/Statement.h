@@ -21,6 +21,7 @@ enum class StmtType
 	STATEMENT_VAR_DECL,
 	STATEMENT_ARR_DECL,
 	STATEMENT_FUNC_DECL,
+	STATEMENT_CLASS_DECL,
 	STATEMENT_EXPR
 };
 
@@ -44,6 +45,7 @@ public:
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
 	static stmt_ptr make_arr_decl_stmt(ArrInfo info, expr_list vals, Position pos);
 	static stmt_ptr make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos);
+	static stmt_ptr make_class_decl_stmt(ClassInfo info, stmt_list methods, stmt_list members, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
 	Position pos() const
@@ -84,6 +86,9 @@ public:
 
 	bool is_func_decl() const
 	{ return this->type_ == StmtType::STATEMENT_FUNC_DECL; }
+
+	bool is_class_decl() const
+	{ return this->type_ == StmtType::STATEMENT_CLASS_DECL; }
 
 	bool is_expr_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_EXPR; }
@@ -249,6 +254,26 @@ public:
 private:
 	FuncInfo info_;
 	stmt_ptr body_;
+};
+
+class ClassDeclStatement : public Statement
+{
+public:
+	ClassDeclStatement(ClassInfo info, stmt_list methods, stmt_list members, Position pos)
+		: Statement(StmtType::STATEMENT_CLASS_DECL, pos), info_(info), methods_(methods), members_(members) {}
+
+	const ClassInfo info() const
+	{ return info_; }
+
+	const stmt_list methods() const
+	{ return methods_; }
+
+	const stmt_list members() const
+	{ return members_; }
+private:
+	ClassInfo info_;
+	stmt_list methods_;
+	stmt_list members_;
 };
 
 class ExprStatement : public Statement

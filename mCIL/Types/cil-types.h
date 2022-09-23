@@ -44,6 +44,13 @@ struct ArrInfo
 	int size;
 };
 
+struct ClassInfo
+{
+	std::string name;
+	std::vector<FuncInfo> methods;
+	std::vector<VarInfo> members;
+};
+
 bool operator==(cilType a, cilType b);
 
 bool operator!=(cilType a, cilType b);

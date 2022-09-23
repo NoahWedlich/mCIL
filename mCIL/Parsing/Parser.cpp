@@ -197,6 +197,29 @@ bool Parser::match_keyword(Keyword key)
     return false;
 }
 
+bool Parser::match_type()
+{
+    bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
+
+    const Token token = this->peek();
+    if (token.is_keyword())
+    {
+        switch (token.keyword())
+        {
+        case Keyword::KEYWORD_BOOL:
+        case Keyword::KEYWORD_NUM:
+        case Keyword::KEYWORD_STR:
+        case Keyword::KEYWORD_AUTO:
+            if(is_const)
+            { current--; }
+            return true;
+        default:
+            return false;
+        }
+    }
+    return false;
+}
+
 bool Parser::get_type(cilType& type)
 {
     bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
@@ -751,11 +774,69 @@ stmt_ptr Parser::func_decl_stmt()
     return this->arr_decl_stmt();
 }
 
+stmt_ptr Parser::class_decl_stmt()
+{
+    const Token class_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_CLASS))
+    {
+        const Token name = peek();
+        expect_identifier();
+        const Token l_brace = peek();
+        expect_symbol(Symbol::LEFT_BRACE);
+
+        stmt_list methods{};
+        std::vector<FuncInfo> methods_info{};
+        stmt_list members{};
+        std::vector<VarInfo> members_info{};
+
+        Token r_brace = peek();
+        while (!atEnd())
+        {
+            r_brace = peek();
+
+            const Token current = peek();
+            if (current.is_keyword() && current.keyword() == Keyword::KEYWORD_DEF)
+            {
+                stmt_ptr method = func_decl_stmt();
+                std::shared_ptr<FuncDeclStatement> cast_method = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(method);
+                FuncInfo method_info = cast_method->info();
+                methods.push_back(method);
+                methods_info.push_back(method_info);
+            }
+            else if (match_type())
+            {
+                stmt_ptr member = var_decl_stmt();
+                std::shared_ptr<VarDeclStatement> cast_member = std::dynamic_pointer_cast<VarDeclStatement, Statement>(member);
+                VarInfo member_info = cast_member->info();
+                members.push_back(member);
+                members_info.push_back(member_info);
+            }
+            else if (match_symbol(Symbol::RIGHT_BRACE))
+            {
+                ClassInfo info
+                {
+                    .name = name.identifier(),
+                    .methods = methods_info,
+                    .members = members_info
+                };
+
+                return Statement::make_class_decl_stmt(info, methods, members, pos_from_tokens(class_keyword, r_brace));
+            }
+            else
+            {
+                throw CILError::error(current.pos(), "Only method and member-declarations are allowed inside a class-body");
+            }
+        }
+        throw CILError::error(r_brace.pos(), "Expected '}'");
+    }
+    return func_decl_stmt();
+}
+
 stmt_ptr Parser::statement()
 {
     try
     {
-        return this->func_decl_stmt();
+        return this->class_decl_stmt();
     }
     catch (CILError& err)
     {

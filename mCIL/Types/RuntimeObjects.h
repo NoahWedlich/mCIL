@@ -22,3 +22,10 @@ struct Array
 	ArrInfo info;
 	std::vector<value_ptr> arr;
 };
+
+struct Class
+{
+	ClassInfo info;
+	std::vector<Function> methods;
+	std::vector<Variable> members;
+};

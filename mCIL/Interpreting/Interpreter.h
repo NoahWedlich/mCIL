@@ -72,6 +72,7 @@ private:
 	void run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
 	void run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt);
 	void run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
+	void run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 
 	stmt_list program_;

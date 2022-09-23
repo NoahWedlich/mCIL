@@ -55,6 +55,11 @@ stmt_ptr Statement::make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position p
     return stmt_ptr(new FuncDeclStatement(info, body, pos));
 }
 
+stmt_ptr Statement::make_class_decl_stmt(ClassInfo info, stmt_list methods, stmt_list members, Position pos)
+{
+    return stmt_ptr(new ClassDeclStatement(info, methods, members, pos));
+}
+
 stmt_ptr Statement::make_expr_stmt(expr_ptr expr, Position pos)
 {
     return stmt_ptr(new ExprStatement(expr, pos));

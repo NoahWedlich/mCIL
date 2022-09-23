@@ -14,7 +14,7 @@ int main()
 	/*REPL repl{};
 	repl.run();*/
 
-	SourceFileManager source{ "Samples/rule110.cil" };
+	SourceFileManager source{ "Samples/Classes.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)

@@ -1,0 +1,9 @@
+
+
+class Test
+{
+	def method(num arg) -> num
+	{ return arg+1; }
+
+	str member = "Test";
+}

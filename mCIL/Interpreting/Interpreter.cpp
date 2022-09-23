@@ -326,6 +326,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_FUNC_DECL:
 		this->run_func_decl_stmt(std::dynamic_pointer_cast<FuncDeclStatement, Statement>(stmt));
 		break;
+	case StmtType::STATEMENT_CLASS_DECL:
+		run_class_decl_stmt(std::dynamic_pointer_cast<ClassDeclStatement, Statement>(stmt));
+		break;
 	case StmtType::STATEMENT_EXPR:
 		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
 		break;
@@ -459,6 +462,28 @@ void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
 {
 	Function func{ stmt->info(), stmt->body() };
 	this->env_->define_func(func);
+}
+
+void Interpreter::run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
+{
+	std::vector<Function> methods{};
+	std::vector<Variable> members{};
+
+	for (auto s : stmt->methods())
+	{
+		std::shared_ptr<FuncDeclStatement> method_ptr = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(s);
+		methods.emplace_back(method_ptr->info(), method_ptr->body());
+	}
+
+	for (auto s : stmt->members())
+	{
+		std::shared_ptr<VarDeclStatement> member_ptr = std::dynamic_pointer_cast<VarDeclStatement, Statement>(s);
+		value_ptr value = run_expr(member_ptr->val());
+		members.emplace_back(member_ptr->info(), value);
+	}
+
+	Class cls{ stmt->info(), methods, members };
+	env_->define_class(cls);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)
