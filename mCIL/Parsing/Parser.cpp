@@ -304,7 +304,7 @@ expr_ptr Parser::call_expr()
         {
             expr_list args;
             Token r_paren = this->peek();
-            while (true)
+            while (!match_symbol(Symbol::RIGHT_PAREN))
             {
                 if (this->atEnd())
                 { throw CILError::error(l_paren.pos(), "Exptected ')'"); }
