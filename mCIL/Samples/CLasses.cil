@@ -4,11 +4,11 @@ class Test
 {
 	def method(num arg) -> num
 	{
-	member = arg++;
+		member = arg++;
 		return member;
 	}
 
-	str member = "Test";
+	num member = 1;
 }
 
 Test t = new Test();
