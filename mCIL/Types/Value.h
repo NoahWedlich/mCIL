@@ -24,7 +24,6 @@ namespace CIL
 		virtual value_ptr increment();
 		virtual value_ptr decrement();
 		//TODO: Call operator
-		//TODO: Access operator
 
 		virtual value_ptr add(value_ptr);
 		virtual value_ptr subtract(value_ptr);

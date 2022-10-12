@@ -551,7 +551,6 @@ expr_ptr Parser::ternary_expr()
 
 expr_ptr Parser::assignment_expr()
 {
-    //TODO: Implement call.identifier
     expr_ptr target = this->ternary_expr();
     while (this->match_operator(Operator::OPERATOR_EQUAL))
     {
