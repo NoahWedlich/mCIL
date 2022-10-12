@@ -9,7 +9,6 @@ typedef std::vector<expr_ptr> expr_list;
 
 enum class ExprType
 {
-	//TODO: Make trailing operators for () and [] and maybe ? and !
 	EXPRESSION_ERROR,
 	EXPRESSION_GROUPING,
 	EXPRESSION_PRIMARY,
