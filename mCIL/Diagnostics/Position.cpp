@@ -63,7 +63,13 @@ Position::Position(const SourcePos& pos)
 	: range_(pos, pos) {}
 
 Position::Position(const SourcePos& start, const SourcePos& end)
-	: range_(start, end) {}
+	: range_(start, end)
+{
+	if (start > end)
+	{
+		range_ = SourceRange(end, start);
+	}
+}
 
 Position::Position(const SourceRange& range)
 	: range_(range) {}
@@ -72,7 +78,13 @@ Position::Position(const Position& pos)
 	: range_(pos.range()) {}
 
 Position::Position(const Position& start, const Position& end)
-	: range_(start.start_pos(), end.end_pos()) {}
+	: range_(start.start_pos(), end.end_pos())
+{
+	if (start.start_pos() > end.end_pos())
+	{
+		range_ = SourceRange(end.start_pos(), start.end_pos());
+	}
+}
 
 const SourceRange Position::range() const
 {
