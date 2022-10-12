@@ -23,7 +23,6 @@ namespace CIL
 		virtual value_ptr negate();
 		virtual value_ptr increment();
 		virtual value_ptr decrement();
-		//TODO: Call operator
 
 		virtual value_ptr add(value_ptr);
 		virtual value_ptr subtract(value_ptr);
