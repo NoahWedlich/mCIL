@@ -5,7 +5,6 @@
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
 #include "Tools/ASTDebugPrinter.h"
-#include "Tools/ASTPrettyPrinter.h"
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 
@@ -31,14 +30,14 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/////*ASTDebugPrinter dbg{ std::cout };
-	////dbg.print_expression(exprs[0]);*/
-	//
-	Interpreter interpreter{ stmts };
+	ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);
+	
+	/*Interpreter interpreter{ stmts };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
-	}
+	}*/
 }
