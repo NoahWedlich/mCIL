@@ -42,9 +42,6 @@
     <ClCompile Include="Diagnostics\TokenPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\ASTPrettyPrinter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Interpreting\Interpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,9 +117,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Diagnostics\TokenPrinter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\ASTPrettyPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreting\Interpreter.h">
