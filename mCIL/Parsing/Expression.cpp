@@ -43,6 +43,16 @@ expr_ptr Expression::make_call_expr(Token token, expr_list args, Position pos)
 	return expr_ptr(new CallExpression(token.identifier(), args, pos));
 }
 
+expr_ptr Expression::make_access_expr(Token token, expr_ptr inner, Position pos)
+{
+	return expr_ptr(new AccessExpression(token.identifier(), inner, pos));
+}
+
+expr_ptr Expression::make_new_expr(Token token, expr_list args, Position pos)
+{
+	return expr_ptr(new NewExpression(token.identifier(), args, pos));
+}
+
 expr_ptr Expression::make_array_access_expr(Token name, expr_ptr index, Position pos)
 {
 	return expr_ptr(new ArrayAccessExpression(name.identifier(), index, pos));

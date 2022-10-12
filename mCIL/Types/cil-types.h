@@ -7,6 +7,7 @@ enum Type
 	BOOL,
 	NUM,
 	STR,
+	OBJ,
 	UNKNOWN,
 	ERROR
 };

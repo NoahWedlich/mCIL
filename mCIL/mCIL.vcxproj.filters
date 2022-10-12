@@ -84,6 +84,9 @@
     <ClCompile Include="Types\ErrorValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Types\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -162,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types\BuiltinTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

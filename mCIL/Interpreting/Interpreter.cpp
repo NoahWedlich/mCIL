@@ -74,6 +74,10 @@ value_ptr Interpreter::run_expr(expr_ptr expr)
 		return this->run_grouping_expr(std::dynamic_pointer_cast<GroupingExpression, Expression>(expr));
 	case ExprType::EXPRESSION_CALL:
 		return this->run_call_expr(std::dynamic_pointer_cast<CallExpression, Expression>(expr));
+	case ExprType::EXPRESSION_ACCESS:
+		return run_access_expr(std::dynamic_pointer_cast<AccessExpression, Expression>(expr));
+	case ExprType::EXPRESSION_NEW:
+		return run_new_expr(std::dynamic_pointer_cast<NewExpression, Expression>(expr));
 	case ExprType::EXPRESSION_ARRAY_ACCESS:
 		return this->run_array_access_expr(std::dynamic_pointer_cast<ArrayAccessExpression, Expression>(expr));
 	case ExprType::EXPRESSION_PRIMARY:
@@ -183,6 +187,29 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		ErrorManager::cil_error(err);
 		return CIL::ErrorValue::create();
 	}
+}
+
+value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
+{
+	Variable var = env_->get_var(expr->identifier());
+	if(var.info.type.type != Type::OBJ)
+	{ throw CILError::error(expr->pos(), "Can only access variables of type '$', got '$'", Type::OBJ, var.info.type.type); }
+	CIL::Object obj = *std::dynamic_pointer_cast<CIL::Object, CIL::Value>(var.value);
+
+	Environment* previous = this->env_;
+	env_ = obj.env();
+	env_->add_enclosing(previous);
+	value_ptr val = run_expr(expr->inner());
+	env_->rem_enclosing();
+	this->env_ = previous;
+	return val;
+}
+
+value_ptr Interpreter::run_new_expr(std::shared_ptr<NewExpression> expr)
+{
+	Class cls = env_->get_class(expr->identifier());
+	value_ptr obj = CIL::Object::create(cls);
+	return obj;
 }
 
 value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
@@ -469,13 +496,13 @@ void Interpreter::run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
 	std::vector<Function> methods{};
 	std::vector<Variable> members{};
 
-	for (auto s : stmt->methods())
+	for (stmt_ptr s : stmt->methods())
 	{
 		std::shared_ptr<FuncDeclStatement> method_ptr = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(s);
 		methods.emplace_back(method_ptr->info(), method_ptr->body());
 	}
 
-	for (auto s : stmt->members())
+	for (stmt_ptr s : stmt->members())
 	{
 		std::shared_ptr<VarDeclStatement> member_ptr = std::dynamic_pointer_cast<VarDeclStatement, Statement>(s);
 		value_ptr value = run_expr(member_ptr->val());

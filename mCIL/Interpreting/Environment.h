@@ -37,6 +37,9 @@ public:
 	bool class_exists(const std::string name);
 	bool class_exists(Class cls);
 
+	void add_enclosing(Environment* other);
+	void rem_enclosing();
+
 	bool has_enclosing()
 	{ return this->enclosing_ != nullptr; }
 private:

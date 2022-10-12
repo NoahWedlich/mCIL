@@ -3,7 +3,14 @@
 class Test
 {
 	def method(num arg) -> num
-	{ return arg+1; }
+	{
+	member = arg++;
+		return member;
+	}
 
 	str member = "Test";
 }
+
+Test t = new Test();
+
+print t.method(1);

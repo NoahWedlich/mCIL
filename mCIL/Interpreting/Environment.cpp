@@ -183,3 +183,9 @@ bool Environment::class_exists(Class cls)
 {
 	return class_exists(cls.info.name);
 }
+
+void Environment::add_enclosing(Environment* other)
+{ enclosing_ = other; }
+
+void Environment::rem_enclosing()
+{ enclosing_ = nullptr; }

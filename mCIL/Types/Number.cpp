@@ -83,7 +83,7 @@ value_ptr CIL::Number::divide(value_ptr other)
 
 value_ptr CIL::Number::bitwise_not()
 {
-	return CIL::Number::create(~(__int64)value_);
+	return CIL::Number::create((double)~(__int64)value_);
 }
 
 value_ptr CIL::Number::bitwise_and(value_ptr other)
@@ -147,7 +147,7 @@ value_ptr CIL::Number::assign(value_ptr other)
 
 	if (other->is_type(Type::NUM))
 	{
-	value_ = std::dynamic_pointer_cast<Number>(other)->value();
+		value_ = std::dynamic_pointer_cast<Number>(other)->value();
 	}
 	else
 	{

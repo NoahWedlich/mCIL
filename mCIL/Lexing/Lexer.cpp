@@ -20,6 +20,7 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"def"    , Keyword::KEYWORD_DEF    },
 	{"return" , Keyword::KEYWORD_RETURN },
 	{"class"  , Keyword::KEYWORD_CLASS  },
+	{"new"    , Keyword::KEYWORD_NEW    },
 	{"this"   , Keyword::KEYWORD_THIS   },
 	{"extends", Keyword::KEYWORD_EXTENDS}
 };

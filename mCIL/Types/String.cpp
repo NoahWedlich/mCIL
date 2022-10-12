@@ -32,7 +32,7 @@ value_ptr CIL::String::assign(value_ptr other)
 
 	if (other->is_type(Type::STR))
 	{
-	value_ = std::dynamic_pointer_cast<String>(other)->value();
+		value_ = std::dynamic_pointer_cast<String>(other)->value();
 	}
 	else
 	{

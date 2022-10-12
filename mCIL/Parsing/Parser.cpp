@@ -217,6 +217,12 @@ bool Parser::match_type()
             return false;
         }
     }
+    else if (token.is_identifier())
+    {
+        if (is_const)
+        { current--; }
+        return true;
+    }
     return false;
 }
 
@@ -247,6 +253,12 @@ bool Parser::get_type(cilType& type)
             return false;
         }
         this->advance();
+        return true;
+    }
+    else if (token.is_identifier())
+    {
+        type = cilType(Type::OBJ, is_const);
+        advance();
         return true;
     }
     return false;
@@ -326,6 +338,56 @@ expr_ptr Parser::call_expr()
     return this->primary_expr();
 }
 
+expr_ptr Parser::access_expr()
+{
+    const Token id = this->peek();
+    if (this->match_identifier())
+    {
+        const Token dot = this->peek();
+        if (this->match_symbol(Symbol::DOT))
+        {
+            expr_ptr inner = call_expr();
+            return Expression::make_access_expr(id, inner, Position(id.pos().range(), inner->pos().range()));
+        }
+        this->current--;
+    }
+    return this->call_expr();
+}
+
+expr_ptr Parser::new_expr()
+{
+    const Token new_t = peek();
+    if (match_keyword(Keyword::KEYWORD_NEW))
+    {
+        const Token id = peek();
+        expect_identifier();
+        const Token l_paren = peek();
+        expect_symbol(Symbol::LEFT_PAREN);
+
+        expr_list args;
+        Token r_paren = peek();
+        while (!match_symbol(Symbol::RIGHT_PAREN))
+        {
+            if (atEnd())
+            {
+                throw CILError::error(l_paren.pos(), "Exptected ')'");
+            }
+            expr_ptr arg = expression();
+            args.push_back(arg);
+            const Token comma = peek();
+            r_paren = this->peek();
+            if (!this->match_symbol(Symbol::COMMA))
+            {
+                if (this->match_symbol(Symbol::RIGHT_PAREN))
+                { break; }
+                throw CILError::error(comma.pos(), "Exptected ','");
+            }
+        }
+        return Expression::make_new_expr(id, args, pos_from_tokens(new_t, r_paren));
+    }
+    return access_expr();
+}
+
 expr_ptr Parser::array_access_expr()
 {
     const Token id = this->peek();
@@ -340,7 +402,7 @@ expr_ptr Parser::array_access_expr()
         }
         this->current--;
     }
-    return this->call_expr();
+    return this->new_expr();
 }
 
 expr_ptr Parser::unary_expr()
@@ -655,21 +717,25 @@ stmt_ptr Parser::var_decl_stmt()
     if (this->get_type(type))
     {
         const Token name = this->peek();
-        expect_identifier();
-        if (!this->match_operator(Operator::OPERATOR_EQUAL))
+        if (match_identifier())
         {
-            //TODO: Change this
-            CILError::error(name.pos(), "Variables must be initialized for now");
+            if (!this->match_operator(Operator::OPERATOR_EQUAL))
+            {
+                //TODO: Change this
+                CILError::error(name.pos(), "Variables must be initialized for now");
+            }
+            expr_ptr val = this->expression();
+            const Token semicolon = this->peek();
+            expect_symbol(Symbol::SEMICOLON);
+            VarInfo info
+            {
+                .name = name.identifier(),
+                .type = type
+            };
+            return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
         }
-        expr_ptr val = this->expression();
-        const Token semicolon = this->peek();
-        expect_symbol(Symbol::SEMICOLON);
-        VarInfo info
-        {
-            .name = name.identifier(),
-            .type = type
-        };
-        return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
+        else
+        { this->current -= (type.is_const ? 2 : 1); }
     }
     return this->for_stmt();
 }

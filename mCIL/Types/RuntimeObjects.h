@@ -5,6 +5,8 @@
 class Statement;
 typedef std::shared_ptr<Statement> stmt_ptr;
 
+class Environment;
+
 struct Variable
 {
 	VarInfo info;

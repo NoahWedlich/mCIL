@@ -54,6 +54,8 @@ private:
 	value_ptr run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
 	value_ptr run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
 	value_ptr run_call_expr(std::shared_ptr<CallExpression> expr);
+	value_ptr run_access_expr(std::shared_ptr<AccessExpression> expr);
+	value_ptr run_new_expr(std::shared_ptr<NewExpression> expr);
 	value_ptr run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr);
 	value_ptr run_unary_expr(std::shared_ptr<UnaryExpression> expr);
 	value_ptr run_binary_expr(std::shared_ptr<BinaryExpression> expr);
