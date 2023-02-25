@@ -311,7 +311,6 @@ expr_ptr Parser::primary_expr()
     {
         return Expression::make_bool_expr(token);
     }
-    //TODO: Implement 'this' and 'none'
     return this->grouping_expr();
 }
 
