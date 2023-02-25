@@ -141,22 +141,6 @@ value_ptr CIL::Number::right_bitshift(value_ptr other)
 	throw binary_op_invalid_type("+", other);
 }
 
-value_ptr CIL::Number::assign(value_ptr other)
-{
-	no_assign_to_const();
-
-	if (other->is_type(Type::NUM))
-	{
-		value_ = std::dynamic_pointer_cast<Number>(other)->value();
-	}
-	else
-	{
-		throw binary_op_invalid_type("=", other);
-	}
-
-	return other;
-}
-
 value_ptr CIL::Number::equals(value_ptr other)
 {
 	if (other->is_type(Type::NUM))

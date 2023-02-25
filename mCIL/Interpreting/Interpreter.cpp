@@ -318,7 +318,10 @@ value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression>
 	{ return CIL::ErrorValue::create(); }
 
 	value_ptr target = this->run_expr(expr->target());
-	TRY_OP(return target->assign(value), expr->pos());
+	if (target->type() == value->type() || value->type() == Type::NONE)
+	{
+		target = value;
+	}
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)

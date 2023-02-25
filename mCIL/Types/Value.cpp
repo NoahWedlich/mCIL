@@ -70,11 +70,6 @@ value_ptr CIL::Value::right_bitshift(value_ptr other)
 	throw binary_op_not_implemented(">>", other);
 }
 
-value_ptr CIL::Value::assign(value_ptr other)
-{
-	throw binary_op_not_implemented("=", other);
-}
-
 value_ptr CIL::Value::equals(value_ptr other)
 {
 	throw binary_op_not_implemented("==", other);
@@ -128,12 +123,4 @@ CILError CIL::Value::binary_op_not_implemented(std::string op, value_ptr val)
 CILError CIL::Value::binary_op_invalid_type(std::string op, value_ptr val)
 {
 	return CILError::error("Invalid operands '$' and '$' for operator '$'", type(), val->type(), op);
-}
-
-void CIL::Value::no_assign_to_const()
-{
-	if (type_.is_const)
-	{
-		throw CILError::error("Cannot assign to const '$'", type());
-	}
 }
