@@ -111,6 +111,7 @@ bool Lexer::char_is_alpha(char c)
 {
 	return ((c >= 'A' && c <= 'Z') ||
 			(c >= 'a' && c <= 'z') ||
+			(c >= '0' && c <= '9') ||
 			(c == '_'));
 }
 
