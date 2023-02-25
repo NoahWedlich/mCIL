@@ -1,6 +1,6 @@
 
 
-for (num i = 0; i < 2; i++)
+for (num i = 0; i <= 2; i++)
 {
 	if (i == 0)
 	{

@@ -30,14 +30,14 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	ASTDebugPrinter dbg{};
-	dbg.print_stmt_list(stmts);
+	/*ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);*/
 	
-	/*Interpreter interpreter{ stmts };
+	Interpreter interpreter{ stmts };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
-	}*/
+	}
 }

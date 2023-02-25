@@ -68,6 +68,8 @@ private:
 	void run_break_stmt(std::shared_ptr<BreakStatement> stmt);
 	void run_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	void run_print_stmt(std::shared_ptr<PrintStatement> stmt);
+	void run_else_stmt(std::shared_ptr<ElseStatement> stmt);
+	bool run_elif_stmt(std::shared_ptr<ElifStatement> stmt);
 	void run_if_stmt(std::shared_ptr<IfStatement> stmt);
 	void run_while_stmt(std::shared_ptr<WhileStatement> stmt);
 	void run_for_stmt(std::shared_ptr<ForStatement> stmt);
