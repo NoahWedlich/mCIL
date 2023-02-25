@@ -179,8 +179,7 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		delete this->env_;
 		this->env_ = previous;
-		//TODO: Change to none
-		return CIL::ErrorValue::create();
+		return CIL::None::create();
 	}
 	catch (CILError& err)
 	{
