@@ -101,6 +101,11 @@ void Parser::synchronize()
         {
             break;
         }
+        if (this->match_symbol(Symbol::LEFT_BRACE))
+        {
+            this->current--;
+            break;
+        }
         if (this->match_keyword(Keyword::KEYWORD_PRINT) ||
             this->match_keyword(Keyword::KEYWORD_IF   ) ||
             this->match_keyword(Keyword::KEYWORD_FOR  ) ||
@@ -695,7 +700,7 @@ stmt_ptr Parser::for_stmt()
     const Token for_keyword = this->peek();
     if (this->match_keyword(Keyword::KEYWORD_FOR))
     {
-        expect_symbol(Symbol::RIGHT_PAREN);
+        expect_symbol(Symbol::LEFT_PAREN);
         stmt_ptr init = this->statement();
         expr_ptr cond = this->expression();
         expect_symbol(Symbol::SEMICOLON);
