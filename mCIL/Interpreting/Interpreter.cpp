@@ -317,11 +317,29 @@ value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression>
 	if (value->type() == Type::ERROR)
 	{ return CIL::ErrorValue::create(); }
 
-	value_ptr target = this->run_expr(expr->target());
-	if (target->type() == value->type() || value->type() == Type::NONE)
+	if (expr->target()->is_primary_expr())
 	{
-		target = value;
+		std::shared_ptr<PrimaryExpression> primary = std::dynamic_pointer_cast<PrimaryExpression, Expression>(expr->target());
+		if (primary->primary_type() == PrimaryType::PRIMARY_IDENTIFIER)
+		{
+			std::string identifier = *primary->val().identifier_val;
+
+			if (env_->var_exists(identifier))
+			{
+				env_->get_var(identifier).value = value;
+			}
+		}
+		else
+		{
+			throw CILError::error(expr->pos(), "Cannot assign to '$'", primary->primary_type());
+		}
 	}
+	else
+	{
+		throw CILError::error(expr->pos(), "Cannot only assign to primary values");
+	}
+
+	return value;
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)

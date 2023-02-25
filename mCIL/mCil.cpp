@@ -30,8 +30,8 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/*ASTDebugPrinter dbg{};
-	dbg.print_stmt_list(stmts);*/
+	ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);
 	
 	Interpreter interpreter{ stmts };
 	interpreter.run();

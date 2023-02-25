@@ -112,3 +112,27 @@ void CILError::insert(std::stringstream& ss, Keyword value)
 {
 	ss << TokenPrinter::print_keyword(value);
 }
+
+void CILError::insert(std::stringstream& ss, PrimaryType value)
+{
+	switch (value)
+	{
+	case PrimaryType::PRIMARY_BOOL:
+		ss << "bool";
+		break;
+	case PrimaryType::PRIMARY_NUM:
+		ss << "num";
+		break;
+	case PrimaryType::PRIMARY_STR:
+		ss << "str";
+		break;
+	case PrimaryType::PRIMARY_NONE:
+		ss << "none";
+		break;
+	case PrimaryType::PRIMARY_IDENTIFIER:
+		ss << "identifier";
+		break;
+	default:
+		ss << "?";
+	}
+}

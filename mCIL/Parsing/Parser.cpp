@@ -748,12 +748,11 @@ stmt_ptr Parser::var_decl_stmt()
         const Token name = this->peek();
         if (match_identifier())
         {
-            if (!this->match_operator(Operator::OPERATOR_EQUAL))
-            {
-                //TODO: Change this
-                CILError::error(name.pos(), "Variables must be initialized for now");
-            }
-            expr_ptr val = this->expression();
+            expr_ptr val;
+            if (match_operator(Operator::OPERATOR_EQUAL))
+            { val = expression(); }
+            else
+            { val = Expression::make_none_expr(Token::create_invalid_token(Position{0,0})); }
             const Token semicolon = this->peek();
             expect_symbol(Symbol::SEMICOLON);
             VarInfo info
