@@ -658,6 +658,17 @@ stmt_ptr Parser::print_stmt()
     return this->return_stmt();
 }
 
+stmt_ptr Parser::else_stmt()
+{
+    const Token else_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_ELSE))
+    {
+        stmt_ptr inner = statement();
+        return Statement::make_else_stmt(inner, Position{ else_keyword.pos(), inner->pos() });
+    }
+    return nullptr;
+}
+
 stmt_ptr Parser::elif_stmt()
 {
     const Token elif_keyword = peek();
@@ -683,12 +694,7 @@ stmt_ptr Parser::if_stmt()
         expect_symbol(Symbol::RIGHT_PAREN);
         stmt_ptr if_branch = this->statement();
         stmt_ptr top_elif = elif_stmt();
-        stmt_ptr else_branch = nullptr;
-
-        if (match_keyword(Keyword::KEYWORD_ELSE))
-        {
-            else_branch = statement();
-        }
+        stmt_ptr else_branch = else_stmt();
 
         return Statement::make_if_stmt(cond, if_branch, top_elif, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
     }

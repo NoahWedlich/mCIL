@@ -17,6 +17,7 @@ enum class StmtType
 	STATEMENT_PRINT,
 	STATEMENT_IF,
 	STATEMENT_ELIF,
+	STATEMENT_ELSE,
 	STATEMENT_WHILE,
 	STATEMENT_FOR,
 	STATEMENT_VAR_DECL,
@@ -41,6 +42,7 @@ public:
 	static stmt_ptr make_print_stmt(expr_ptr expr, Position pos);
 	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr top_elif, stmt_ptr else_branch, Position pos);
 	static stmt_ptr make_elif_stmt(expr_ptr cond, stmt_ptr inner, stmt_ptr next_elif, Position pos);
+	static stmt_ptr make_else_stmt(stmt_ptr inner, Position pos);
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
@@ -75,6 +77,9 @@ public:
 
 	bool is_elif_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_ELIF; }
+
+	bool is_else_stmt() const
+	{ return this->type_ == StmtType::STATEMENT_ELSE; }
 
 	bool is_while_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_WHILE; }
@@ -194,6 +199,18 @@ private:
 	expr_ptr cond_;
 	stmt_ptr inner_;
 	stmt_ptr next_elif_;
+};
+
+class ElseStatement : public Statement
+{
+public:
+	ElseStatement(stmt_ptr inner, Position pos)
+		: Statement(StmtType::STATEMENT_ELSE, pos), inner_(inner) {}
+
+	const stmt_ptr inner() const
+	{ return inner_; }
+private:
+	stmt_ptr inner_;
 };
 
 class WhileStatement : public Statement

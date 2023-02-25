@@ -35,6 +35,11 @@ stmt_ptr Statement::make_elif_stmt(expr_ptr cond, stmt_ptr inner, stmt_ptr next_
     return stmt_ptr(new ElifStatement(cond, inner, next_elif, pos));
 }
 
+stmt_ptr Statement::make_else_stmt(stmt_ptr inner, Position pos)
+{
+    return stmt_ptr(new ElseStatement(inner, pos));
+}
+
 stmt_ptr Statement::make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos)
 {
     return stmt_ptr(new WhileStatement(cond, inner, pos));
