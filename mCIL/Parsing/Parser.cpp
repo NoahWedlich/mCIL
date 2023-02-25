@@ -101,6 +101,11 @@ void Parser::synchronize()
         {
             break;
         }
+        if (this->match_symbol(Symbol::LEFT_BRACE))
+        {
+            this->current--;
+            break;
+        }
         if (this->match_keyword(Keyword::KEYWORD_PRINT) ||
             this->match_keyword(Keyword::KEYWORD_IF   ) ||
             this->match_keyword(Keyword::KEYWORD_FOR  ) ||
@@ -653,6 +658,32 @@ stmt_ptr Parser::print_stmt()
     return this->return_stmt();
 }
 
+stmt_ptr Parser::else_stmt()
+{
+    const Token else_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_ELSE))
+    {
+        stmt_ptr inner = statement();
+        return Statement::make_else_stmt(inner, Position{ else_keyword.pos(), inner->pos() });
+    }
+    return nullptr;
+}
+
+stmt_ptr Parser::elif_stmt()
+{
+    const Token elif_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_ELIF))
+    {
+        expect_symbol(Symbol::LEFT_PAREN);
+        expr_ptr cond = expression();
+        expect_symbol(Symbol::RIGHT_PAREN);
+        stmt_ptr inner = statement();
+        stmt_ptr next_elif = elif_stmt();
+        return Statement::make_elif_stmt(cond, inner, next_elif, Position{ elif_keyword.pos(), inner->pos() });
+    }
+    return nullptr;
+}
+
 stmt_ptr Parser::if_stmt()
 {
     const Token if_keyword = this->peek();
@@ -662,14 +693,10 @@ stmt_ptr Parser::if_stmt()
         expr_ptr cond = this->expression();
         expect_symbol(Symbol::RIGHT_PAREN);
         stmt_ptr if_branch = this->statement();
-        stmt_ptr else_branch = nullptr;
+        stmt_ptr top_elif = elif_stmt();
+        stmt_ptr else_branch = else_stmt();
 
-        if (match_keyword(Keyword::KEYWORD_ELSE))
-        {
-            else_branch = statement();
-        }
-
-        return Statement::make_if_stmt(cond, if_branch, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
+        return Statement::make_if_stmt(cond, if_branch, top_elif, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
     }
     return this->print_stmt();
 }
@@ -695,7 +722,7 @@ stmt_ptr Parser::for_stmt()
     const Token for_keyword = this->peek();
     if (this->match_keyword(Keyword::KEYWORD_FOR))
     {
-        expect_symbol(Symbol::RIGHT_PAREN);
+        expect_symbol(Symbol::LEFT_PAREN);
         stmt_ptr init = this->statement();
         expr_ptr cond = this->expression();
         expect_symbol(Symbol::SEMICOLON);

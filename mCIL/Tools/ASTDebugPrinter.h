@@ -8,7 +8,10 @@
 
 #define InitRepr()						\
 	std::string result = "";			\
-	result += std::string(level_, '\t');	
+	result += std::string(level_, '\t');
+
+#define ReprEqual(stmt) \
+	result += stmt;
 
 #define ReprChild(stmt) \
 	level_++;		\
@@ -52,6 +55,8 @@ private:
 	std::string repr_break_stmt(std::shared_ptr<BreakStatement> stmt);
 	std::string repr_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	std::string repr_print_stmt(std::shared_ptr<PrintStatement> stmt);
+	std::string repr_else_stmt(std::shared_ptr<ElseStatement> stmt);
+	std::string repr_elif_stmt(std::shared_ptr<ElifStatement> stmt);
 	std::string repr_if_stmt(std::shared_ptr<IfStatement> stmt);
 	std::string repr_while_stmt(std::shared_ptr<WhileStatement> stmt);
 	std::string repr_for_stmt(std::shared_ptr<ForStatement> stmt);
