@@ -104,6 +104,8 @@ value_ptr Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 {
 	switch (expr->primary_type())
 	{
+	case PrimaryType::PRIMARY_NONE:
+		return CIL::None::create();
 	case PrimaryType::PRIMARY_BOOL:
 		return CIL::Bool::create(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
@@ -480,7 +482,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
 	value_ptr value = this->run_expr(stmt->val());
 
-	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type())
+	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type() && value->type() != Type::NONE)
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
 			stmt->info().type, value->type());

@@ -24,6 +24,7 @@ enum class ExprType
 
 enum class PrimaryType
 {
+	PRIMARY_NONE,
 	PRIMARY_BOOL,
 	PRIMARY_NUM,
 	PRIMARY_STR,
@@ -48,6 +49,7 @@ public:
 
 	static expr_ptr make_error_expr(Position);
 	static expr_ptr make_grouping_expr(expr_ptr, Position);
+	static expr_ptr make_none_expr(Token);
 	static expr_ptr make_bool_expr(Token);
 	static expr_ptr make_num_expr(Token);
 	static expr_ptr make_str_expr(Token);

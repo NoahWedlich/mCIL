@@ -10,6 +10,12 @@ expr_ptr Expression::make_grouping_expr(expr_ptr expr, Position pos)
 	return expr_ptr(new GroupingExpression(expr, pos));
 }
 
+expr_ptr Expression::make_none_expr(Token token)
+{
+	primary_value value{};
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_NONE, value, token.pos()));
+}
+
 expr_ptr Expression::make_bool_expr(Token token)
 {
 	primary_value value{};

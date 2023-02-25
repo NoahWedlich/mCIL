@@ -287,7 +287,11 @@ expr_ptr Parser::primary_expr()
 {
     const Token token = this->peek();
 
-    if (this->match_number())
+    if (match_keyword(Keyword::KEYWORD_NONE))
+    {
+        return Expression::make_none_expr(token);
+    }
+    else if (this->match_number())
     {
         return Expression::make_num_expr(token);
     }
