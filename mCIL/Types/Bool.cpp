@@ -20,14 +20,6 @@ value_ptr CIL::Bool::invert()
 	return CIL::Bool::create(!value_, type_.is_const);
 }
 
-value_ptr CIL::Bool::assign(value_ptr other)
-{
-	no_assign_to_const();
-
-	value_ = other->to_bool();
-	return other;
-}
-
 value_ptr CIL::Bool::equals(value_ptr other)
 {
 	return CIL::Bool::create(value_ == other->to_bool());

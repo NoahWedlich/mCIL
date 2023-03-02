@@ -1,0 +1,13 @@
+num cap = 10;
+num[10] board = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+board[cap - 1] = 1;
+
+for (num i = 0; i < cap - 2; i = i + 1)
+{
+	for (num j = 0; j < cap; j = j + 1)
+	{
+		print (board[j] == 1 ? "*" : " ");
+	}
+	print "\n";
+}

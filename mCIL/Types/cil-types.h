@@ -7,6 +7,7 @@ enum Type
 	BOOL,
 	NUM,
 	STR,
+	OBJ,
 	UNKNOWN,
 	ERROR
 };
@@ -42,6 +43,13 @@ struct ArrInfo
 	std::string name;
 	cilType type;
 	int size;
+};
+
+struct ClassInfo
+{
+	std::string name;
+	std::vector<FuncInfo> methods;
+	std::vector<VarInfo> members;
 };
 
 bool operator==(cilType a, cilType b);

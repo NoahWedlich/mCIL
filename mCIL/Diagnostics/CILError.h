@@ -4,6 +4,7 @@
 #include "Position.h"
 #include "TokenPrinter.h"
 #include "../Lexing/Token.h"
+#include "../Parsing/Expression.h"
 
 class CILError : std::exception
 {
@@ -50,6 +51,7 @@ private:
 	static void insert(std::stringstream& ss, Symbol value);
 	static void insert(std::stringstream& ss, Operator value);
 	static void insert(std::stringstream& ss, Keyword value);
+	static void insert(std::stringstream& ss, PrimaryType value);
 
 	static const std::string format_msg(const char* fmt)
 	{

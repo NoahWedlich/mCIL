@@ -16,11 +16,14 @@ enum class StmtType
 	STATEMENT_RETURN,
 	STATEMENT_PRINT,
 	STATEMENT_IF,
+	STATEMENT_ELIF,
+	STATEMENT_ELSE,
 	STATEMENT_WHILE,
 	STATEMENT_FOR,
 	STATEMENT_VAR_DECL,
 	STATEMENT_ARR_DECL,
 	STATEMENT_FUNC_DECL,
+	STATEMENT_CLASS_DECL,
 	STATEMENT_EXPR
 };
 
@@ -37,13 +40,15 @@ public:
 	static stmt_ptr make_break_stmt(Position pos);
 	static stmt_ptr make_return_stmt(expr_ptr expr, Position pos);
 	static stmt_ptr make_print_stmt(expr_ptr expr, Position pos);
-	//TODO: make elif and else
-	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos);
+	static stmt_ptr make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr top_elif, stmt_ptr else_branch, Position pos);
+	static stmt_ptr make_elif_stmt(expr_ptr cond, stmt_ptr inner, stmt_ptr next_elif, Position pos);
+	static stmt_ptr make_else_stmt(stmt_ptr inner, Position pos);
 	static stmt_ptr make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos);
 	static stmt_ptr make_for_stmt(stmt_ptr init, expr_ptr cond, expr_ptr exec, stmt_ptr inner, Position pos);
 	static stmt_ptr make_var_decl_stmt(VarInfo info, expr_ptr val, Position pos);
 	static stmt_ptr make_arr_decl_stmt(ArrInfo info, expr_list vals, Position pos);
 	static stmt_ptr make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos);
+	static stmt_ptr make_class_decl_stmt(ClassInfo info, stmt_list methods, stmt_list members, Position pos);
 	static stmt_ptr make_expr_stmt(expr_ptr expr, Position pos);
 
 	Position pos() const
@@ -70,6 +75,12 @@ public:
 	bool is_if_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_IF; }
 
+	bool is_elif_stmt() const
+	{ return this->type_ == StmtType::STATEMENT_ELIF; }
+
+	bool is_else_stmt() const
+	{ return this->type_ == StmtType::STATEMENT_ELSE; }
+
 	bool is_while_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_WHILE; }
 
@@ -84,6 +95,9 @@ public:
 
 	bool is_func_decl() const
 	{ return this->type_ == StmtType::STATEMENT_FUNC_DECL; }
+
+	bool is_class_decl() const
+	{ return this->type_ == StmtType::STATEMENT_CLASS_DECL; }
 
 	bool is_expr_stmt() const
 	{ return this->type_ == StmtType::STATEMENT_EXPR; }
@@ -146,8 +160,8 @@ private:
 class IfStatement : public Statement
 {
 public:
-	IfStatement(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos)
-		: Statement(StmtType::STATEMENT_IF, pos), cond_(cond), if_branch_(if_branch), else_branch_(else_branch) {}
+	IfStatement(expr_ptr cond, stmt_ptr if_branch, stmt_ptr top_elif, stmt_ptr else_branch, Position pos)
+		: Statement(StmtType::STATEMENT_IF, pos), cond_(cond), if_branch_(if_branch), top_elif_(top_elif), else_branch_(else_branch) {}
 
 	const expr_ptr cond() const
 	{ return cond_; }
@@ -155,12 +169,48 @@ public:
 	const stmt_ptr if_branch() const
 	{ return if_branch_; }
 
+	const stmt_ptr top_elif() const
+	{ return top_elif_; }
+
 	const stmt_ptr else_branch() const
 	{ return else_branch_; }
 private:
 	expr_ptr cond_;
 	stmt_ptr if_branch_;
+	stmt_ptr top_elif_;
 	stmt_ptr else_branch_;
+};
+
+class ElifStatement : public Statement
+{
+public:
+	ElifStatement(expr_ptr cond, stmt_ptr inner, stmt_ptr next_elif, Position pos)
+		: Statement(StmtType::STATEMENT_ELIF, pos), cond_(cond), inner_(inner), next_elif_(next_elif) {}
+
+	const expr_ptr cond() const
+	{ return cond_;	}
+
+	const stmt_ptr inner() const
+	{ return inner_; }
+
+	const stmt_ptr next_elif() const
+	{ return next_elif_; }
+private:
+	expr_ptr cond_;
+	stmt_ptr inner_;
+	stmt_ptr next_elif_;
+};
+
+class ElseStatement : public Statement
+{
+public:
+	ElseStatement(stmt_ptr inner, Position pos)
+		: Statement(StmtType::STATEMENT_ELSE, pos), inner_(inner) {}
+
+	const stmt_ptr inner() const
+	{ return inner_; }
+private:
+	stmt_ptr inner_;
 };
 
 class WhileStatement : public Statement
@@ -249,6 +299,26 @@ public:
 private:
 	FuncInfo info_;
 	stmt_ptr body_;
+};
+
+class ClassDeclStatement : public Statement
+{
+public:
+	ClassDeclStatement(ClassInfo info, stmt_list methods, stmt_list members, Position pos)
+		: Statement(StmtType::STATEMENT_CLASS_DECL, pos), info_(info), methods_(methods), members_(members) {}
+
+	const ClassInfo info() const
+	{ return info_; }
+
+	const stmt_list methods() const
+	{ return methods_; }
+
+	const stmt_list members() const
+	{ return members_; }
+private:
+	ClassInfo info_;
+	stmt_list methods_;
+	stmt_list members_;
 };
 
 class ExprStatement : public Statement

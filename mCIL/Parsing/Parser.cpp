@@ -101,6 +101,11 @@ void Parser::synchronize()
         {
             break;
         }
+        if (this->match_symbol(Symbol::LEFT_BRACE))
+        {
+            this->current--;
+            break;
+        }
         if (this->match_keyword(Keyword::KEYWORD_PRINT) ||
             this->match_keyword(Keyword::KEYWORD_IF   ) ||
             this->match_keyword(Keyword::KEYWORD_FOR  ) ||
@@ -197,6 +202,35 @@ bool Parser::match_keyword(Keyword key)
     return false;
 }
 
+bool Parser::match_type()
+{
+    bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
+
+    const Token token = this->peek();
+    if (token.is_keyword())
+    {
+        switch (token.keyword())
+        {
+        case Keyword::KEYWORD_BOOL:
+        case Keyword::KEYWORD_NUM:
+        case Keyword::KEYWORD_STR:
+        case Keyword::KEYWORD_AUTO:
+            if(is_const)
+            { current--; }
+            return true;
+        default:
+            return false;
+        }
+    }
+    else if (token.is_identifier())
+    {
+        if (is_const)
+        { current--; }
+        return true;
+    }
+    return false;
+}
+
 bool Parser::get_type(cilType& type)
 {
     bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
@@ -226,6 +260,12 @@ bool Parser::get_type(cilType& type)
         this->advance();
         return true;
     }
+    else if (token.is_identifier())
+    {
+        type = cilType(Type::OBJ, is_const);
+        advance();
+        return true;
+    }
     return false;
 }
 
@@ -247,7 +287,11 @@ expr_ptr Parser::primary_expr()
 {
     const Token token = this->peek();
 
-    if (this->match_number())
+    if (match_keyword(Keyword::KEYWORD_NONE))
+    {
+        return Expression::make_none_expr(token);
+    }
+    else if (this->match_number())
     {
         return Expression::make_num_expr(token);
     }
@@ -267,7 +311,6 @@ expr_ptr Parser::primary_expr()
     {
         return Expression::make_bool_expr(token);
     }
-    //TODO: Implement 'this' and 'none'
     return this->grouping_expr();
 }
 
@@ -281,7 +324,7 @@ expr_ptr Parser::call_expr()
         {
             expr_list args;
             Token r_paren = this->peek();
-            while (true)
+            while (!match_symbol(Symbol::RIGHT_PAREN))
             {
                 if (this->atEnd())
                 { throw CILError::error(l_paren.pos(), "Exptected ')'"); }
@@ -303,6 +346,56 @@ expr_ptr Parser::call_expr()
     return this->primary_expr();
 }
 
+expr_ptr Parser::access_expr()
+{
+    const Token id = this->peek();
+    if (this->match_identifier())
+    {
+        const Token dot = this->peek();
+        if (this->match_symbol(Symbol::DOT))
+        {
+            expr_ptr inner = call_expr();
+            return Expression::make_access_expr(id, inner, Position(id.pos().range(), inner->pos().range()));
+        }
+        this->current--;
+    }
+    return this->call_expr();
+}
+
+expr_ptr Parser::new_expr()
+{
+    const Token new_t = peek();
+    if (match_keyword(Keyword::KEYWORD_NEW))
+    {
+        const Token id = peek();
+        expect_identifier();
+        const Token l_paren = peek();
+        expect_symbol(Symbol::LEFT_PAREN);
+
+        expr_list args;
+        Token r_paren = peek();
+        while (!match_symbol(Symbol::RIGHT_PAREN))
+        {
+            if (atEnd())
+            {
+                throw CILError::error(l_paren.pos(), "Exptected ')'");
+            }
+            expr_ptr arg = expression();
+            args.push_back(arg);
+            const Token comma = peek();
+            r_paren = this->peek();
+            if (!this->match_symbol(Symbol::COMMA))
+            {
+                if (this->match_symbol(Symbol::RIGHT_PAREN))
+                { break; }
+                throw CILError::error(comma.pos(), "Exptected ','");
+            }
+        }
+        return Expression::make_new_expr(id, args, pos_from_tokens(new_t, r_paren));
+    }
+    return access_expr();
+}
+
 expr_ptr Parser::array_access_expr()
 {
     const Token id = this->peek();
@@ -317,7 +410,7 @@ expr_ptr Parser::array_access_expr()
         }
         this->current--;
     }
-    return this->call_expr();
+    return this->new_expr();
 }
 
 expr_ptr Parser::unary_expr()
@@ -466,7 +559,6 @@ expr_ptr Parser::ternary_expr()
 
 expr_ptr Parser::assignment_expr()
 {
-    //TODO: Implement call.identifier
     expr_ptr target = this->ternary_expr();
     while (this->match_operator(Operator::OPERATOR_EQUAL))
     {
@@ -569,6 +661,32 @@ stmt_ptr Parser::print_stmt()
     return this->return_stmt();
 }
 
+stmt_ptr Parser::else_stmt()
+{
+    const Token else_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_ELSE))
+    {
+        stmt_ptr inner = statement();
+        return Statement::make_else_stmt(inner, Position{ else_keyword.pos(), inner->pos() });
+    }
+    return nullptr;
+}
+
+stmt_ptr Parser::elif_stmt()
+{
+    const Token elif_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_ELIF))
+    {
+        expect_symbol(Symbol::LEFT_PAREN);
+        expr_ptr cond = expression();
+        expect_symbol(Symbol::RIGHT_PAREN);
+        stmt_ptr inner = statement();
+        stmt_ptr next_elif = elif_stmt();
+        return Statement::make_elif_stmt(cond, inner, next_elif, Position{ elif_keyword.pos(), inner->pos() });
+    }
+    return nullptr;
+}
+
 stmt_ptr Parser::if_stmt()
 {
     const Token if_keyword = this->peek();
@@ -578,14 +696,10 @@ stmt_ptr Parser::if_stmt()
         expr_ptr cond = this->expression();
         expect_symbol(Symbol::RIGHT_PAREN);
         stmt_ptr if_branch = this->statement();
-        stmt_ptr else_branch = nullptr;
+        stmt_ptr top_elif = elif_stmt();
+        stmt_ptr else_branch = else_stmt();
 
-        if (match_keyword(Keyword::KEYWORD_ELSE))
-        {
-            else_branch = statement();
-        }
-
-        return Statement::make_if_stmt(cond, if_branch, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
+        return Statement::make_if_stmt(cond, if_branch, top_elif, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
     }
     return this->print_stmt();
 }
@@ -632,21 +746,24 @@ stmt_ptr Parser::var_decl_stmt()
     if (this->get_type(type))
     {
         const Token name = this->peek();
-        expect_identifier();
-        if (!this->match_operator(Operator::OPERATOR_EQUAL))
+        if (match_identifier())
         {
-            //TODO: Change this
-            CILError::error(name.pos(), "Variables must be initialized for now");
+            expr_ptr val;
+            if (match_operator(Operator::OPERATOR_EQUAL))
+            { val = expression(); }
+            else
+            { val = Expression::make_none_expr(Token::create_invalid_token(Position{0,0})); }
+            const Token semicolon = this->peek();
+            expect_symbol(Symbol::SEMICOLON);
+            VarInfo info
+            {
+                .name = name.identifier(),
+                .type = type
+            };
+            return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
         }
-        expr_ptr val = this->expression();
-        const Token semicolon = this->peek();
-        expect_symbol(Symbol::SEMICOLON);
-        VarInfo info
-        {
-            .name = name.identifier(),
-            .type = type
-        };
-        return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
+        else
+        { this->current -= (type.is_const ? 2 : 1); }
     }
     return this->for_stmt();
 }
@@ -751,11 +868,69 @@ stmt_ptr Parser::func_decl_stmt()
     return this->arr_decl_stmt();
 }
 
+stmt_ptr Parser::class_decl_stmt()
+{
+    const Token class_keyword = peek();
+    if (match_keyword(Keyword::KEYWORD_CLASS))
+    {
+        const Token name = peek();
+        expect_identifier();
+        const Token l_brace = peek();
+        expect_symbol(Symbol::LEFT_BRACE);
+
+        stmt_list methods{};
+        std::vector<FuncInfo> methods_info{};
+        stmt_list members{};
+        std::vector<VarInfo> members_info{};
+
+        Token r_brace = peek();
+        while (!atEnd())
+        {
+            r_brace = peek();
+
+            const Token current = peek();
+            if (current.is_keyword() && current.keyword() == Keyword::KEYWORD_DEF)
+            {
+                stmt_ptr method = func_decl_stmt();
+                std::shared_ptr<FuncDeclStatement> cast_method = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(method);
+                FuncInfo method_info = cast_method->info();
+                methods.push_back(method);
+                methods_info.push_back(method_info);
+            }
+            else if (match_type())
+            {
+                stmt_ptr member = var_decl_stmt();
+                std::shared_ptr<VarDeclStatement> cast_member = std::dynamic_pointer_cast<VarDeclStatement, Statement>(member);
+                VarInfo member_info = cast_member->info();
+                members.push_back(member);
+                members_info.push_back(member_info);
+            }
+            else if (match_symbol(Symbol::RIGHT_BRACE))
+            {
+                ClassInfo info
+                {
+                    .name = name.identifier(),
+                    .methods = methods_info,
+                    .members = members_info
+                };
+
+                return Statement::make_class_decl_stmt(info, methods, members, pos_from_tokens(class_keyword, r_brace));
+            }
+            else
+            {
+                throw CILError::error(current.pos(), "Only method and member-declarations are allowed inside a class-body");
+            }
+        }
+        throw CILError::error(r_brace.pos(), "Expected '}'");
+    }
+    return func_decl_stmt();
+}
+
 stmt_ptr Parser::statement()
 {
     try
     {
-        return this->func_decl_stmt();
+        return this->class_decl_stmt();
     }
     catch (CILError& err)
     {

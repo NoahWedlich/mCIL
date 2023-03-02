@@ -23,8 +23,6 @@ namespace CIL
 		virtual value_ptr negate();
 		virtual value_ptr increment();
 		virtual value_ptr decrement();
-		//TODO: Call operator
-		//TODO: Access operator
 
 		virtual value_ptr add(value_ptr);
 		virtual value_ptr subtract(value_ptr);
@@ -38,8 +36,6 @@ namespace CIL
 
 		virtual value_ptr left_bitshift(value_ptr);
 		virtual value_ptr right_bitshift(value_ptr);
-
-		virtual value_ptr assign(value_ptr);
 
 		virtual value_ptr equals(value_ptr);
 		virtual value_ptr not_equals(value_ptr);
@@ -65,7 +61,5 @@ namespace CIL
 		CILError binary_op_not_implemented(std::string op, value_ptr val);
 
 		CILError binary_op_invalid_type(std::string op, value_ptr val);
-
-		void no_assign_to_const();
 	};
 }

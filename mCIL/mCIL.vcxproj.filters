@@ -42,9 +42,6 @@
     <ClCompile Include="Diagnostics\TokenPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\ASTPrettyPrinter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Interpreting\Interpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,6 +81,12 @@
     <ClCompile Include="Types\ErrorValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Types\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Types\None.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -117,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Diagnostics\TokenPrinter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\ASTPrettyPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreting\Interpreter.h">
@@ -164,13 +164,24 @@
     <ClInclude Include="Types\BuiltinTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Types\Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\None.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\LexerTest.cil" />
     <None Include="Samples\Variables.cil" />
     <None Include="Samples\Functions.cil" />
     <None Include="Samples\Arrays.cil" />
+    <None Include="Samples\rule110.cil" />
     <None Include="Samples\IfElse.cil" />
+    <None Include="Samples\Sample.cil" />
+    <None Include="Samples\CLasses.cil" />
+    <None Include="Samples\Elif.cil" />
+    <None Include="Samples\None.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />

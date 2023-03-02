@@ -54,6 +54,8 @@ private:
 	value_ptr run_grouping_expr(std::shared_ptr<GroupingExpression> expr);
 	value_ptr run_primary_expr(std::shared_ptr<PrimaryExpression> expr);
 	value_ptr run_call_expr(std::shared_ptr<CallExpression> expr);
+	value_ptr run_access_expr(std::shared_ptr<AccessExpression> expr);
+	value_ptr run_new_expr(std::shared_ptr<NewExpression> expr);
 	value_ptr run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr);
 	value_ptr run_unary_expr(std::shared_ptr<UnaryExpression> expr);
 	value_ptr run_binary_expr(std::shared_ptr<BinaryExpression> expr);
@@ -66,12 +68,15 @@ private:
 	void run_break_stmt(std::shared_ptr<BreakStatement> stmt);
 	void run_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	void run_print_stmt(std::shared_ptr<PrintStatement> stmt);
+	void run_else_stmt(std::shared_ptr<ElseStatement> stmt);
+	bool run_elif_stmt(std::shared_ptr<ElifStatement> stmt);
 	void run_if_stmt(std::shared_ptr<IfStatement> stmt);
 	void run_while_stmt(std::shared_ptr<WhileStatement> stmt);
 	void run_for_stmt(std::shared_ptr<ForStatement> stmt);
 	void run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
 	void run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt);
 	void run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
+	void run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 
 	stmt_list program_;

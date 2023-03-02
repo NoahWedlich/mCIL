@@ -5,7 +5,6 @@
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
 #include "Tools/ASTDebugPrinter.h"
-#include "Tools/ASTPrettyPrinter.h"
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 
@@ -14,7 +13,7 @@ int main()
 	/*REPL repl{};
 	repl.run();*/
 
-	SourceFileManager source{ "Samples/IfElse.cil" };
+	SourceFileManager source{ "Samples/None.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
@@ -31,9 +30,9 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/////*ASTDebugPrinter dbg{ std::cout };
-	////dbg.print_expression(exprs[0]);*/
-	//
+	ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);
+	
 	Interpreter interpreter{ stmts };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)

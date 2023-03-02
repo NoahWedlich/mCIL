@@ -1,12 +1,12 @@
 #include "Environment.h"
 
 Environment::Environment()
-	: variables_(), arrays_(), functions_(), enclosing_(nullptr)
+	: variables_(), arrays_(), functions_(), classes_(), enclosing_(nullptr)
 {
 }
 
 Environment::Environment(Environment* enclosing)
-	: variables_(), arrays_(), functions_(), enclosing_(enclosing)
+	: variables_(), arrays_(), functions_(), classes_(), enclosing_(enclosing)
 {
 }
 
@@ -34,11 +34,20 @@ void Environment::define_arr(Array arr)
 
 void Environment::define_func(Function func)
 {
-	if (this->func_exists(func))
+	if (this->functions_.contains(func.info.name))
 	{
 		throw CILError::error("Redifinition of function '$'", func.info.name.c_str());
 	}
 	this->functions_.insert({ func.info.name, func });
+}
+
+void Environment::define_class(Class cls)
+{
+	if (classes_.contains(cls.info.name))
+	{
+		throw CILError::error("Redifinition of class '$'", cls.info.name.c_str());
+	}
+	classes_.insert({ cls.info.name, cls });
 }
 
 Variable& Environment::get_var(const std::string name)
@@ -86,6 +95,22 @@ Function& Environment::get_func(const std::string name)
 	else
 	{
 		throw CILError::error("Undefined function '$'", name.c_str());
+	}
+}
+
+Class& Environment::get_class(const std::string name)
+{
+	if (classes_.contains(name))
+	{
+		return classes_.at(name);
+	}
+	else if (enclosing_ && enclosing_->class_exists(name))
+	{
+		return enclosing_->get_class(name);
+	}
+	else
+	{
+		throw CILError::error("Undefined class '$'", name.c_str());
 	}
 }
 
@@ -143,3 +168,24 @@ bool Environment::func_exists(Function func)
 	else
 	{ return false; }
 }
+
+bool Environment::class_exists(const std::string name)
+{
+	if (classes_.contains(name))
+	{ return true; }
+	if (enclosing_ != nullptr)
+	{ return enclosing_->class_exists(name); }
+	else
+	{ return false; }
+}
+
+bool Environment::class_exists(Class cls)
+{
+	return class_exists(cls.info.name);
+}
+
+void Environment::add_enclosing(Environment* other)
+{ enclosing_ = other; }
+
+void Environment::rem_enclosing()
+{ enclosing_ = nullptr; }
