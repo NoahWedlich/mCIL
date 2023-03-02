@@ -1,0 +1,19 @@
+
+/*
+num tnum = none;
+num tnum2 = 1;
+tnum2 = none;
+
+str tstr = none;
+str tstr2 = "ß";
+tstr2 = none;
+
+bool tbool = none;
+bool tbool2 = true;
+tbool2 = none;
+*/
+
+bool test;
+print test;
+test = false;
+print test;

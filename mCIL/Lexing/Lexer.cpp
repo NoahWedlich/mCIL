@@ -20,6 +20,7 @@ std::map<std::string, Keyword> Lexer::keyword_map =
 	{"def"    , Keyword::KEYWORD_DEF    },
 	{"return" , Keyword::KEYWORD_RETURN },
 	{"class"  , Keyword::KEYWORD_CLASS  },
+	{"new"    , Keyword::KEYWORD_NEW    },
 	{"this"   , Keyword::KEYWORD_THIS   },
 	{"extends", Keyword::KEYWORD_EXTENDS}
 };
@@ -79,7 +80,8 @@ Token Lexer::next_token()
 			continue;
 		}
 
-		this->skip_spaces();
+		if(skip_spaces())
+		{ continue; }
 
 		Token next = this->create_invalid_token();
 		bool found = false;
@@ -109,6 +111,7 @@ bool Lexer::char_is_alpha(char c)
 {
 	return ((c >= 'A' && c <= 'Z') ||
 			(c >= 'a' && c <= 'z') ||
+			(c >= '0' && c <= '9') ||
 			(c == '_'));
 }
 
@@ -192,7 +195,7 @@ Token Lexer::create_symbol_token(Symbol type, std::string lexeme, size_t len)
 	return Token::create_symbol_token(type, lexeme, this->pos(len));
 }
 
-void Lexer::skip_spaces()
+bool Lexer::skip_spaces()
 {
 	const char* start = this->current_line_ + this->char_off_;
 
@@ -206,8 +209,9 @@ void Lexer::skip_spaces()
 			current++;
 		}
 		this->char_off_ = current - this->current_line_;
-		return;
+		return true;
 	}
+	return false;
 }
 
 bool Lexer::skip_comments()
@@ -301,6 +305,7 @@ Token Lexer::get_symbol(bool& found)
 			this->char_off_++;
 			break;
 		}
+		current--;
 		found = false;
 		return sym;
 	default:

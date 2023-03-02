@@ -9,11 +9,12 @@ typedef std::vector<expr_ptr> expr_list;
 
 enum class ExprType
 {
-	//TODO: Make trailing operators for () and [] and maybe ? and !
 	EXPRESSION_ERROR,
 	EXPRESSION_GROUPING,
 	EXPRESSION_PRIMARY,
 	EXPRESSION_CALL,
+	EXPRESSION_ACCESS,
+	EXPRESSION_NEW,
 	EXPRESSION_ARRAY_ACCESS,
 	EXPRESSION_UNARY,
 	EXPRESSION_BINARY,
@@ -23,6 +24,7 @@ enum class ExprType
 
 enum class PrimaryType
 {
+	PRIMARY_NONE,
 	PRIMARY_BOOL,
 	PRIMARY_NUM,
 	PRIMARY_STR,
@@ -47,11 +49,14 @@ public:
 
 	static expr_ptr make_error_expr(Position);
 	static expr_ptr make_grouping_expr(expr_ptr, Position);
+	static expr_ptr make_none_expr(Token);
 	static expr_ptr make_bool_expr(Token);
 	static expr_ptr make_num_expr(Token);
 	static expr_ptr make_str_expr(Token);
 	static expr_ptr make_identifier_expr(Token);
 	static expr_ptr make_call_expr(Token, expr_list, Position);
+	static expr_ptr make_access_expr(Token, expr_ptr, Position);
+	static expr_ptr make_new_expr(Token, expr_list, Position);
 	static expr_ptr make_array_access_expr(Token, expr_ptr, Position);
 	static expr_ptr make_unary_expr(Token, expr_ptr);
 	static expr_ptr make_binary_expr(Token, expr_ptr, expr_ptr);
@@ -75,6 +80,12 @@ public:
 
 	bool is_call_expr()
 	{ return this->type_ == ExprType::EXPRESSION_CALL; }
+
+	bool is_access_expr()
+	{ return type_ == ExprType::EXPRESSION_ACCESS; }
+
+	bool is_new_expr()
+	{ return type_ == ExprType::EXPRESSION_NEW; }
 
 	bool is_array_access_expr()
 	{ return this->type_ == ExprType::EXPRESSION_ARRAY_ACCESS; }
@@ -144,6 +155,38 @@ public:
 	{ return args_; }
 private:
 	const std::string& identifier_;
+	expr_list args_;
+};
+
+class AccessExpression : public Expression
+{
+public:
+	AccessExpression(const std::string identifier, expr_ptr inner, Position pos)
+		: Expression(ExprType::EXPRESSION_ACCESS, pos), identifier_(identifier), inner_(inner) {}
+
+	const std::string& identifier() const
+	{ return identifier_; }
+
+	const expr_ptr inner() const
+	{ return inner_; }
+private:
+	const std::string identifier_;
+	expr_ptr inner_;
+};
+
+class NewExpression : public Expression
+{
+public:
+	NewExpression(const std::string identifier, expr_list args, Position pos)
+		: Expression(ExprType::EXPRESSION_NEW, pos), identifier_(identifier), args_(args) {}
+
+	const std::string& identifier() const
+	{ return identifier_; }
+
+	const expr_list args() const
+	{ return args_; }
+private:
+	const std::string identifier_;
 	expr_list args_;
 };
 

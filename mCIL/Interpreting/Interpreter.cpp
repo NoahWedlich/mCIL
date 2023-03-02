@@ -74,6 +74,10 @@ value_ptr Interpreter::run_expr(expr_ptr expr)
 		return this->run_grouping_expr(std::dynamic_pointer_cast<GroupingExpression, Expression>(expr));
 	case ExprType::EXPRESSION_CALL:
 		return this->run_call_expr(std::dynamic_pointer_cast<CallExpression, Expression>(expr));
+	case ExprType::EXPRESSION_ACCESS:
+		return run_access_expr(std::dynamic_pointer_cast<AccessExpression, Expression>(expr));
+	case ExprType::EXPRESSION_NEW:
+		return run_new_expr(std::dynamic_pointer_cast<NewExpression, Expression>(expr));
 	case ExprType::EXPRESSION_ARRAY_ACCESS:
 		return this->run_array_access_expr(std::dynamic_pointer_cast<ArrayAccessExpression, Expression>(expr));
 	case ExprType::EXPRESSION_PRIMARY:
@@ -100,6 +104,8 @@ value_ptr Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 {
 	switch (expr->primary_type())
 	{
+	case PrimaryType::PRIMARY_NONE:
+		return CIL::None::create();
 	case PrimaryType::PRIMARY_BOOL:
 		return CIL::Bool::create(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
@@ -173,8 +179,7 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		delete this->env_;
 		this->env_ = previous;
-		//Change to none
-		return CIL::ErrorValue::create();
+		return CIL::None::create();
 	}
 	catch (CILError& err)
 	{
@@ -183,6 +188,29 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		ErrorManager::cil_error(err);
 		return CIL::ErrorValue::create();
 	}
+}
+
+value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
+{
+	Variable var = env_->get_var(expr->identifier());
+	if(var.info.type.type != Type::OBJ)
+	{ throw CILError::error(expr->pos(), "Can only access variables of type '$', got '$'", Type::OBJ, var.info.type.type); }
+	CIL::Object obj = *std::dynamic_pointer_cast<CIL::Object, CIL::Value>(var.value);
+
+	Environment* previous = this->env_;
+	env_ = obj.env();
+	env_->add_enclosing(previous);
+	value_ptr val = run_expr(expr->inner());
+	env_->rem_enclosing();
+	this->env_ = previous;
+	return val;
+}
+
+value_ptr Interpreter::run_new_expr(std::shared_ptr<NewExpression> expr)
+{
+	Class cls = env_->get_class(expr->identifier());
+	value_ptr obj = CIL::Object::create(cls);
+	return obj;
 }
 
 value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
@@ -288,8 +316,29 @@ value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression>
 	if (value->type() == Type::ERROR)
 	{ return CIL::ErrorValue::create(); }
 
-	value_ptr target = this->run_expr(expr->target());
-	TRY_OP(return target->assign(value), expr->pos());
+	if (expr->target()->is_primary_expr())
+	{
+		std::shared_ptr<PrimaryExpression> primary = std::dynamic_pointer_cast<PrimaryExpression, Expression>(expr->target());
+		if (primary->primary_type() == PrimaryType::PRIMARY_IDENTIFIER)
+		{
+			std::string identifier = *primary->val().identifier_val;
+
+			if (env_->var_exists(identifier))
+			{
+				env_->get_var(identifier).value = value;
+			}
+		}
+		else
+		{
+			throw CILError::error(expr->pos(), "Cannot assign to '$'", primary->primary_type());
+		}
+	}
+	else
+	{
+		throw CILError::error(expr->pos(), "Cannot only assign to primary values");
+	}
+
+	return value;
 }
 
 void Interpreter::run_stmt(stmt_ptr stmt)
@@ -308,6 +357,12 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_PRINT:
 		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
 		break;
+	case StmtType::STATEMENT_ELSE:
+		run_else_stmt(std::dynamic_pointer_cast<ElseStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_ELIF:
+		run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt));
+		break;
 	case StmtType::STATEMENT_IF:
 		this->run_if_stmt(std::dynamic_pointer_cast<IfStatement, Statement>(stmt));
 		break;
@@ -325,6 +380,9 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 		break;
 	case StmtType::STATEMENT_FUNC_DECL:
 		this->run_func_decl_stmt(std::dynamic_pointer_cast<FuncDeclStatement, Statement>(stmt));
+		break;
+	case StmtType::STATEMENT_CLASS_DECL:
+		run_class_decl_stmt(std::dynamic_pointer_cast<ClassDeclStatement, Statement>(stmt));
 		break;
 	case StmtType::STATEMENT_EXPR:
 		this->run_expr_stmt(std::dynamic_pointer_cast<ExprStatement, Statement>(stmt));
@@ -372,6 +430,26 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 	std::cout << val->to_string();
 }
 
+void Interpreter::run_else_stmt(std::shared_ptr<ElseStatement> stmt)
+{
+	run_stmt(stmt->inner());
+}
+
+bool Interpreter::run_elif_stmt(std::shared_ptr<ElifStatement> stmt)
+{
+	value_ptr val = run_expr(stmt->cond());
+	if (val->to_bool())
+	{
+		run_stmt(stmt->inner());
+		return true;
+	}
+	else if (stmt->next_elif() != nullptr)
+	{
+		return run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt->next_elif()));
+	}
+	return false;
+}
+
 void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 {
 	value_ptr val = this->run_expr(stmt->cond());
@@ -379,9 +457,12 @@ void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 	{
 		this->run_stmt(stmt->if_branch());
 	}
-	else if (stmt->else_branch() != nullptr)
+	else if (stmt->top_elif() != nullptr)
 	{
-		run_stmt(stmt->else_branch());
+		if (!run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt->top_elif())))
+		{
+			run_stmt(stmt->else_branch());
+		}
 	}
 }
 
@@ -421,7 +502,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
 	value_ptr value = this->run_expr(stmt->val());
 
-	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type())
+	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type() && value->type() != Type::NONE)
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
 			stmt->info().type, value->type());
@@ -459,6 +540,28 @@ void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
 {
 	Function func{ stmt->info(), stmt->body() };
 	this->env_->define_func(func);
+}
+
+void Interpreter::run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
+{
+	std::vector<Function> methods{};
+	std::vector<Variable> members{};
+
+	for (stmt_ptr s : stmt->methods())
+	{
+		std::shared_ptr<FuncDeclStatement> method_ptr = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(s);
+		methods.emplace_back(method_ptr->info(), method_ptr->body());
+	}
+
+	for (stmt_ptr s : stmt->members())
+	{
+		std::shared_ptr<VarDeclStatement> member_ptr = std::dynamic_pointer_cast<VarDeclStatement, Statement>(s);
+		value_ptr value = run_expr(member_ptr->val());
+		members.emplace_back(member_ptr->info(), value);
+	}
+
+	Class cls{ stmt->info(), methods, members };
+	env_->define_class(cls);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)

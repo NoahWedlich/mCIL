@@ -41,6 +41,10 @@ namespace TokenPrinter
 			return "!";
 		case Operator::OPERATOR_ADD:
 			return "+";
+		case Operator::OPERATOR_INCREMENT:
+			return "++";
+		case Operator::OPERATOR_DECREMENT:
+			return "--";
 		case Operator::OPERATOR_SUBTRACT:
 			return "-";
 		case Operator::OPERATOR_MULTIPLY:
@@ -65,6 +69,18 @@ namespace TokenPrinter
 			return "&&";
 		case Operator::OPERATOR_OR:
 			return "||";
+		case Operator::OPERATOR_LEFT_BITSHIFT:
+			return "<<";
+		case Operator::OPERATOR_RIGHT_BITSHIFT:
+			return ">>";
+		case Operator::OPERATOR_BITWISE_NOT:
+			return "~";
+		case Operator::OPERATOR_BITWISE_AND:
+			return "&";
+		case Operator::OPERATOR_BITWISE_OR:
+			return "|";
+		case Operator::OPERATOR_BITWISE_XOR:
+			return "^";
 		default:
 			return "INVALID_OPERATOR";
 		}

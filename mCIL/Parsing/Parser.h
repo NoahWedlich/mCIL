@@ -50,11 +50,14 @@ private:
 	{ return this->match_operator(a) || this->match_operator(b); }
 	bool match_keyword(Keyword key);
 	
+	bool match_type();
 	bool get_type(cilType& type);
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();
 	expr_ptr call_expr();
+	expr_ptr access_expr();
+	expr_ptr new_expr();
 	expr_ptr array_access_expr();
 	expr_ptr unary_expr();
 	expr_ptr factor_expr();
@@ -74,12 +77,15 @@ private:
 	stmt_ptr break_stmt();
 	stmt_ptr return_stmt();
 	stmt_ptr print_stmt();
+	stmt_ptr else_stmt();
+	stmt_ptr elif_stmt();
 	stmt_ptr if_stmt();
 	stmt_ptr while_stmt();
 	stmt_ptr for_stmt();
 	stmt_ptr var_decl_stmt();
 	stmt_ptr arr_decl_stmt();
 	stmt_ptr func_decl_stmt();
+	stmt_ptr class_decl_stmt();
 	stmt_ptr statement();
 
 	std::vector<Token>& tokens_;

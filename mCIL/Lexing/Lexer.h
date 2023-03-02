@@ -31,7 +31,7 @@ private:
 	Token create_operator_token(Operator type, std::string lexeme, size_t len = 1);
 	Token create_symbol_token(Symbol type, std::string lexeme, size_t len = 1);
 
-	void skip_spaces();
+	bool skip_spaces();
 	bool skip_comments();
 
 	Token get_symbol(bool& found);

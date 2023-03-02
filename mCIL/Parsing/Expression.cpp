@@ -10,6 +10,12 @@ expr_ptr Expression::make_grouping_expr(expr_ptr expr, Position pos)
 	return expr_ptr(new GroupingExpression(expr, pos));
 }
 
+expr_ptr Expression::make_none_expr(Token token)
+{
+	primary_value value{};
+	return expr_ptr(new PrimaryExpression(PrimaryType::PRIMARY_NONE, value, token.pos()));
+}
+
 expr_ptr Expression::make_bool_expr(Token token)
 {
 	primary_value value{};
@@ -41,6 +47,16 @@ expr_ptr Expression::make_identifier_expr(Token token)
 expr_ptr Expression::make_call_expr(Token token, expr_list args, Position pos)
 {
 	return expr_ptr(new CallExpression(token.identifier(), args, pos));
+}
+
+expr_ptr Expression::make_access_expr(Token token, expr_ptr inner, Position pos)
+{
+	return expr_ptr(new AccessExpression(token.identifier(), inner, pos));
+}
+
+expr_ptr Expression::make_new_expr(Token token, expr_list args, Position pos)
+{
+	return expr_ptr(new NewExpression(token.identifier(), args, pos));
 }
 
 expr_ptr Expression::make_array_access_expr(Token name, expr_ptr index, Position pos)

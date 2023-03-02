@@ -1,0 +1,16 @@
+
+
+class Test
+{
+	def method(num arg) -> num
+	{
+		member = arg++;
+		return member;
+	}
+
+	num member = 1;
+}
+
+Test t = new Test();
+
+print t.method(1);

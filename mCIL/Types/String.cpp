@@ -26,14 +26,6 @@ value_ptr CIL::String::add(value_ptr other)
 	throw binary_op_invalid_type("+", other);
 }
 
-value_ptr CIL::String::assign(value_ptr other)
-{
-	no_assign_to_const();
-
-	value_ = std::dynamic_pointer_cast<String>(other)->value();
-	return other;
-}
-
 value_ptr CIL::String::equals(value_ptr other)
 {
 	if (other->is_type(Type::STR))

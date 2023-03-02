@@ -25,9 +25,19 @@ stmt_ptr Statement::make_print_stmt(expr_ptr expr, Position pos)
     return stmt_ptr(new PrintStatement(expr, pos));
 }
 
-stmt_ptr Statement::make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr else_branch, Position pos)
+stmt_ptr Statement::make_if_stmt(expr_ptr cond, stmt_ptr if_branch, stmt_ptr top_elif, stmt_ptr else_branch, Position pos)
 {
-    return stmt_ptr(new IfStatement(cond, if_branch, else_branch, pos));
+    return stmt_ptr(new IfStatement(cond, if_branch, top_elif, else_branch, pos));
+}
+
+stmt_ptr Statement::make_elif_stmt(expr_ptr cond, stmt_ptr inner, stmt_ptr next_elif, Position pos)
+{
+    return stmt_ptr(new ElifStatement(cond, inner, next_elif, pos));
+}
+
+stmt_ptr Statement::make_else_stmt(stmt_ptr inner, Position pos)
+{
+    return stmt_ptr(new ElseStatement(inner, pos));
 }
 
 stmt_ptr Statement::make_while_stmt(expr_ptr cond, stmt_ptr inner, Position pos)
@@ -53,6 +63,11 @@ stmt_ptr Statement::make_arr_decl_stmt(ArrInfo info, expr_list vals, Position po
 stmt_ptr Statement::make_func_decl_stmt(FuncInfo info, stmt_ptr body, Position pos)
 {
     return stmt_ptr(new FuncDeclStatement(info, body, pos));
+}
+
+stmt_ptr Statement::make_class_decl_stmt(ClassInfo info, stmt_list methods, stmt_list members, Position pos)
+{
+    return stmt_ptr(new ClassDeclStatement(info, methods, members, pos));
 }
 
 stmt_ptr Statement::make_expr_stmt(expr_ptr expr, Position pos)

@@ -83,7 +83,7 @@ value_ptr CIL::Number::divide(value_ptr other)
 
 value_ptr CIL::Number::bitwise_not()
 {
-	return CIL::Number::create(~(__int64)value_);
+	return CIL::Number::create((double)~(__int64)value_);
 }
 
 value_ptr CIL::Number::bitwise_and(value_ptr other)
@@ -139,14 +139,6 @@ value_ptr CIL::Number::right_bitshift(value_ptr other)
 		);
 	}
 	throw binary_op_invalid_type("+", other);
-}
-
-value_ptr CIL::Number::assign(value_ptr other)
-{
-	no_assign_to_const();
-
-	value_ = std::dynamic_pointer_cast<Number>(other)->value();
-	return other;
 }
 
 value_ptr CIL::Number::equals(value_ptr other)

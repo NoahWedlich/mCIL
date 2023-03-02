@@ -12,8 +12,6 @@ namespace CIL
 
 		virtual value_ptr invert() override;
 
-		virtual value_ptr assign(value_ptr) override;
-
 		virtual value_ptr equals(value_ptr) override;
 		virtual value_ptr not_equals(value_ptr) override;
 		virtual value_ptr logical_and(value_ptr) override;
