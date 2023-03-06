@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Compiling\Compiler.cpp" />
     <ClCompile Include="Types\None.cpp" />
     <ClCompile Include="Types\Object.cpp" />
     <ClCompile Include="Types\ErrorValue.cpp" />
@@ -154,6 +155,8 @@
     <ClCompile Include="Types\Value.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Compiling\Backend.h" />
+    <ClInclude Include="Compiling\Compiler.h" />
     <ClInclude Include="Types\None.h" />
     <ClInclude Include="Types\Object.h" />
     <ClInclude Include="Types\BuiltinTypes.h" />
