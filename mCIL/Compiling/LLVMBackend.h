@@ -56,6 +56,10 @@ private:
 
 	template <typename T>
 	CILError invalid_unary(Position pos, T op, val value);
+
+	bool is_num(val value);
+	bool is_str(val value);
+	bool is_bool(val value);
 };
 
 template<typename T>

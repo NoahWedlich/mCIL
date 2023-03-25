@@ -98,16 +98,15 @@ val LLVMBackend::gen_array_access_expr(std::shared_ptr<ArrayAccessExpression> ex
 val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
 	val inner = gen_expr(expr->expr());
-	llvm::Type* inner_type = inner->getType();
 
 	switch (expr->op())
 	{
 	case Operator::OPERATOR_BANG:
-		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		if (is_num(inner))
 		{
 			return builder_->CreateFCmpOEQ(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(0.0)), "UnaryNot");
 		}
-		else if (inner_type == llvm::Type::getInt1Ty(*context_))
+		else if (is_bool(inner))
 		{
 			return builder_->CreateICmpEQ(inner, llvm::ConstantInt::get(*context_, llvm::APInt(1, 0)), "UnaryNot");
 		}
@@ -116,7 +115,7 @@ val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 			throw invalid_unary(expr->pos(), Operator::OPERATOR_BANG, inner);
 		}
 	case Operator::OPERATOR_SUBTRACT:
-		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		if (is_num(inner))
 		{
 			return builder_->CreateFMul(llvm::ConstantFP::get(*context_, llvm::APFloat(-1.0)), inner, "UnaryInvert");
 		}
@@ -125,7 +124,7 @@ val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 			throw invalid_unary(expr->pos(), Operator::OPERATOR_SUBTRACT, inner);
 		}
 	case Operator::OPERATOR_INCREMENT:
-		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		if (is_num(inner))
 		{
 			return builder_->CreateFAdd(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(1.0)), "UnaryIncrement");
 		}
@@ -134,7 +133,7 @@ val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 			throw invalid_unary(expr->pos(), Operator::OPERATOR_INCREMENT, inner);
 		}
 	case Operator::OPERATOR_DECREMENT:
-		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		if (is_num(inner))
 		{
 			return builder_->CreateFSub(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(1.0)), "UnaryDecrement");
 		}
@@ -269,4 +268,22 @@ val LLVMBackend::gen_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
 val LLVMBackend::gen_expr_stmt(std::shared_ptr<ExprStatement> stmt)
 {
 	return gen_expr(stmt->expr());
+}
+
+bool LLVMBackend::is_num(val value)
+{
+	llvm::Type* type = value->getType();
+	return type->isDoubleTy();
+}
+
+bool LLVMBackend::is_str(val value)
+{
+	llvm::Type* type = value->getType();
+	return type->isArrayTy();
+}
+
+bool LLVMBackend::is_bool(val value)
+{
+	llvm::Type* type = value->getType();
+	return type->isIntegerTy(1);
 }
