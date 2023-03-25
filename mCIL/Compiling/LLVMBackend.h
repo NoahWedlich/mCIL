@@ -57,6 +57,9 @@ private:
 	template <typename T>
 	CILError invalid_unary(Position pos, T op, val value);
 
+	template <typename T>
+	CILError invalid_binary(Position pos, T op, val left, val right);
+
 	bool is_num(val value);
 	bool is_str(val value);
 	bool is_bool(val value);
@@ -72,4 +75,10 @@ template<typename T>
 inline CILError LLVMBackend::invalid_unary(Position pos, T op, val value)
 {
 	return CILError::error(pos, "Cannot compile unary operation '$' with value '$'", op, value);
+}
+
+template<typename T>
+inline CILError LLVMBackend::invalid_binary(Position pos, T op, val left, val right)
+{
+	return CILError::error(pos, "Cannot compile binary operation '$' with values '$' and '$'", op, left, right);
 }

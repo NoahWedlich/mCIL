@@ -150,7 +150,149 @@ val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 
 val LLVMBackend::gen_binary_expr(std::shared_ptr<BinaryExpression> expr)
 {
-	throw unsupported(expr->pos(), ExprType::EXPRESSION_BINARY);
+	val left = gen_expr(expr->left());
+	val right = gen_expr(expr->right());
+
+	switch (expr->op())
+	{
+	case Operator::OPERATOR_ADD:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFAdd(left, right, "NumAdd");
+		}
+		//TODO: Custom str-class
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_ADD, left, right);
+		}
+	case Operator::OPERATOR_SUBTRACT:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFSub(left, right, "NumSub");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_SUBTRACT, left, right);
+		}
+	case Operator::OPERATOR_MULTIPLY:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFMul(left, right, "NumMult");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_MULTIPLY, left, right);
+		}
+	case Operator::OPERATOR_DIVIDE:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFDiv(left, right, "NumDiv");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_DIVIDE, left, right);
+		}
+	case Operator::OPERATOR_LEFT_BITSHIFT:
+		throw unsupported(expr->pos(), Operator::OPERATOR_LEFT_BITSHIFT);
+	case Operator::OPERATOR_RIGHT_BITSHIFT:
+		throw unsupported(expr->pos(), Operator::OPERATOR_RIGHT_BITSHIFT);
+	case Operator::OPERATOR_GREATER:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpOGT(left, right, "NumGreater");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_GREATER, left, right);
+		}
+	case Operator::OPERATOR_LESS:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpOLT(left, right, "NumLess");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_LESS, left, right);
+		}
+	case Operator::OPERATOR_GREATER_EQUAL:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpOGE(left, right, "NumGreaterEqual");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_GREATER_EQUAL, left, right);
+		}
+	case Operator::OPERATOR_LESS_EQUAL:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpOLE(left, right, "NumLessEqual");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_LESS_EQUAL, left, right);
+		}
+	case Operator::OPERATOR_EQUAL_EQUAL:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpOEQ(left, right, "NumEquals");
+		}
+		else if (is_bool(left) && is_bool(right))
+		{
+			return builder_->CreateICmpEQ(left, right, "BoolEquals");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_EQUAL_EQUAL, left, right);
+		}
+	case Operator::OPERATOR_NOT_EQUAL:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateFCmpONE(left, right, "NumNotEquals");
+		}
+		else if (is_bool(left) && is_bool(right))
+		{
+			return builder_->CreateICmpNE(left, right, "BoolNotEquals");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_NOT_EQUAL, left, right);
+		}
+	case Operator::OPERATOR_AND:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateLogicalAnd(left, right, "NumAnd");
+		}
+		else if (is_bool(left) && is_bool(right))
+		{
+			return builder_->CreateLogicalAnd(left, right, "BoolAnd");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_AND, left, right);
+		}
+	case Operator::OPERATOR_OR:
+		if (is_num(left) && is_num(right))
+		{
+			return builder_->CreateLogicalOr(left, right, "NumOr");
+		}
+		else if (is_bool(left) && is_bool(right))
+		{
+			return builder_->CreateLogicalOr(left, right, "BoolOr");
+		}
+		else
+		{
+			throw invalid_binary(expr->pos(), Operator::OPERATOR_OR, left, right);
+	case Operator::OPERATOR_BITWISE_AND:
+		throw unsupported(expr->pos(), Operator::OPERATOR_BITWISE_AND);
+	case Operator::OPERATOR_BITWISE_OR:
+		throw unsupported(expr->pos(), Operator::OPERATOR_BITWISE_OR);
+	case Operator::OPERATOR_BITWISE_XOR:
+		throw unsupported(expr->pos(), Operator::OPERATOR_BITWISE_XOR);
+	default:
+		throw CILError::error(expr->pos(), "Incomplete handling of binary expressions");
+		}
+	}
 }
 
 val LLVMBackend::gen_ternary_expr(std::shared_ptr<TernaryExpression> expr)
