@@ -53,10 +53,19 @@ private:
 
 	template <typename T>
 	CILError unsupported(Position pos, T op);
+
+	template <typename T>
+	CILError invalid_unary(Position pos, T op, val value);
 };
 
 template<typename T>
 inline CILError LLVMBackend::unsupported(Position pos, T op)
 {
 	return CILError::error(pos, "Compilation of '$' is not supported", op);
+}
+
+template<typename T>
+inline CILError LLVMBackend::invalid_unary(Position pos, T op, val value)
+{
+	return CILError::error(pos, "Cannot compile unary operation '$' with value '$'", op, value);
 }

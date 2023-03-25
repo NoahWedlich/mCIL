@@ -97,7 +97,56 @@ val LLVMBackend::gen_array_access_expr(std::shared_ptr<ArrayAccessExpression> ex
 
 val LLVMBackend::gen_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
-	throw unsupported(expr->pos(), ExprType::EXPRESSION_UNARY);
+	val inner = gen_expr(expr->expr());
+	llvm::Type* inner_type = inner->getType();
+
+	switch (expr->op())
+	{
+	case Operator::OPERATOR_BANG:
+		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		{
+			return builder_->CreateFCmpOEQ(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(0.0)), "UnaryNot");
+		}
+		else if (inner_type == llvm::Type::getInt1Ty(*context_))
+		{
+			return builder_->CreateICmpEQ(inner, llvm::ConstantInt::get(*context_, llvm::APInt(1, 0)), "UnaryNot");
+		}
+		else
+		{
+			throw invalid_unary(expr->pos(), Operator::OPERATOR_BANG, inner);
+		}
+	case Operator::OPERATOR_SUBTRACT:
+		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		{
+			return builder_->CreateFMul(llvm::ConstantFP::get(*context_, llvm::APFloat(-1.0)), inner, "UnaryInvert");
+		}
+		else
+		{
+			throw invalid_unary(expr->pos(), Operator::OPERATOR_SUBTRACT, inner);
+		}
+	case Operator::OPERATOR_INCREMENT:
+		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		{
+			return builder_->CreateFAdd(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(1.0)), "UnaryIncrement");
+		}
+		else
+		{
+			throw invalid_unary(expr->pos(), Operator::OPERATOR_INCREMENT, inner);
+		}
+	case Operator::OPERATOR_DECREMENT:
+		if (inner_type == llvm::Type::getDoubleTy(*context_))
+		{
+			return builder_->CreateFSub(inner, llvm::ConstantFP::get(*context_, llvm::APFloat(1.0)), "UnaryDecrement");
+		}
+		else
+		{
+			throw invalid_unary(expr->pos(), Operator::OPERATOR_DECREMENT, inner);
+		}
+	case Operator::OPERATOR_BITWISE_NOT:
+		throw unsupported(expr->pos(), Operator::OPERATOR_BITWISE_NOT);
+	default:
+		throw CILError::error(expr->pos(), "Incomplete handling of unary operators");
+	}
 }
 
 val LLVMBackend::gen_binary_expr(std::shared_ptr<BinaryExpression> expr)
