@@ -231,3 +231,11 @@ void CILError::insert(std::stringstream& ss, StmtType type)
 		break;
 	}
 }
+
+void CILError::insert(std::stringstream& ss, llvm::Value* value)
+{
+	std::string v = "";
+	llvm::raw_string_ostream os{ v };
+	value->print(os);
+	ss << v;
+}
