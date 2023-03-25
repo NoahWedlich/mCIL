@@ -17,6 +17,7 @@ void LLVMBackend::gen_statement(stmt_ptr stmt)
 {
 	val IR = gen_stmt(stmt);
 	IR->print(llvm::errs());
+	llvm::errs() << "\n";
 }
 
 val LLVMBackend::gen_expr(expr_ptr expr)
@@ -57,7 +58,21 @@ val LLVMBackend::gen_grouping_expr(std::shared_ptr<GroupingExpression> expr)
 
 val LLVMBackend::gen_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 {
-	throw unsupported(expr->pos(), ExprType::EXPRESSION_PRIMARY);
+	switch (expr->primary_type())
+	{
+	case PrimaryType::PRIMARY_NONE:
+		throw unsupported(expr->pos(), PrimaryType::PRIMARY_NONE);
+	case PrimaryType::PRIMARY_BOOL:
+		return builder_->getInt1(expr->val().bool_val);
+	case PrimaryType::PRIMARY_NUM:
+		return llvm::ConstantFP::get(*context_, llvm::APFloat(expr->val().num_val));
+	case PrimaryType::PRIMARY_STR:
+		return llvm::ConstantDataArray::getString(*context_, *expr->val().str_val);
+	case PrimaryType::PRIMARY_IDENTIFIER:
+		throw unsupported(expr->pos(), PrimaryType::PRIMARY_IDENTIFIER);
+	default:
+		throw CILError::error(expr->pos(), "Incomplete handling of primary expressions");
+	}
 }
 
 val LLVMBackend::gen_call_expr(std::shared_ptr<CallExpression> expr)
@@ -204,5 +219,5 @@ val LLVMBackend::gen_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
 
 val LLVMBackend::gen_expr_stmt(std::shared_ptr<ExprStatement> stmt)
 {
-	throw unsupported(stmt->pos(), StmtType::STATEMENT_EXPR);
+	return gen_expr(stmt->expr());
 }

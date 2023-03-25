@@ -2,6 +2,8 @@
 #include "Lexing/Lexer.h"
 #include "Parsing/Parser.h"
 #include "Parsing/Statement.h"
+#include "Compiling/Compiler.h"
+#include "Compiling/LLVMBackend.h"
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
 #include "Tools/ASTDebugPrinter.h"
@@ -13,7 +15,7 @@ int main()
 	/*REPL repl{};
 	repl.run();*/
 
-	SourceFileManager source{ "Samples/None.cil" };
+	SourceFileManager source{ "Samples/CompileTest.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
@@ -30,14 +32,22 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	ASTDebugPrinter dbg{};
-	dbg.print_stmt_list(stmts);
-	
-	Interpreter interpreter{ stmts };
-	interpreter.run();
+	/*ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);*/
+
+	Compiler compiler{ stmts, std::shared_ptr<Backend>(new LLVMBackend())};
+	compiler.compile();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
 	}
+	
+	/*Interpreter interpreter{ stmts };
+	interpreter.run();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}*/
 }

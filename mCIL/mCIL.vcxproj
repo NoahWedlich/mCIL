@@ -191,6 +191,7 @@
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\CLasses.cil" />
+    <None Include="Samples\CompileTest.cil" />
     <None Include="Samples\Elif.cil" />
     <None Include="Samples\Functions.cil" />
     <None Include="Samples\IfElse.cil" />
