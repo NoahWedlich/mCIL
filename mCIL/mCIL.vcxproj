@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Compiling\Compiler.cpp" />
+    <ClCompile Include="Compiling\LLVMBackend.cpp" />
     <ClCompile Include="Types\None.cpp" />
     <ClCompile Include="Types\Object.cpp" />
     <ClCompile Include="Types\ErrorValue.cpp" />
@@ -157,6 +158,8 @@
   <ItemGroup>
     <ClInclude Include="Compiling\Backend.h" />
     <ClInclude Include="Compiling\Compiler.h" />
+    <ClInclude Include="Compiling\LLVMBackend.h" />
+    <ClInclude Include="Compiling\LLVMHeaders.h" />
     <ClInclude Include="Types\None.h" />
     <ClInclude Include="Types\Object.h" />
     <ClInclude Include="Types\BuiltinTypes.h" />
