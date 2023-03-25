@@ -5,6 +5,7 @@
 #include "TokenPrinter.h"
 #include "../Lexing/Token.h"
 #include "../Parsing/Expression.h"
+#include "../Parsing/Statement.h"
 
 class CILError : std::exception
 {
@@ -52,6 +53,8 @@ private:
 	static void insert(std::stringstream& ss, Operator value);
 	static void insert(std::stringstream& ss, Keyword value);
 	static void insert(std::stringstream& ss, PrimaryType value);
+	static void insert(std::stringstream& ss, ExprType type);
+	static void insert(std::stringstream& ss, StmtType type);
 
 	static const std::string format_msg(const char* fmt)
 	{

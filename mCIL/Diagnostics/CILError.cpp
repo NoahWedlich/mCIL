@@ -136,3 +136,98 @@ void CILError::insert(std::stringstream& ss, PrimaryType value)
 		ss << "?";
 	}
 }
+
+void CILError::insert(std::stringstream& ss, ExprType type)
+{
+	switch (type)
+	{
+	case ExprType::EXPRESSION_ERROR:
+		ss << "error-expr";
+		break;
+	case ExprType::EXPRESSION_GROUPING:
+		ss << "grouping-expr";
+		break;
+	case ExprType::EXPRESSION_CALL:
+		ss << "call-expr";
+		break;
+	case ExprType::EXPRESSION_ACCESS:
+		ss << "access-expr";
+		break;
+	case ExprType::EXPRESSION_NEW:
+		ss << "new-expr";
+		break;
+	case ExprType::EXPRESSION_ARRAY_ACCESS:
+		ss << "array-access-expr";
+		break;
+	case ExprType::EXPRESSION_PRIMARY:
+		ss << "primary-expr";
+		break;
+	case ExprType::EXPRESSION_UNARY:
+		ss << "unary-expr";
+		break;
+	case ExprType::EXPRESSION_BINARY:
+		ss << "binary-expr";
+		break;
+	case ExprType::EXPRESSION_TERNARY:
+		ss << "ternary-expr";
+		break;
+	case ExprType::EXPRESSION_ASSIGNMENT:
+		ss << "assignment-expr";
+		break;
+	default:
+		ss << "unknown-expr";
+		break;
+	}
+}
+
+void CILError::insert(std::stringstream& ss, StmtType type)
+{
+	switch (type)
+	{
+	case StmtType::STATEMENT_BLOCK:
+		ss << "block-stmt";
+		break;
+	case StmtType::STATEMENT_BREAK:
+		ss << "break-stmt";
+		break;
+	case StmtType::STATEMENT_RETURN:
+		ss << "return-stmt";
+		break;
+	case StmtType::STATEMENT_PRINT:
+		ss << "print-stmt";
+		break;
+	case StmtType::STATEMENT_ELSE:
+		ss << "else-stmt";
+		break;
+	case StmtType::STATEMENT_ELIF:
+		ss << "elif-stmt";
+		break;
+	case StmtType::STATEMENT_IF:
+		ss << "if-stmt";
+		break;
+	case StmtType::STATEMENT_WHILE:
+		ss << "while-stmt";
+		break;
+	case StmtType::STATEMENT_FOR:
+		ss << "for-stmt";
+		break;
+	case StmtType::STATEMENT_VAR_DECL:
+		ss << "var-decl-stmt";
+		break;
+	case StmtType::STATEMENT_ARR_DECL:
+		ss << "array-decl-stmt";
+		break;
+	case StmtType::STATEMENT_FUNC_DECL:
+		ss << "function-decl-stmt";
+		break;
+	case StmtType::STATEMENT_CLASS_DECL:
+		ss << "class-decl-stmt";
+		break;
+	case StmtType::STATEMENT_EXPR:
+		ss << "expr-stmt";
+		break;
+	default:
+		ss << "unknow-stmt";
+		break;
+	}
+}
