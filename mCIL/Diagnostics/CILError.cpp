@@ -196,9 +196,6 @@ void CILError::insert(std::stringstream& ss, StmtType type)
 	case StmtType::STATEMENT_PRINT:
 		ss << "print-stmt";
 		break;
-	case StmtType::STATEMENT_ELSE:
-		ss << "else-stmt";
-		break;
 	case StmtType::STATEMENT_ELIF:
 		ss << "elif-stmt";
 		break;

@@ -357,12 +357,6 @@ void Interpreter::run_stmt(stmt_ptr stmt)
 	case StmtType::STATEMENT_PRINT:
 		this->run_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
 		break;
-	case StmtType::STATEMENT_ELSE:
-		run_else_stmt(std::dynamic_pointer_cast<ElseStatement, Statement>(stmt));
-		break;
-	case StmtType::STATEMENT_ELIF:
-		run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt));
-		break;
 	case StmtType::STATEMENT_IF:
 		this->run_if_stmt(std::dynamic_pointer_cast<IfStatement, Statement>(stmt));
 		break;
@@ -430,24 +424,16 @@ void Interpreter::run_print_stmt(std::shared_ptr<PrintStatement> stmt)
 	std::cout << val->to_string();
 }
 
-void Interpreter::run_else_stmt(std::shared_ptr<ElseStatement> stmt)
+void Interpreter::run_elif_stmt(std::shared_ptr<ElifStatement> stmt)
 {
-	run_stmt(stmt->inner());
-}
-
-bool Interpreter::run_elif_stmt(std::shared_ptr<ElifStatement> stmt)
-{
-	value_ptr val = run_expr(stmt->cond());
-	if (val->to_bool())
+	if (stmt->cond() == nullptr || run_expr(stmt->cond())->to_bool())
 	{
 		run_stmt(stmt->inner());
-		return true;
 	}
 	else if (stmt->next_elif() != nullptr)
 	{
-		return run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt->next_elif()));
+		run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt->next_elif()));
 	}
-	return false;
 }
 
 void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
@@ -459,10 +445,7 @@ void Interpreter::run_if_stmt(std::shared_ptr<IfStatement> stmt)
 	}
 	else if (stmt->top_elif() != nullptr)
 	{
-		if (!run_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt->top_elif())))
-		{
-			run_stmt(stmt->else_branch());
-		}
+		run_stmt(stmt->top_elif());
 	}
 }
 

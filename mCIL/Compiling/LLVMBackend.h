@@ -35,7 +35,6 @@ private:
 	val gen_break_stmt(std::shared_ptr<BreakStatement> stmt);
 	val gen_return_stmt(std::shared_ptr<ReturnStatement> stmt);
 	val gen_print_stmt(std::shared_ptr<PrintStatement> stmt);
-	val gen_else_stmt(std::shared_ptr<ElseStatement> stmt);
 	val gen_elif_stmt(std::shared_ptr<ElifStatement> stmt);
 	val gen_if_stmt(std::shared_ptr<IfStatement> stmt);
 	val gen_while_stmt(std::shared_ptr<WhileStatement> stmt);

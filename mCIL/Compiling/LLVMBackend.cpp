@@ -324,8 +324,6 @@ val LLVMBackend::gen_stmt(stmt_ptr stmt)
 		return gen_return_stmt(std::dynamic_pointer_cast<ReturnStatement, Statement>(stmt));
 	case StmtType::STATEMENT_PRINT:
 		return gen_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
-	case StmtType::STATEMENT_ELSE:
-		return gen_else_stmt(std::dynamic_pointer_cast<ElseStatement, Statement>(stmt));
 	case StmtType::STATEMENT_ELIF:
 		return gen_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt));
 	case StmtType::STATEMENT_IF:
@@ -367,11 +365,6 @@ val LLVMBackend::gen_return_stmt(std::shared_ptr<ReturnStatement> stmt)
 val LLVMBackend::gen_print_stmt(std::shared_ptr<PrintStatement> stmt)
 {
 	throw unsupported(stmt->pos(), StmtType::STATEMENT_PRINT);
-}
-
-val LLVMBackend::gen_else_stmt(std::shared_ptr<ElseStatement> stmt)
-{
-	throw unsupported(stmt->pos(), StmtType::STATEMENT_ELSE);
 }
 
 val LLVMBackend::gen_elif_stmt(std::shared_ptr<ElifStatement> stmt)
