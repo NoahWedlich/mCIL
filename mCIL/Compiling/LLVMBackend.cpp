@@ -69,7 +69,14 @@ val LLVMBackend::gen_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	case PrimaryType::PRIMARY_STR:
 		return llvm::ConstantDataArray::getString(*context_, *expr->val().str_val);
 	case PrimaryType::PRIMARY_IDENTIFIER:
-		throw unsupported(expr->pos(), PrimaryType::PRIMARY_IDENTIFIER);
+	{
+		val var = named_values_[*expr->val().str_val];
+		if (!var)
+		{
+			throw CILError::error(expr->pos(), "Unknown variable: '$'", *expr->val().str_val);
+		}
+		return var;
+	}
 	default:
 		throw CILError::error(expr->pos(), "Incomplete handling of primary expressions");
 	}
