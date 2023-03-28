@@ -136,6 +136,10 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 	try
 	{
 		Function func = this->env_->get_func(expr->identifier());
+		if (!func.body)
+		{
+			throw CILError::error(expr->pos(), "Function '$' was declared but never defined", func.info.name);
+		}
 		std::vector<Variable> args {};
 		if (expr->args().size() != func.info.args.size())
 		{

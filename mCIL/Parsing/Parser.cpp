@@ -852,11 +852,19 @@ stmt_ptr Parser::func_decl_stmt()
             .ret_type = ret_type
         };
 
-        this->func_level++;
-        stmt_ptr body = this->statement();
-        this->func_level--;
+        stmt_ptr body = nullptr;
 
-        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
+        Token semicolon = peek();
+        if (!match_symbol(Symbol::SEMICOLON))
+        {
+            this->func_level++;
+            stmt_ptr body = this->statement();
+            this->func_level--;
+
+            return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
+        }
+
+        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), semicolon.pos() });
     }
     return this->arr_decl_stmt();
 }
