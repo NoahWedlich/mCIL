@@ -15,6 +15,7 @@ public:
 	LLVMBackend();
 	virtual void init() override;
 	virtual void gen_statement(stmt_ptr stmt) override;
+	virtual void dump() override;
 private:
 	val gen_expr(expr_ptr expr);
 

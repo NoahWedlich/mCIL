@@ -16,8 +16,13 @@ void LLVMBackend::init()
 void LLVMBackend::gen_statement(stmt_ptr stmt)
 {
 	val IR = gen_stmt(stmt);
-	IR->print(llvm::errs());
-	llvm::errs() << "\n";
+	//IR->print(llvm::errs());
+	//llvm::errs() << "\n";
+}
+
+void LLVMBackend::dump()
+{
+	module_->dump();
 }
 
 val LLVMBackend::gen_expr(expr_ptr expr)

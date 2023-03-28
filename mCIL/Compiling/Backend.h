@@ -8,4 +8,5 @@ public:
 	virtual void init() = 0;
 
 	virtual void gen_statement(stmt_ptr stmt) = 0;
+	virtual void dump() = 0;
 };

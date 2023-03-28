@@ -32,6 +32,8 @@ void Compiler::compile()
 			break;
 		}
 	}
+
+	backend_->dump();
 }
 
 void Compiler::compile_single_statement(stmt_ptr stmt)
