@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(std::vector<Token>& tokens)
-    : tokens_(tokens), current(0), func_level(0), loop_level(0) {}
+    : tokens_(tokens), current(0), func_level(0), loop_level(0), has_return_(false) {}
 
 stmt_list& Parser::parse()
 {
@@ -643,6 +643,7 @@ stmt_ptr Parser::return_stmt()
         expr_ptr expr = this->expression();
         const Token semicolon = this->peek();
         expect_symbol(Symbol::SEMICOLON);
+        has_return_ = true;
         return Statement::make_return_stmt(expr, this->pos_from_tokens(ret_keyword, semicolon));
     }
     return this->break_stmt();
@@ -849,7 +850,8 @@ stmt_ptr Parser::func_decl_stmt()
         {
             .name = name.identifier(),
             .args = args,
-            .ret_type = ret_type
+            .ret_type = ret_type,
+            .has_return = false
         };
 
         stmt_ptr body = nullptr;
@@ -860,6 +862,12 @@ stmt_ptr Parser::func_decl_stmt()
             this->func_level++;
             stmt_ptr body = this->statement();
             this->func_level--;
+
+            if (has_return_)
+            {
+                info.has_return = true;
+                has_return_ = false;
+            }
 
             return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
         }

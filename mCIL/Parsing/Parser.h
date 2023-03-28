@@ -92,5 +92,7 @@ private:
 
 	int func_level;
 	int loop_level;
+
+	bool has_return_;
 };
 

@@ -476,7 +476,11 @@ llvm::Function* LLVMBackend::gen_func_decl_stmt(std::shared_ptr<FuncDeclStatemen
 			}
 
 			val body = gen_stmt(stmt->body());
-			builder_->CreateRetVoid();
+
+			if (!stmt->info().has_return)
+			{
+				builder_->CreateRetVoid();
+			}
 
 			llvm::verifyFunction(*function);
 		}
