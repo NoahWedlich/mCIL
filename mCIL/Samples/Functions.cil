@@ -11,10 +11,9 @@ for (num i = 0; true; i = i+1)
 
 def sum(num a, num b) -> num;
 
-def print_sum(num a, num b)
+def call_sum(num a, num b)
 {
-	print sum(a, b);
-	print "\n";
+	sum(a, b);
 }
 
 
@@ -23,6 +22,6 @@ def sum(num a, num b) -> num
 	return (a + b);
 }
 
-print_sum(1, 2);
-print_sum(2, 3);
-print_sum(2, 5);
+call_sum(1, 2);
+call_sum(2, 3);
+call_sum(2, 5);

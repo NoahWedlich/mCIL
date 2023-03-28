@@ -42,7 +42,7 @@ private:
 	val gen_for_stmt(std::shared_ptr<ForStatement> stmt);
 	val gen_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt);
 	val gen_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt);
-	val gen_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
+	llvm::Function* gen_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
 	val gen_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt);
 	val gen_expr_stmt(std::shared_ptr<ExprStatement> stmt);
 
@@ -63,6 +63,10 @@ private:
 	bool is_num(val value);
 	bool is_str(val value);
 	bool is_bool(val value);
+
+	llvm::Type* cilType_to_LLVM_Type(cilType type);
+
+	llvm::BasicBlock* entry_;
 };
 
 template<typename T>

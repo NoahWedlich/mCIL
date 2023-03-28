@@ -1,7 +1,7 @@
 #include "LLVMBackend.h"
 
 LLVMBackend::LLVMBackend()
-	: context_(nullptr), builder_(nullptr), module_(nullptr), named_values_()
+	: context_(nullptr), builder_(nullptr), module_(nullptr), named_values_(), entry_(nullptr)
 {
 }
 
@@ -11,10 +11,16 @@ void LLVMBackend::init()
 	module_ = std::make_unique<llvm::Module>("mCIL", *context_);
 
 	builder_ = std::make_unique<llvm::IRBuilder<>>(*context_);
+
+	llvm::FunctionType* main_func_type = llvm::FunctionType::get(llvm::Type::getVoidTy(*context_), false);
+	llvm::Function* main_func = llvm::Function::Create(main_func_type, llvm::Function::ExternalLinkage, "internal_main", module_.get());
+
+	entry_ = llvm::BasicBlock::Create(*context_, "entry", main_func);
 }
 
 void LLVMBackend::gen_statement(stmt_ptr stmt)
 {
+	builder_->SetInsertPoint(entry_);
 	val IR = gen_stmt(stmt);
 	//IR->print(llvm::errs());
 	//llvm::errs() << "\n";
@@ -89,7 +95,24 @@ val LLVMBackend::gen_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 
 val LLVMBackend::gen_call_expr(std::shared_ptr<CallExpression> expr)
 {
-	throw unsupported(expr->pos(), ExprType::EXPRESSION_CALL);
+	llvm::Function* func = module_->getFunction(expr->identifier());
+	if (!func)
+	{
+		throw CILError::error(expr->pos(), "Unknown functon '$'", expr->identifier());
+	}
+
+	if (expr->args().size() != func->arg_size())
+	{
+		throw CILError::error(expr->pos(), "Function '$' expects $ arguments, got $", expr->identifier(), func->arg_size(), expr->args().size());
+	}
+
+	std::vector<val> args;
+	for (int i = 0; i < func->arg_size(); i++)
+	{
+		args.push_back(gen_expr(expr->args()[i]));
+	}
+
+	return builder_->CreateCall(func, args);
 }
 
 val LLVMBackend::gen_access_expr(std::shared_ptr<AccessExpression> expr)
@@ -354,7 +377,13 @@ val LLVMBackend::gen_stmt(stmt_ptr stmt)
 
 val LLVMBackend::gen_block_stmt(std::shared_ptr<BlockStatement> stmt)
 {
-	throw unsupported(stmt->pos(), StmtType::STATEMENT_BLOCK);
+	//TODO: Change this maybe?
+	val last_stmt = nullptr;
+	for (stmt_ptr inner : stmt->inner())
+	{
+		last_stmt = gen_stmt(inner);
+	}
+	return last_stmt;
 }
 
 val LLVMBackend::gen_break_stmt(std::shared_ptr<BreakStatement> stmt)
@@ -364,7 +393,8 @@ val LLVMBackend::gen_break_stmt(std::shared_ptr<BreakStatement> stmt)
 
 val LLVMBackend::gen_return_stmt(std::shared_ptr<ReturnStatement> stmt)
 {
-	throw unsupported(stmt->pos(), StmtType::STATEMENT_RETURN);
+	val ret_val = gen_expr(stmt->expr());
+	return builder_->CreateRet(ret_val);
 }
 
 val LLVMBackend::gen_print_stmt(std::shared_ptr<PrintStatement> stmt)
@@ -402,9 +432,57 @@ val LLVMBackend::gen_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt)
 	throw unsupported(stmt->pos(), StmtType::STATEMENT_ARR_DECL);
 }
 
-val LLVMBackend::gen_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
+llvm::Function* LLVMBackend::gen_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
 {
-	throw unsupported(stmt->pos(), StmtType::STATEMENT_FUNC_DECL);
+	llvm::Function* function = module_->getFunction(stmt->info().name);
+
+	if (!function)
+	{
+		std::vector<llvm::Type*> arg_types{};
+		for (VarInfo info : stmt->info().args)
+		{
+			arg_types.push_back(cilType_to_LLVM_Type(info.type));
+		}
+
+		llvm::FunctionType* func_type = llvm::FunctionType::get(cilType_to_LLVM_Type(stmt->info().ret_type), arg_types, false);
+		function = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, stmt->info().name, module_.get());
+
+		unsigned index = 0;
+		for (auto& arg : function->args())
+		{
+			arg.setName(stmt->info().args[index++].name);
+		}
+	}
+
+	if (!function)
+	{
+		throw CILError::error("Error creating function '$'", stmt->info().name);
+	}
+	else
+	{
+		if (stmt->body())
+		{
+			if (!function->empty())
+			{
+				throw CILError::error(stmt->pos(), "Function '$' cannot be redefined", stmt->info().name);
+			}
+
+			llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context_, "entry", function);
+			builder_->SetInsertPoint(entry);
+
+			for (auto& arg : function->args())
+			{
+				named_values_[std::string(arg.getName())] = &arg;
+			}
+
+			val body = gen_stmt(stmt->body());
+			builder_->CreateRetVoid();
+
+			llvm::verifyFunction(*function);
+		}
+
+		return function;
+	}
 }
 
 val LLVMBackend::gen_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
@@ -433,4 +511,25 @@ bool LLVMBackend::is_bool(val value)
 {
 	llvm::Type* type = value->getType();
 	return type->isIntegerTy(1);
+}
+
+llvm::Type* LLVMBackend::cilType_to_LLVM_Type(cilType type)
+{
+	switch (type.type)
+	{
+		case Type::NONE:
+			return llvm::Type::getVoidTy(*context_); //TODO: Change this to custom none
+		case Type::BOOL:
+			return llvm::Type::getInt1Ty(*context_);
+		case Type::NUM:
+			return llvm::Type::getDoubleTy(*context_);
+		case Type::STR:
+			throw CILError::error("Cannot compile 'str'");
+		case Type::OBJ:
+			throw CILError::error("Cannot compile 'obj'");
+		case Type::UNKNOWN:
+			throw CILError::error("Cannot compile 'unknown'");
+		case Type::ERROR:
+			throw CILError::error("Cannot compile 'error'");
+	}
 }
