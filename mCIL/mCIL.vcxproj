@@ -153,7 +153,9 @@
     <ClCompile Include="Lexing\Token.cpp" />
     <ClCompile Include="Diagnostics\TokenPrinter.cpp" />
     <ClCompile Include="Types\cil-types.cpp" />
+    <ClCompile Include="Types\Type.cpp" />
     <ClCompile Include="Types\Value.cpp" />
+    <ClCompile Include="Types\TypeTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Compiling\Backend.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="Types\Bool.h" />
     <ClInclude Include="Diagnostics\CILError.h" />
     <ClInclude Include="Types\Number.h" />
+    <ClInclude Include="Types\Type.h" />
     <ClInclude Include="Types\Value.h" />
     <ClInclude Include="Interpreting\Environment.h" />
     <ClInclude Include="Interpreting\Interpreter.h" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
     <ClInclude Include="Types\cil-types.h" />
     <ClInclude Include="Types\RuntimeObjects.h" />
+    <ClInclude Include="Types\TypeTable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />

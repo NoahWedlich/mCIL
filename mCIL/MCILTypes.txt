@@ -25,18 +25,18 @@ Type (?/!)
 │   ├── Function
 │   ├── Struct
 │   └── Union
-└── Iterable
-    ├── Str
-    ├── StrView
-    ├── Array
-    ├── List
-    ├── Map
-    ├── Enum
-    └── ...
+├── Iterable
+│   ├── Str
+│   ├── StrView
+│   ├── Array
+│   ├── List
+│   ├── Map
+│   └── ...
+└─ Enum
 
-Ptr
-├── ValuePtr
-│   └── ...
-├── ObjectPtr
-│   └── ...
-└── ...
+Qualifiers
+├── Ptr
+├── Volatile
+├── Nullable
+├── Const
+└── ConstExpr
