@@ -1,0 +1,42 @@
+Type (?/!)
+├── Value
+│   ├── Num
+│   │   ├── Float
+│   │   ├── Double
+│   │   ├── APFloat
+│   │   └── Complex
+│   ├── Int
+│   │   ├── UInt
+│   │   │   ├── UInt2
+│   │   │   ├── UInt8
+│   │   │   ├── UInt16
+│   │   │   ├── UInt32
+│   │   │   ├── UInt64
+│   │   │   └── UInt128
+│   │   ├── SInt
+│   │   │   ├── SInt2
+│   │   │   └── ...
+│   │   └── Char
+│   │       ├── ASCIIChar
+│   │       ├── UTF8Char
+│   │       └── UTF16Char
+│   └── Bool
+├── Object
+│   ├── Function
+│   ├── Struct
+│   └── Union
+└── Iterable
+    ├── Str
+    ├── StrView
+    ├── Array
+    ├── List
+    ├── Map
+    ├── Enum
+    └── ...
+
+Ptr
+├── ValuePtr
+│   └── ...
+├── ObjectPtr
+│   └── ...
+└── ...

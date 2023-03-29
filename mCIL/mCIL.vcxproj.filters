@@ -204,5 +204,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />
+    <Text Include="MCILTypes.txt" />
   </ItemGroup>
 </Project>

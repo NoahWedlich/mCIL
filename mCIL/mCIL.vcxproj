@@ -202,6 +202,7 @@
     <None Include="Samples\Variables.cil" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="MCILTypes.txt" />
     <Text Include="Samples\ParseTest.cil" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
