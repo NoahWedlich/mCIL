@@ -8,8 +8,26 @@
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 
+#include "Utils/Threading/FunctionJob.h"
+#include "Utils/Threading/JobResult.h"
+#include "Utils/Threading/Worker.h"
+
+int test(int a, int b)
+{ return a + b; }
+
 int main()
 {
+	Worker worker{};
+	FunctionJob<int>* job = new FunctionJob(1, std::function<int(int, int)>{&test}, 1, 2);
+	const JobResult<int>* result = job->get_result();
+	worker.schedule_job(job);
+	worker.wait();
+
+
+	std::cout << result->value << std::endl;
+
+	exit(0);
+
 	/*REPL repl{};
 	repl.run();*/
 
