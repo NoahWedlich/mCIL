@@ -200,6 +200,9 @@
     <ClInclude Include="Utils\Threading\JobQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\Threading\ThreadSafeObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\LexerTest.cil" />

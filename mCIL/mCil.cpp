@@ -8,26 +8,8 @@
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 
-#include "Utils/Threading/FunctionJob.h"
-#include "Utils/Threading/JobResult.h"
-#include "Utils/Threading/Worker.h"
-#include "Utils/Threading/ThreadManager.h"
-
-int test(int a, int b)
-{ return a + b; }
-
 int main()
 {
-	ThreadManager manager{ 2 };
-	auto a = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
-	auto b = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
-	auto c = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
-	auto d = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
-
-	manager.wait_all();
-
-	exit(0);
-
 	/*REPL repl{};
 	repl.run();*/
 

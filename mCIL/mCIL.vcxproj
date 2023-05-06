@@ -190,6 +190,7 @@
     <ClInclude Include="Utils\Threading\JobResult.h" />
     <ClInclude Include="Utils\Threading\ThreadJob.h" />
     <ClInclude Include="Utils\Threading\ThreadManager.h" />
+    <ClInclude Include="Utils\Threading\ThreadSafeObj.h" />
     <ClInclude Include="Utils\Threading\Worker.h" />
   </ItemGroup>
   <ItemGroup>
