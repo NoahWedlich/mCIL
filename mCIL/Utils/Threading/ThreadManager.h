@@ -18,6 +18,9 @@ public:
 	void wait(JobID id);
 	void wait_all();
 
+	template <typename Ret>
+	Ret& wait(JobResult<Ret> result);
+
 	void resize(size_t thread_count);
 private:
 	std::mutex lock_;
@@ -45,4 +48,11 @@ const JobResult<Ret>* ThreadManager::schedule_func(std::function<Ret(Ts...)> fun
 	jobs_.push_job(job);
 
 	return result;
+}
+
+template<typename Ret>
+Ret& ThreadManager::wait(JobResult<Ret> result)
+{
+	wait(result.id);
+	return result.value;
 }

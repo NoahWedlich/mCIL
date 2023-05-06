@@ -24,7 +24,7 @@ FunctionJob<Ret>::FunctionJob(JobID id, std::function<Ret(Ts...)> func, Ts... ar
 	: ThreadJob(id)
 {
 	func_ = std::bind(func, args...);
-	result_ = new JobResult<Ret>();
+	result_ = new JobResult<Ret>(id);
 }
 
 template <typename Ret>

@@ -1,5 +1,7 @@
 #pragma once
 
+typedef unsigned int JobID;
+
 enum class ResultStatus
 {
 	RUNNING,
@@ -9,16 +11,17 @@ enum class ResultStatus
 template <typename Ret>
 struct JobResult
 {
-	JobResult();
+	JobResult(JobID id);
 	void set_value(Ret value);
 
 	ResultStatus status;
+	JobID id;
 	Ret value;
 };
 
 template<typename Ret>
-JobResult<Ret>::JobResult()
-	: status(ResultStatus::RUNNING), value()
+JobResult<Ret>::JobResult(JobID id)
+	: status(ResultStatus::RUNNING), value(), id(id)
 {}
 
 template<typename Ret>
