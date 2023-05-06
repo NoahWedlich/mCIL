@@ -11,20 +11,20 @@
 #include "Utils/Threading/FunctionJob.h"
 #include "Utils/Threading/JobResult.h"
 #include "Utils/Threading/Worker.h"
+#include "Utils/Threading/ThreadManager.h"
 
 int test(int a, int b)
 { return a + b; }
 
 int main()
 {
-	Worker worker{};
-	FunctionJob<int>* job = new FunctionJob(1, std::function<int(int, int)>{&test}, 1, 2);
-	const JobResult<int>* result = job->get_result();
-	worker.schedule_job(job);
-	worker.wait();
+	ThreadManager manager{ 2 };
+	auto a = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
+	auto b = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
+	auto c = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
+	auto d = manager.schedule_func(std::function<int(int, int)>(test), 1, 2);
 
-
-	std::cout << result->value << std::endl;
+	manager.wait_all();
 
 	exit(0);
 

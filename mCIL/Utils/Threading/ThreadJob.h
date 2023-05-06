@@ -2,6 +2,7 @@
 #include "../../cil-system.h"
 
 typedef unsigned int JobID;
+class Worker;
 
 enum class JobStatus
 {
@@ -19,6 +20,7 @@ public:
 
 	JobID id;
 	JobStatus status;
+	Worker* worker;
 private:
 	virtual void run_() = 0;
 };

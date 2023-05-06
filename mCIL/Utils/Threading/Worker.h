@@ -1,6 +1,7 @@
 #pragma once
 #include "../../cil-system.h"
 #include "ThreadJob.h"
+#include "JobQueue.h"
 
 enum class WorkerStatus
 {
@@ -11,11 +12,10 @@ enum class WorkerStatus
 class Worker
 {
 public:
-	Worker();
+	Worker(JobQueue* queue);
 	~Worker();
 
 	void wait();
-	bool schedule_job(ThreadJob* job);
 
 	WorkerStatus status;
 	
@@ -24,15 +24,16 @@ public:
 private:
 	void run();
 
+	void get_job_();
+
 	std::thread* thread_;
 
-	std::atomic<bool> waiting_;
+	JobQueue* job_queue_;
+
 	std::atomic<bool> continue_;
-	std::atomic<bool> available_;
 	std::atomic<bool> finished_;
 
 	std::mutex lock_;
 	std::condition_variable thread_ready_;
-	std::condition_variable job_available_;
 	std::condition_variable job_finished_;
 };

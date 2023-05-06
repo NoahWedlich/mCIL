@@ -1,7 +1,7 @@
 #include "ThreadJob.h"
 
 ThreadJob::ThreadJob(JobID id)
-	: id(id), status(JobStatus::PENDING)
+	: id(id), status(JobStatus::PENDING), worker(nullptr)
 {}
 
 void ThreadJob::execute()

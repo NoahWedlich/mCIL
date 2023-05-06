@@ -96,6 +96,9 @@
     <ClCompile Include="Utils\Threading\Worker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\Threading\JobQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -179,16 +182,22 @@
     <ClInclude Include="Types\None.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiling\Compiler.h">
+    <ClInclude Include="Utils\Threading\FunctionJob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiling\Backend.h">
+    <ClInclude Include="Utils\Threading\JobResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiling\LLVMBackend.h">
+    <ClInclude Include="Utils\Threading\ThreadJob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiling\LLVMHeaders.h">
+    <ClInclude Include="Utils\Threading\ThreadManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\Worker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\JobQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -206,5 +215,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />
+    <Text Include="CILPlan.txt" />
   </ItemGroup>
 </Project>

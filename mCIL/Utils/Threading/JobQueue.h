@@ -1,14 +1,12 @@
 #pragma once
 #include "../../cil-system.h"
 #include "ThreadJob.h"
-#include "Worker.h"
 
 struct JobQueueEntry
 {
 	ThreadJob* job;
 	int priority;
 	JobID id;
-	Worker* worker = nullptr;
 };
 
 struct JobQueueCmp
@@ -22,6 +20,13 @@ public:
 	JobQueue();
 
 	void push_job(ThreadJob* job);
+	ThreadJob* request_job();
 
 	const JobQueueEntry& get_job_entry(JobID id) const;
+
+	void wait_for_assign();
+private:
+	std::mutex lock_;
+	std::condition_variable job_available_;
+	std::condition_variable job_assigned_;
 };
