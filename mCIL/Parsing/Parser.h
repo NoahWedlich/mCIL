@@ -77,7 +77,6 @@ private:
 	stmt_ptr break_stmt();
 	stmt_ptr return_stmt();
 	stmt_ptr print_stmt();
-	stmt_ptr else_stmt();
 	stmt_ptr elif_stmt();
 	stmt_ptr if_stmt();
 	stmt_ptr while_stmt();
@@ -93,5 +92,7 @@ private:
 
 	int func_level;
 	int loop_level;
+
+	bool has_return_;
 };
 

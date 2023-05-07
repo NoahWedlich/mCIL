@@ -97,6 +97,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Threading\JobQueue.cpp">
+    <ClCompile Include="Compiling\Compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiling\LLVMBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -201,6 +205,16 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Threading\ThreadSafeObj.h">
+    <ClInclude Include="Compiling\Compiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiling\Backend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiling\LLVMBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiling\LLVMHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,6 +229,7 @@
     <None Include="Samples\CLasses.cil" />
     <None Include="Samples\Elif.cil" />
     <None Include="Samples\None.cil" />
+    <None Include="Samples\CompileTest.cil" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />

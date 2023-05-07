@@ -36,7 +36,11 @@ void Environment::define_func(Function func)
 {
 	if (this->functions_.contains(func.info.name))
 	{
-		throw CILError::error("Redifinition of function '$'", func.info.name.c_str());
+		if (functions_.at(func.info.name).body)
+		{
+			throw CILError::error("Redifinition of function '$'", func.info.name.c_str());
+		}
+		functions_.at(func.info.name) = func;
 	}
 	this->functions_.insert({ func.info.name, func });
 }

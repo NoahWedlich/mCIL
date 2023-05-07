@@ -101,7 +101,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -131,6 +131,8 @@
     <ClCompile Include="Utils\Threading\JobQueue.cpp" />
     <ClCompile Include="Utils\Threading\ThreadJob.cpp" />
     <ClCompile Include="Utils\Threading\ThreadManager.cpp" />
+    <ClCompile Include="Compiling\Compiler.cpp" />
+    <ClCompile Include="Compiling\LLVMBackend.cpp" />
     <ClCompile Include="Types\None.cpp" />
     <ClCompile Include="Types\Object.cpp" />
     <ClCompile Include="Types\ErrorValue.cpp" />
@@ -158,6 +160,10 @@
     <ClCompile Include="Utils\Threading\Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Compiling\Backend.h" />
+    <ClInclude Include="Compiling\Compiler.h" />
+    <ClInclude Include="Compiling\LLVMBackend.h" />
+    <ClInclude Include="Compiling\LLVMHeaders.h" />
     <ClInclude Include="Types\None.h" />
     <ClInclude Include="Types\Object.h" />
     <ClInclude Include="Types\BuiltinTypes.h" />
@@ -196,6 +202,7 @@
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />
     <None Include="Samples\CLasses.cil" />
+    <None Include="Samples\CompileTest.cil" />
     <None Include="Samples\Elif.cil" />
     <None Include="Samples\Functions.cil" />
     <None Include="Samples\IfElse.cil" />

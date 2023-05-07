@@ -226,8 +226,6 @@ std::string ASTDebugPrinter::repr_stmt(stmt_ptr stmt)
 		return repr_return_stmt(std::dynamic_pointer_cast<ReturnStatement, Statement>(stmt));
 	case StmtType::STATEMENT_PRINT:
 		return repr_print_stmt(std::dynamic_pointer_cast<PrintStatement, Statement>(stmt));
-	case StmtType::STATEMENT_ELSE:
-		return repr_else_stmt(std::dynamic_pointer_cast<ElseStatement, Statement>(stmt));
 	case StmtType::STATEMENT_ELIF:
 		return repr_elif_stmt(std::dynamic_pointer_cast<ElifStatement, Statement>(stmt));
 	case StmtType::STATEMENT_IF:
@@ -285,21 +283,21 @@ std::string ASTDebugPrinter::repr_print_stmt(std::shared_ptr<PrintStatement> stm
 	return result;
 }
 
-std::string ASTDebugPrinter::repr_else_stmt(std::shared_ptr<ElseStatement> stmt)
-{
-	InitRepr();
-	result += "<ElseStatement>\n";
-	ReprChild(repr_stmt(stmt->inner()));
-	return result;
-}
-
 std::string ASTDebugPrinter::repr_elif_stmt(std::shared_ptr<ElifStatement> stmt)
 {
 	InitRepr();
-	result += "<ElifStatement>\n";
-	ReprChild(repr_expr(stmt->cond()));
-	ReprChild(repr_stmt(stmt->inner()));
-	ReprEqual(repr_stmt(stmt->next_elif()));
+	if (stmt->cond())
+	{
+		result += "<ElifStatement>\n";
+		ReprChild(repr_expr(stmt->cond()));
+		ReprChild(repr_stmt(stmt->inner()));
+		ReprEqual(repr_stmt(stmt->next_elif()));
+	}
+	else
+	{
+		result += "<ElseStatement>\n";
+		ReprChild(repr_stmt(stmt->inner()));
+	}
 	return result;
 }
 
@@ -310,7 +308,6 @@ std::string ASTDebugPrinter::repr_if_stmt(std::shared_ptr<IfStatement> stmt)
 	ReprChild(repr_expr(stmt->cond()));
 	ReprChild(repr_stmt(stmt->if_branch()));
 	ReprEqual(repr_stmt(stmt->top_elif()));
-	ReprEqual(repr_stmt(stmt->else_branch()));
 	return result;
 }
 

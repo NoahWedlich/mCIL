@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(std::vector<Token>& tokens)
-    : tokens_(tokens), current(0), func_level(0), loop_level(0) {}
+    : tokens_(tokens), current(0), func_level(0), loop_level(0), has_return_(false) {}
 
 stmt_list& Parser::parse()
 {
@@ -643,6 +643,7 @@ stmt_ptr Parser::return_stmt()
         expr_ptr expr = this->expression();
         const Token semicolon = this->peek();
         expect_symbol(Symbol::SEMICOLON);
+        has_return_ = true;
         return Statement::make_return_stmt(expr, this->pos_from_tokens(ret_keyword, semicolon));
     }
     return this->break_stmt();
@@ -661,17 +662,6 @@ stmt_ptr Parser::print_stmt()
     return this->return_stmt();
 }
 
-stmt_ptr Parser::else_stmt()
-{
-    const Token else_keyword = peek();
-    if (match_keyword(Keyword::KEYWORD_ELSE))
-    {
-        stmt_ptr inner = statement();
-        return Statement::make_else_stmt(inner, Position{ else_keyword.pos(), inner->pos() });
-    }
-    return nullptr;
-}
-
 stmt_ptr Parser::elif_stmt()
 {
     const Token elif_keyword = peek();
@@ -683,6 +673,11 @@ stmt_ptr Parser::elif_stmt()
         stmt_ptr inner = statement();
         stmt_ptr next_elif = elif_stmt();
         return Statement::make_elif_stmt(cond, inner, next_elif, Position{ elif_keyword.pos(), inner->pos() });
+    }
+    else if (match_keyword(Keyword::KEYWORD_ELSE))
+    {
+        stmt_ptr inner = statement();
+        return Statement::make_elif_stmt(nullptr, inner, nullptr, Position{ elif_keyword.pos(), inner->pos() });
     }
     return nullptr;
 }
@@ -697,9 +692,8 @@ stmt_ptr Parser::if_stmt()
         expect_symbol(Symbol::RIGHT_PAREN);
         stmt_ptr if_branch = this->statement();
         stmt_ptr top_elif = elif_stmt();
-        stmt_ptr else_branch = else_stmt();
 
-        return Statement::make_if_stmt(cond, if_branch, top_elif, else_branch, Position{ if_keyword.pos(), if_branch->pos() });
+        return Statement::make_if_stmt(cond, if_branch, top_elif, Position{ if_keyword.pos(), if_branch->pos() });
     }
     return this->print_stmt();
 }
@@ -856,14 +850,29 @@ stmt_ptr Parser::func_decl_stmt()
         {
             .name = name.identifier(),
             .args = args,
-            .ret_type = ret_type
+            .ret_type = ret_type,
+            .has_return = false
         };
 
-        this->func_level++;
-        stmt_ptr body = this->statement();
-        this->func_level--;
+        stmt_ptr body = nullptr;
 
-        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
+        Token semicolon = peek();
+        if (!match_symbol(Symbol::SEMICOLON))
+        {
+            this->func_level++;
+            stmt_ptr body = this->statement();
+            this->func_level--;
+
+            if (has_return_)
+            {
+                info.has_return = true;
+                has_return_ = false;
+            }
+
+            return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
+        }
+
+        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), semicolon.pos() });
     }
     return this->arr_decl_stmt();
 }

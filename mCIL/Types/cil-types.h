@@ -36,6 +36,7 @@ struct FuncInfo
 	std::string name;
 	std::vector<VarInfo> args;
 	cilType ret_type;
+	bool has_return;
 };
 
 struct ArrInfo
