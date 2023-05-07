@@ -105,6 +105,9 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>cil-system.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>cil-system.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,6 +122,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>cil-system.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>cil-system.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +134,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cil-system.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Utils\Threading\JobQueue.cpp" />
     <ClCompile Include="Utils\Threading\ThreadJob.cpp" />
     <ClCompile Include="Utils\Threading\ThreadManager.cpp" />
@@ -163,7 +173,7 @@
     <ClInclude Include="Compiling\Backend.h" />
     <ClInclude Include="Compiling\Compiler.h" />
     <ClInclude Include="Compiling\LLVMBackend.h" />
-    <ClInclude Include="Compiling\LLVMHeaders.h" />
+    <ClInclude Include="LLVMHeaders.h" />
     <ClInclude Include="Types\None.h" />
     <ClInclude Include="Types\Object.h" />
     <ClInclude Include="Types\BuiltinTypes.h" />

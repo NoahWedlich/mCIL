@@ -17,3 +17,5 @@
 
 #include <sstream>
 #include <cstdarg>
+
+#include "LLVMHeaders.h"
