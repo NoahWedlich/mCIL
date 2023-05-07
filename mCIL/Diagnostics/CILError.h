@@ -69,8 +69,8 @@ private:
 		return ss.str();
 	}
 
-	template<typename T, typename... Targs>
-	static const std::string format_msg(const char* fmt, T value, Targs... Fargs)
+	template<typename obj, typename... Targs>
+	static const std::string format_msg(const char* fmt, obj value, Targs... Fargs)
 	{
 		std::stringstream ss;
 		for (; *fmt != '\0'; fmt++)

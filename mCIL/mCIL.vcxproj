@@ -128,6 +128,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Utils\Threading\JobQueue.cpp" />
+    <ClCompile Include="Utils\Threading\ThreadJob.cpp" />
+    <ClCompile Include="Utils\Threading\ThreadManager.cpp" />
     <ClCompile Include="Compiling\Compiler.cpp" />
     <ClCompile Include="Compiling\LLVMBackend.cpp" />
     <ClCompile Include="Types\None.cpp" />
@@ -154,6 +157,7 @@
     <ClCompile Include="Diagnostics\TokenPrinter.cpp" />
     <ClCompile Include="Types\cil-types.cpp" />
     <ClCompile Include="Types\Value.cpp" />
+    <ClCompile Include="Utils\Threading\Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Compiling\Backend.h" />
@@ -187,6 +191,13 @@
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
     <ClInclude Include="Types\cil-types.h" />
     <ClInclude Include="Types\RuntimeObjects.h" />
+    <ClInclude Include="Utils\Threading\FunctionJob.h" />
+    <ClInclude Include="Utils\Threading\JobQueue.h" />
+    <ClInclude Include="Utils\Threading\JobResult.h" />
+    <ClInclude Include="Utils\Threading\ThreadJob.h" />
+    <ClInclude Include="Utils\Threading\ThreadManager.h" />
+    <ClInclude Include="Utils\Threading\ThreadSafeObj.h" />
+    <ClInclude Include="Utils\Threading\Worker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\Arrays.cil" />
@@ -202,6 +213,7 @@
     <None Include="Samples\Variables.cil" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="CILPlan.txt" />
     <Text Include="Samples\ParseTest.cil" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
