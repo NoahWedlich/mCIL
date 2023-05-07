@@ -87,6 +87,16 @@
     <ClCompile Include="Types\None.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\Threading\ThreadJob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Threading\ThreadManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Threading\Worker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Threading\JobQueue.cpp">
     <ClCompile Include="Compiling\Compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -182,6 +192,25 @@
     <ClInclude Include="Types\None.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\Threading\FunctionJob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\JobResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\ThreadJob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\ThreadManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\Worker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\JobQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading\ThreadSafeObj.h">
     <ClInclude Include="Compiling\Compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -217,5 +246,6 @@
   <ItemGroup>
     <Text Include="Samples\ParseTest.cil" />
     <Text Include="MCILTypes.txt" />
+    <Text Include="CILPlan.txt" />
   </ItemGroup>
 </Project>

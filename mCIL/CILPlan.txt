@@ -1,0 +1,72 @@
+Scanning:
+ - Global variable declaration (known types)
+ - Global function declaration
+ - Global class declaration
+ - Includes
+Parsing:
+ - Top-level stmt-block
+ - Global var/func/cls definitions
+ - Local var/func/cls decls/defs
+
+Manager:
+ - Queue of available threads
+ - Queue of potential source-files
+ - Queue of source-files to be lexed/scanned
+ - Queue of (code-blocks/definitions) to be parsed
+ - List of already enqueued files
+ - List of potential references to be verified
+ - Global symbol table (vars/funcs/clss)
+   + This includes whether the definition has been parsed and the corresponding code-block
+ - Main program
+ o Potential source-files get added to the scan-queue if they exist and they haven't been enqueued before
+ o Enqueued files get lexed and scanned by a seperate thread.
+   + Once a file finished scanning it's symbol table gets added to the global symbol table
+   + The returned symbol table is also used to verify potential references
+   + If there are duplicate declarations they must only have one definition
+ o Once all enqueued files have been assigned to a thread, the enqueued code-blocks get parsed.
+   + The returned program includes it's local symbol table
+ o If a reference to a var/func/clss get parsed before the declaration has been scanned,
+	it gets added to the list of potential references
+ o Once all files have been completely scanned, the list of unverified func/cls references must be empty
+ o All parsed programs get fused to the main program
+   + The local symbol tables of all top-level programs also get fused into the global symbol table
+     + This is used to verifiy potential references
+ o Once all files have been completely parsed, the list of unverified variable references must be empty
+ o If necessary a call to the entry function gets inserted at the end of the program
+
+Lexer:
+ o Lex files as already defined
+
+Scanner:
+ - List of lexemes to be scanned
+ - Local symbol table (vars/funcs/clss)
+   + This includes the definition code-blocks if existing
+ - Local code block
+ - List of included files
+ o Scanner walks through lexemes and scans for:
+   + match 'include': Included files get added to manager queue of potential includes
+   + match known type: Global variable can be declaration, expression (match ';') -> expression
+   + match 'def': Function can be declaration, single statement (match ';'), block (count '}') -> statement
+   + match 'class': Class can be declaration, class block (cound '}') -> class body
+   + else: Add lexeme to local code-block
+ o After scanning the Scanner returns the symbol table and code block
+
+Parser:
+ o Every code-block has a local symbol table
+ o Parsing is mostly unchanged
+ o (var/func/cls) references get checked against the global and local tables
+   + If the reference gets found the parser links it to the entry in the table
+   + If it is not found, it is assumed to exist but added to the list of references to be verified
+     + Potential members are also assumed to exist but must be verified
+   + If a reference gets found in the global symbol table and it hasn't been parsed yet, it gets enqueued
+ o After parsing the Parser returns a program
+
+TODO:
+ [o] ThreadSafe Queue
+ [x] Symbol Table
+ [x] Source File
+ [x] Code Block
+ [x] Program
+ [x] Scanner
+ [x] Manager
+ [x] Parser
