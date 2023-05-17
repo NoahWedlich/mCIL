@@ -96,7 +96,6 @@
     <ClCompile Include="Utils\Threading\Worker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Threading\JobQueue.cpp">
     <ClCompile Include="Compiling\Compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,7 +209,9 @@
     <ClInclude Include="Utils\Threading\JobQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Threading\ThreadSafeObj.h">
+	<ClInclude Include="Utils\Threading\ThreadSafeObj.h">
+	  <Filter>Header Files</Filter>
+	</ClInclude>
     <ClInclude Include="Compiling\Compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>

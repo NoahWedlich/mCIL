@@ -35,19 +35,19 @@ int main()
 	/*ASTDebugPrinter dbg{};
 	dbg.print_stmt_list(stmts);*/
 
-	Compiler compiler{ stmts, std::shared_ptr<Backend>(new LLVMBackend())};
+	/*Compiler compiler{ stmts, std::shared_ptr<Backend>(new LLVMBackend())};
 	compiler.compile();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
-	}
+	}*/
 	
-	/*Interpreter interpreter{ stmts };
+	Interpreter interpreter{ stmts };
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{
 		ErrorManager::report_errors(source);
 		exit(EXIT_FAILURE);
-	}*/
+	}
 }

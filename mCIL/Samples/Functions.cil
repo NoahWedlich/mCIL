@@ -13,7 +13,7 @@ def sum(num a, num b) -> num;
 
 def call_sum(num a, num b)
 {
-	sum(a, b);
+	print sum(a, b);
 }
 
 
