@@ -841,8 +841,7 @@ stmt_ptr Parser::func_decl_stmt()
                 break;
             }
         }
-        //TODO: Change how this is handled
-        Type ret_type = Type::make("error");
+        Type ret_type = Type::make("none");
         if (this->match_symbol(Symbol::ARROW))
         {
             if(!this->get_type(ret_type))

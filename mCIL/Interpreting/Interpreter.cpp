@@ -105,8 +105,7 @@ value_ptr Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	switch (expr->primary_type())
 	{
 	case PrimaryType::PRIMARY_NONE:
-		// TODO: Reimplement none
-		throw CILError::error("None is not implemented yet!");
+		return CIL::None::create();
 	case PrimaryType::PRIMARY_BOOL:
 		return CIL::Bool::create(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
