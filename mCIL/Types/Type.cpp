@@ -1,31 +1,27 @@
 #include "Type.h"
 
-Type* Type::make(std::string name, TypeQualifier flags)
+Type Type::make(std::string name, TypeQualifier flags)
 {
-	if(!TypeTable::type_exists(name))
-	{ return nullptr; }
 	TypeID id = type_id(name);
-	return new Type(id, flags);
+	return *(new Type(id, flags));
 }
 
-Type* Type::make(TypeID id, TypeQualifier flags)
+Type Type::make(TypeID id, TypeQualifier flags)
 {
-	if (!TypeTable::type_exists(id))
-	{ return nullptr; }
-	return new Type(id, flags);
+	return *(new Type(id, flags));
 }
 
-bool Type::is(TypeID id)
+bool Type::is(TypeID id) const
 {
 	return id_ == id;
 }
 
-bool Type::is(Type* other)
+bool Type::is(Type other) const
 {
-	return id_ == other->id_;
+	return id_ == other.id_;
 }
 
-bool Type::is_subtype_of(TypeID id)
+bool Type::is_subtype_of(TypeID id) const
 {
 	TypeID super_type = TypeTable::get_super_type(id);
 	while (super_type != type_id("type"))
@@ -36,7 +32,7 @@ bool Type::is_subtype_of(TypeID id)
 	return false;
 }
 
-bool Type::is_subtype_of(Type* other)
+bool Type::is_subtype_of(Type* other) const
 {
 	TypeID super_type = TypeTable::get_super_type(other->id());
 	while (super_type != type_id("type"))
@@ -52,27 +48,27 @@ const TypeQualifier Type::flags() const
 	return flags_;
 }
 
-const bool Type::is_ptr()
+const bool Type::is_ptr() const
 {
 	return (flags_ & TypeFlags::PTR) == TypeFlags::PTR;
 }
 
-const bool Type::is_volatile()
+const bool Type::is_volatile() const
 {
 	return (flags_ & TypeFlags::VOLATILE) == TypeFlags::VOLATILE;
 }
 
-const bool Type::is_nullable()
+const bool Type::is_nullable() const
 {
 	return (flags_ & TypeFlags::NULLABLE) == TypeFlags::NULLABLE;
 }
 
-const bool Type::is_const()
+const bool Type::is_const() const
 {
 	return (flags_ & TypeFlags::CONST) == TypeFlags::CONST;
 }
 
-const bool Type::is_constexpr()
+const bool Type::is_constexpr() const
 {
 	return (flags_ & TypeFlags::CONSTEXPR) == TypeFlags::CONSTEXPR;
 }

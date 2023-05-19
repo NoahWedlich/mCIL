@@ -15,21 +15,21 @@ const enum TypeFlags
 class Type
 {
 public:
-	static Type* make(std::string name, TypeQualifier flags = 0);
-	static Type* make(TypeID id, TypeQualifier flags = 0);
+	static Type make(std::string name, TypeQualifier flags = 0);
+	static Type make(TypeID id, TypeQualifier flags = 0);
 
-	bool is(TypeID id);
-	bool is(Type* other);
+	bool is(TypeID id) const;
+	bool is(Type other) const;
 
-	bool is_subtype_of(TypeID id);
-	bool is_subtype_of(Type* other);
+	bool is_subtype_of(TypeID id) const;
+	bool is_subtype_of(Type* other) const;
 
 	const TypeQualifier flags() const;
-	const bool is_ptr();
-	const bool is_volatile();
-	const bool is_nullable();
-	const bool is_const();
-	const bool is_constexpr();
+	const bool is_ptr() const;
+	const bool is_volatile() const;
+	const bool is_nullable() const;
+	const bool is_const() const;
+	const bool is_constexpr() const;
 
 	const TypeID id() const;
 private:
