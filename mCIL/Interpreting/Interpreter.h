@@ -1,7 +1,9 @@
 #pragma once
 #include "../cil-system.h"
-#include "../Types/cil-types.h"
+#include "../Types/Type.h"
 #include "../Types/BuiltinTypes.h"
+#include "../Types/TypeTable.h"
+#include "../Types/cil-types.h"
 #include "Environment.h"
 #include "../Parsing/Expression.h"
 #include "../Parsing/Statement.h"

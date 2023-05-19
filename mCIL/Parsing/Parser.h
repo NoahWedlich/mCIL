@@ -1,6 +1,6 @@
 #pragma once
 #include "../cil-system.h"
-#include "../Types/cil-types.h"
+#include "../Types/Type.h"
 #include "../Lexing/Token.h"
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
@@ -51,7 +51,7 @@ private:
 	bool match_keyword(Keyword key);
 	
 	bool match_type();
-	bool get_type(cilType& type);
+	bool get_type(Type& type);
 
 	expr_ptr grouping_expr();
 	expr_ptr primary_expr();

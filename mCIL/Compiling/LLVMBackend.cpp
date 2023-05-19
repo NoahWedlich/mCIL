@@ -517,23 +517,8 @@ bool LLVMBackend::is_bool(val value)
 	return type->isIntegerTy(1);
 }
 
-llvm::Type* LLVMBackend::cilType_to_LLVM_Type(cilType type)
+llvm::Type* LLVMBackend::cilType_to_LLVM_Type(Type type)
 {
-	switch (type.type)
-	{
-		case Type::NONE:
-			return llvm::Type::getVoidTy(*context_); //TODO: Change this to custom none
-		case Type::BOOL:
-			return llvm::Type::getInt1Ty(*context_);
-		case Type::NUM:
-			return llvm::Type::getDoubleTy(*context_);
-		case Type::STR:
-			throw CILError::error("Cannot compile 'str'");
-		case Type::OBJ:
-			throw CILError::error("Cannot compile 'obj'");
-		case Type::UNKNOWN:
-			throw CILError::error("Cannot compile 'unknown'");
-		case Type::ERROR:
-			throw CILError::error("Cannot compile 'error'");
-	}
+	//TODO: Implement cil-types to llvm-types
+	return llvm::Type::getVoidTy(*context_);
 }

@@ -1,7 +1,7 @@
 #include "String.h"
 
 CIL::String::String(std::string value, bool is_const)
-	: CIL::Value(cilType(Type::STR, is_const)), value_(value)
+	: CIL::Value(Type::make("str", (is_const ? TypeFlags::CONST : 0))), value_(value)
 {
 }
 
@@ -17,7 +17,7 @@ const std::string CIL::String::value() const
 
 value_ptr CIL::String::add(value_ptr other)
 {
-	if (other->is_type(Type::STR))
+	if (other->is_type(type_))
 	{
 		return CIL::String::create(
 			value_ + std::dynamic_pointer_cast<String>(other)->value()
@@ -28,7 +28,7 @@ value_ptr CIL::String::add(value_ptr other)
 
 value_ptr CIL::String::equals(value_ptr other)
 {
-	if (other->is_type(Type::STR))
+	if (other->is_type(type_))
 	{
 		return CIL::Bool::create(
 			value_ == std::dynamic_pointer_cast<String>(other)->value()
@@ -39,7 +39,7 @@ value_ptr CIL::String::equals(value_ptr other)
 
 value_ptr CIL::String::not_equals(value_ptr other)
 {
-	if (other->is_type(Type::STR))
+	if (other->is_type(type_))
 	{
 		return CIL::Bool::create(
 			value_ != std::dynamic_pointer_cast<String>(other)->value()

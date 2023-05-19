@@ -63,7 +63,7 @@ private:
 	bool is_str(val value);
 	bool is_bool(val value);
 
-	llvm::Type* cilType_to_LLVM_Type(cilType type);
+	llvm::Type* cilType_to_LLVM_Type(Type type);
 
 	llvm::BasicBlock* entry_;
 };

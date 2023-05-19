@@ -1,7 +1,7 @@
 #include "ErrorValue.h"
 
 CIL::ErrorValue::ErrorValue()
-    : CIL::Value(cilType(Type::ERROR, true))
+    : CIL::Value(Type::make("error", true))
 {
 }
 

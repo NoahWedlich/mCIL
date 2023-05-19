@@ -63,7 +63,8 @@ bool TypeTable::type_exists(std::string name)
 
 void TypeTable::add_builtin_types()
 {
-	TypeTable::register_type("type"     , type_id("type"    ));    
+	TypeTable::register_type("type"     , type_id("type"    )); 
+	TypeTable::register_type("error"    , type_id("type"    ));
 	TypeTable::register_type("value"    , type_id("type"    ));    
 	TypeTable::register_type("object"   , type_id("type"    ));    
 	TypeTable::register_type("iterable" , type_id("type"    ));    

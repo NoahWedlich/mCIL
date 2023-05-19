@@ -1,6 +1,7 @@
 #pragma once
 #include "../cil-system.h"
-#include "../Types/cil-types.h"
+#include "../Types/Type.h"
+#include "../Types/TypeTable.h"
 #include "../Diagnostics/TokenPrinter.h"
 #include "../Diagnostics/CILError.h"
 #include "../Parsing/Expression.h"
@@ -34,7 +35,7 @@ private:
 
 	size_t level_;
 
-	std::string repr_cil_type(cilType type);
+	std::string repr_cil_type(Type type);
 
 	std::string repr_expr(expr_ptr expr);
 

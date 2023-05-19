@@ -32,7 +32,7 @@ void REPL::run()
 		if (!expr->is_error_expr())
 		{
 			value_ptr value = interpreter.run_single_expression(expr);
-			if (value->type() != Type::ERROR)
+			if (!value->type().is(type_id("error")))
 			{
 				std::cout << value->to_string() << std::endl;
 				continue;

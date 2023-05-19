@@ -63,9 +63,6 @@
     <ClCompile Include="Diagnostics\CILError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Types\cil-types.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Types\Number.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,13 +75,7 @@
     <ClCompile Include="Types\String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Types\ErrorValue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Types\Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Types\None.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Threading\ThreadJob.cpp">
@@ -106,6 +97,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Types\TypeTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cil-system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Threading\JobQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Types\ErrorValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,9 +161,6 @@
     <ClInclude Include="Diagnostics\CILError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Types\cil-types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Types\RuntimeObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -179,16 +176,10 @@
     <ClInclude Include="Types\String.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Types\ErrorValue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Types\BuiltinTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types\Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Types\None.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Threading\FunctionJob.h">
@@ -209,9 +200,9 @@
     <ClInclude Include="Utils\Threading\JobQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	<ClInclude Include="Utils\Threading\ThreadSafeObj.h">
-	  <Filter>Header Files</Filter>
-	</ClInclude>
+    <ClInclude Include="Utils\Threading\ThreadSafeObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Compiling\Compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -221,13 +212,19 @@
     <ClInclude Include="Compiling\LLVMBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiling\LLVMHeaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Types\Type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types\TypeTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LLVMHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\ErrorValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\cil-types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,5 @@
 #include "cil-system.h"
+#include "Types/TypeTable.h"
 #include "Lexing/Lexer.h"
 #include "Parsing/Parser.h"
 #include "Parsing/Statement.h"
@@ -14,6 +15,8 @@ int main()
 {
 	/*REPL repl{};
 	repl.run();*/
+
+	TypeTable::add_builtin_types();
 
 	SourceFileManager source{ "Samples/Functions.cil" };
 	Lexer lexer{ source };
@@ -32,8 +35,8 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/*ASTDebugPrinter dbg{};
-	dbg.print_stmt_list(stmts);*/
+	ASTDebugPrinter dbg{};
+	dbg.print_stmt_list(stmts);
 
 	/*Compiler compiler{ stmts, std::shared_ptr<Backend>(new LLVMBackend())};
 	compiler.compile();

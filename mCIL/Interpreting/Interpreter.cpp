@@ -105,7 +105,8 @@ value_ptr Interpreter::run_primary_expr(std::shared_ptr<PrimaryExpression> expr)
 	switch (expr->primary_type())
 	{
 	case PrimaryType::PRIMARY_NONE:
-		return CIL::None::create();
+		// TODO: Reimplement none
+		throw CILError::error("None is not implemented yet!");
 	case PrimaryType::PRIMARY_BOOL:
 		return CIL::Bool::create(expr->val().bool_val);
 	case PrimaryType::PRIMARY_NUM:
@@ -150,7 +151,7 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		{
 			value_ptr arg_val = this->run_expr(expr->args()[i]);
 			VarInfo arg_info = func.info.args[i];
-			if (arg_val->type() != arg_info.type)
+			if (!arg_val->type().is(arg_info.type))
 			{
 				throw CILError::error(expr->pos(), "Argument '$' of function '$' must be '$' not '$'",
 					arg_info.name.c_str(), func.info.name.c_str(), arg_info.type, arg_val->type());
@@ -174,7 +175,7 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		{
 			delete this->env_;
 			this->env_ = previous;
-			if (ret.ret_val()->type() != func.info.ret_type)
+			if (!ret.ret_val()->type().is(func.info.ret_type))
 			{
 				throw CILError::error(func.body->pos(), "Function '$' should return '$' not '$'",
 					func.info.name, func.info.ret_type, ret.ret_val()->type());
@@ -183,7 +184,8 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		}
 		delete this->env_;
 		this->env_ = previous;
-		return CIL::None::create();
+		//TODO: Change to none
+		return CIL::ErrorValue::create();
 	}
 	catch (CILError& err)
 	{
@@ -197,8 +199,8 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
 {
 	Variable var = env_->get_var(expr->identifier());
-	if(var.info.type.type != Type::OBJ)
-	{ throw CILError::error(expr->pos(), "Can only access variables of type '$', got '$'", Type::OBJ, var.info.type.type); }
+	if(!var.info.type.is_subtype_of(type_id("obj")))
+	{ throw CILError::error(expr->pos(), "Can only access variables of objects, got '$'", var.info.type); }
 	CIL::Object obj = *std::dynamic_pointer_cast<CIL::Object, CIL::Value>(var.value);
 
 	Environment* previous = this->env_;
@@ -220,7 +222,7 @@ value_ptr Interpreter::run_new_expr(std::shared_ptr<NewExpression> expr)
 value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpression> expr)
 {
 	value_ptr index_num = this->run_expr(expr->index());
-	if(index_num->type() != Type::NUM)
+	if(!index_num->type().is_subtype_of(type_id("num")))
 	{ throw CILError::error(expr->pos(), "Index must be 'num' not '$'", index_num->type()); }
 	int index = (int)std::dynamic_pointer_cast<CIL::Number>(index_num)->value();
 	Array arr = this->env_->get_arr(expr->identifier());
@@ -232,7 +234,7 @@ value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpressi
 value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 {
 	value_ptr inner = this->run_expr(expr->expr());
-	if (inner->type() == Type::ERROR)
+	if (inner->type().is(type_id("error")))
 	{ return CIL::ErrorValue::create(); }
 	switch (expr->op())
 	{
@@ -254,10 +256,10 @@ value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
 value_ptr Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 {
 	value_ptr left = this->run_expr(expr->left());
-	if (left->type() == Type::ERROR)
+	if (left->type().is(type_id("error")))
 	{ return CIL::ErrorValue::create(); }
 	value_ptr right = this->run_expr(expr->right());
-	if (right->type() == Type::ERROR)
+	if (right->type().is(type_id("error")))
 	{ return CIL::ErrorValue::create(); }
 
 	switch (expr->op())
@@ -304,7 +306,7 @@ value_ptr Interpreter::run_binary_expr(std::shared_ptr<BinaryExpression> expr)
 value_ptr Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 {
 	value_ptr cond = this->run_expr(expr->cond());
-	if (cond->type() == Type::ERROR)
+	if (cond->type().is(type_id("error")))
 	{ return CIL::ErrorValue::create(); }
 
 	if (cond->to_bool())
@@ -317,7 +319,7 @@ value_ptr Interpreter::run_ternary_expr(std::shared_ptr<TernaryExpression> expr)
 value_ptr Interpreter::run_assignment_expr(std::shared_ptr<AssignmentExpression> expr)
 {
 	value_ptr value = this->run_expr(expr->expr());
-	if (value->type() == Type::ERROR)
+	if (value->type().is(type_id("error")))
 	{ return CIL::ErrorValue::create(); }
 
 	if (expr->target()->is_primary_expr())
@@ -489,7 +491,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 {
 	value_ptr value = this->run_expr(stmt->val());
 
-	if (stmt->info().type.type != Type::UNKNOWN && stmt->info().type != value->type() && value->type() != Type::NONE)
+	if (!stmt->info().type.is(value->type()))
 	{
 		throw CILError::error(stmt->pos(), "Cannot initialize variable of type '$' with value of type '$'",
 			stmt->info().type, value->type());
@@ -511,7 +513,7 @@ void Interpreter::run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt)
 	for (expr_ptr expr : stmt->vals())
 	{
 		value_ptr val = this->run_expr(expr);
-		if (val->type() != stmt->info().type)
+		if (!val->type().is(stmt->info().type))
 		{
 			throw CILError::error(stmt->pos(), "Cannot initizalize array of type '$' with value of type '$'",
 				stmt->info().type, val->type());

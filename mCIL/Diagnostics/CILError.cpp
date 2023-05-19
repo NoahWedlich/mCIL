@@ -63,35 +63,13 @@ void CILError::insert(std::stringstream& ss, std::string value)
 	ss << value;
 }
 
-void CILError::insert(std::stringstream& ss, cilType value)
+void CILError::insert(std::stringstream& ss, Type value)
 {
-	if (value.is_const)
+	if (value.is_const())
 	{
 		ss << "const ";
 	}
-	switch (value.type)
-	{
-	case Type::BOOL:
-		ss << "bool";
-		break;
-	case Type::NUM:
-		ss << "num";
-		break;
-	case Type::STR:
-		ss << "str";
-		break;
-	case Type::NONE:
-		ss << "none";
-		break;
-	case Type::UNKNOWN:
-		ss << "auto";
-		break;
-	case Type::ERROR:
-		ss << "error";
-		break;
-	default:
-		ss << "?";
-	}
+	ss << type_name(value.id());
 }
 void CILError::insert(std::stringstream& ss, TokenType value)
 {

@@ -138,14 +138,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Types\ErrorValue.cpp" />
     <ClCompile Include="Utils\Threading\JobQueue.cpp" />
     <ClCompile Include="Utils\Threading\ThreadJob.cpp" />
     <ClCompile Include="Utils\Threading\ThreadManager.cpp" />
     <ClCompile Include="Compiling\Compiler.cpp" />
     <ClCompile Include="Compiling\LLVMBackend.cpp" />
-    <ClCompile Include="Types\None.cpp" />
     <ClCompile Include="Types\Object.cpp" />
-    <ClCompile Include="Types\ErrorValue.cpp" />
     <ClCompile Include="Types\String.cpp" />
     <ClCompile Include="Types\Bool.cpp" />
     <ClCompile Include="Diagnostics\CILError.cpp" />
@@ -165,7 +164,6 @@
     <ClCompile Include="Diagnostics\SourceFileManager.cpp" />
     <ClCompile Include="Lexing\Token.cpp" />
     <ClCompile Include="Diagnostics\TokenPrinter.cpp" />
-    <ClCompile Include="Types\cil-types.cpp" />
     <ClCompile Include="Types\Type.cpp" />
     <ClCompile Include="Types\Value.cpp" />
     <ClCompile Include="Types\TypeTable.cpp" />
@@ -176,10 +174,10 @@
     <ClInclude Include="Compiling\Compiler.h" />
     <ClInclude Include="Compiling\LLVMBackend.h" />
     <ClInclude Include="LLVMHeaders.h" />
-    <ClInclude Include="Types\None.h" />
+    <ClInclude Include="Types\cil-types.h" />
+    <ClInclude Include="Types\ErrorValue.h" />
     <ClInclude Include="Types\Object.h" />
     <ClInclude Include="Types\BuiltinTypes.h" />
-    <ClInclude Include="Types\ErrorValue.h" />
     <ClInclude Include="Types\String.h" />
     <ClInclude Include="Types\Bool.h" />
     <ClInclude Include="Diagnostics\CILError.h" />
@@ -202,7 +200,6 @@
     <ClInclude Include="Diagnostics\SourceManager.h" />
     <ClInclude Include="Lexing\Token.h" />
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
-    <ClInclude Include="Types\cil-types.h" />
     <ClInclude Include="Types\RuntimeObjects.h" />
     <ClInclude Include="Types\TypeTable.h" />
     <ClInclude Include="Utils\Threading\FunctionJob.h" />

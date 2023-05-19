@@ -23,6 +23,7 @@ bool Type::is(Type other) const
 
 bool Type::is_subtype_of(TypeID id) const
 {
+	if (id_ == id) { return true; }
 	TypeID super_type = TypeTable::get_super_type(id);
 	while (super_type != type_id("type"))
 	{
@@ -32,12 +33,13 @@ bool Type::is_subtype_of(TypeID id) const
 	return false;
 }
 
-bool Type::is_subtype_of(Type* other) const
+bool Type::is_subtype_of(Type other) const
 {
-	TypeID super_type = TypeTable::get_super_type(other->id());
+	if (is(other)) { return true; }
+	TypeID super_type = TypeTable::get_super_type(other.id());
 	while (super_type != type_id("type"))
 	{
-		if (super_type == other->id())
+		if (super_type == other.id())
 		{ return true; }
 	}
 	return false;

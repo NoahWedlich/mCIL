@@ -26,35 +26,12 @@ void ASTDebugPrinter::print_stmt_list(stmt_list stmts)
 	}
 }
 
-std::string ASTDebugPrinter::repr_cil_type(cilType type)
+std::string ASTDebugPrinter::repr_cil_type(Type type)
 {
 	std::string result = " type=";
-	switch (type.type)
-	{
-	case Type::NONE:
-		result += "none";
-		break;
-	case Type::BOOL:
-		result += "bool";
-		break;
-	case Type::NUM:
-		result += "num";
-		break;
-	case Type::STR:
-		result += "str";
-		break;
-	case Type::OBJ:
-		result += "obj";
-		break;
-	case Type::UNKNOWN:
-		result += "auto";
-		break;
-	case Type::ERROR:
-		result += "error";
-		break;
-	}
+	result += type_name(type.id());
 
-	result += (type.is_const ? " const=true" : " const=false");
+	result += (type.is_const() ? " const=true" : " const=false");
 	return result;
 }
 

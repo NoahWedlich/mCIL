@@ -22,7 +22,7 @@ public:
 	bool is(Type other) const;
 
 	bool is_subtype_of(TypeID id) const;
-	bool is_subtype_of(Type* other) const;
+	bool is_subtype_of(Type other) const;
 
 	const TypeQualifier flags() const;
 	const bool is_ptr() const;

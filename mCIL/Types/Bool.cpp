@@ -1,7 +1,7 @@
 #include "Bool.h"
 
 CIL::Bool::Bool(bool value, bool is_const)
-	: CIL::Value(cilType(Type::BOOL, is_const)), value_(value)
+	: CIL::Value(Type::make("bool", (is_const ? TypeFlags::CONST : 0))), value_(value)
 {
 }
 
@@ -17,7 +17,7 @@ const bool CIL::Bool::value() const
 
 value_ptr CIL::Bool::invert()
 {
-	return CIL::Bool::create(!value_, type_.is_const);
+	return CIL::Bool::create(!value_, type_.is_const());
 }
 
 value_ptr CIL::Bool::equals(value_ptr other)

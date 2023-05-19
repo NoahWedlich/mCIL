@@ -231,11 +231,11 @@ bool Parser::match_type()
     return false;
 }
 
-bool Parser::get_type(cilType& type)
+bool Parser::get_type(Type& type)
 {
     bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
 
-    type = cilType(Type::ERROR);
+    type = Type::make("error");
 
     const Token token = this->peek();
     if (token.is_keyword())
@@ -243,16 +243,16 @@ bool Parser::get_type(cilType& type)
         switch (token.keyword())
         {
         case Keyword::KEYWORD_BOOL:
-            type = cilType(Type::BOOL, is_const);
+            type = Type::make("bool", (is_const ? TypeFlags::CONST : 0));
             break;
         case Keyword::KEYWORD_NUM:
-            type = cilType(Type::NUM, is_const);
+            type = Type::make("num", (is_const ? TypeFlags::CONST : 0));
             break;
         case Keyword::KEYWORD_STR:
-            type = cilType(Type::STR, is_const);
+            type = Type::make("str", (is_const ? TypeFlags::CONST : 0));
             break;
         case Keyword::KEYWORD_AUTO:
-            type = cilType(Type::UNKNOWN, is_const);
+            //TODO: Implement auto
             break;
         default:
             return false;
@@ -262,7 +262,8 @@ bool Parser::get_type(cilType& type)
     }
     else if (token.is_identifier())
     {
-        type = cilType(Type::OBJ, is_const);
+        //TODO: Check if class exists and if not add it to TypeTable
+        type = Type::make(token.identifier(), (is_const ? TypeFlags::CONST : 0));
         advance();
         return true;
     }
@@ -735,7 +736,7 @@ stmt_ptr Parser::for_stmt()
 
 stmt_ptr Parser::var_decl_stmt()
 {
-    cilType type;
+    Type type = Type::make("error");
     const Token type_t = this->peek();
     if (this->get_type(type))
     {
@@ -757,14 +758,15 @@ stmt_ptr Parser::var_decl_stmt()
             return Statement::make_var_decl_stmt(info, val, this->pos_from_tokens(type_t, semicolon));
         }
         else
-        { this->current -= (type.is_const ? 2 : 1); }
+        { this->current -= (type.is_const() ? 2 : 1); }
     }
     return this->for_stmt();
 }
 
 stmt_ptr Parser::arr_decl_stmt()
 {
-    cilType type;
+    //TODO: Make default constructor
+    Type type = Type::make("error");
     const Token type_t = this->peek();
     if (this->get_type(type))
     {
@@ -807,7 +809,7 @@ stmt_ptr Parser::arr_decl_stmt()
             return Statement::make_arr_decl_stmt(info, vals, this->pos_from_tokens(type_t, semicolon));
         }
         else
-        { this->current -= (type.is_const ? 2 : 1); }
+        { this->current -= (type.is_const() ? 2 : 1); }
     }
     return this->var_decl_stmt();
 }
@@ -825,7 +827,7 @@ stmt_ptr Parser::func_decl_stmt()
         {
             if(this->atEnd())
             { throw CILError::error(this->peek().pos(), "Expected ')'"); }
-            cilType arg_type;
+            Type arg_type = Type::make("error");
             const Token arg_type_t = this->peek();
             if (!this->get_type(arg_type))
             { throw CILError::error(arg_type_t.pos(), "Expected argument type"); }
@@ -839,7 +841,8 @@ stmt_ptr Parser::func_decl_stmt()
                 break;
             }
         }
-        cilType ret_type = cilType(Type::NONE);
+        //TODO: Change how this is handled
+        Type ret_type = Type::make("error");
         if (this->match_symbol(Symbol::ARROW))
         {
             if(!this->get_type(ret_type))

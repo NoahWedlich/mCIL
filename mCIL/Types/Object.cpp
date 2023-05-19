@@ -1,7 +1,7 @@
 #include "Object.h"
 
 CIL::Object::Object(Class cls, bool is_const)
-	: CIL::Value(cilType(Type::OBJ, is_const)), cls_(cls), env_(new Environment())
+	: CIL::Value(Type::make("obj", (is_const ? TypeFlags::CONST : 0))), cls_(cls), env_(new Environment())
 {
 	for (Function method : cls_.methods)
 	{

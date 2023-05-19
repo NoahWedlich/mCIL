@@ -1,6 +1,6 @@
 #pragma once
 #include "../cil-system.h"
-#include "cil-types.h"
+#include "Type.h"
 #include "../Diagnostics/CILError.h"
 
 namespace CIL
@@ -13,11 +13,11 @@ namespace CIL
 	class Value
 	{
 	public:
-		const cilType type() const
+		const Type type() const
 		{ return type_; }
 
 		const bool is_type(Type t) const
-		{ return type_.type == t; }
+		{ return type_.is(t); }
 
 		virtual value_ptr invert();
 		virtual value_ptr negate();
@@ -51,10 +51,10 @@ namespace CIL
 
 		virtual const bool to_bool() = 0;
 	protected:
-		Value(cilType type)
+		Value(Type type)
 			: type_(type) {}
 
-		const cilType type_;
+		const Type type_;
 
 		CILError unary_op_not_implemented(std::string op);
 
