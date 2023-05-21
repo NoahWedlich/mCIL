@@ -156,7 +156,7 @@
     <ClCompile Include="REPL\REPLFileManager.cpp" />
     <ClCompile Include="REPL\REPL.cpp" />
     <ClCompile Include="Parsing\Statement.cpp" />
-    <ClCompile Include="Tools\ASTDebugPrinter.cpp" />
+    <ClCompile Include="Utils\Debugging\ASTDebugPrinter.cpp" />
     <ClCompile Include="Parsing\Expression.cpp" />
     <ClCompile Include="Diagnostics\Diagnostics.cpp" />
     <ClCompile Include="Lexing\Lexer.cpp" />
@@ -191,7 +191,7 @@
     <ClInclude Include="REPL\REPLFileManager.h" />
     <ClInclude Include="REPL\REPL.h" />
     <ClInclude Include="Parsing\Statement.h" />
-    <ClInclude Include="Tools\ASTDebugPrinter.h" />
+    <ClInclude Include="Utils\Debugging\ASTDebugPrinter.h" />
     <ClInclude Include="cil-system.h" />
     <ClInclude Include="Parsing\Expression.h" />
     <ClInclude Include="Diagnostics\Diagnostics.h" />

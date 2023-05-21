@@ -7,7 +7,7 @@
 #include "Compiling/LLVMBackend.h"
 #include "Diagnostics/SourceFileManager.h"
 #include "Diagnostics/Diagnostics.h"
-#include "Tools/ASTDebugPrinter.h"
+#include "Utils/Debugging/ASTDebugPrinter.h"
 #include "Interpreting/Interpreter.h"
 #include "REPL/REPL.h"
 

@@ -1,11 +1,11 @@
 #pragma once
-#include "../cil-system.h"
-#include "../Types/Type.h"
-#include "../Types/TypeTable.h"
-#include "../Diagnostics/TokenPrinter.h"
-#include "../Diagnostics/CILError.h"
-#include "../Parsing/Expression.h"
-#include "../Parsing/Statement.h"
+#include "../../cil-system.h"
+#include "../../Types/Type.h"
+#include "../../Types/TypeTable.h"
+#include "../../Diagnostics/TokenPrinter.h"
+#include "../../Diagnostics/CILError.h"
+#include "../../Parsing/Expression.h"
+#include "../../Parsing/Statement.h"
 
 #define InitRepr()						\
 	std::string result = "";			\

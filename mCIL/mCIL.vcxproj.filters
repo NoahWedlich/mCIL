@@ -36,7 +36,7 @@
     <ClCompile Include="Parsing\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\ASTDebugPrinter.cpp">
+    <ClCompile Include="Utils\Debugging\ASTDebugPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Diagnostics\TokenPrinter.cpp">
@@ -140,7 +140,7 @@
     <ClInclude Include="Parsing\Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\ASTDebugPrinter.h">
+    <ClInclude Include="Utils\Debugging\ASTDebugPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Diagnostics\TokenPrinter.h">
