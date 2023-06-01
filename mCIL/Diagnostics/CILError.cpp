@@ -65,6 +65,7 @@ void CILError::insert(std::stringstream& ss, std::string value)
 
 void CILError::insert(std::stringstream& ss, Type value)
 {
+	//TODO: Move this to a pretty printer class
 	if (value.is_const())
 	{
 		ss << "const ";

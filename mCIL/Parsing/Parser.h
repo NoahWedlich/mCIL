@@ -1,11 +1,13 @@
 #pragma once
 #include "../cil-system.h"
 #include "../Types/Type.h"
+#include "../Types/TypeTable.h"
 #include "../Lexing/Token.h"
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
 #include "Expression.h"
 #include "Statement.h"
+#include "SymbolTable.h"
 
 class Parser
 {

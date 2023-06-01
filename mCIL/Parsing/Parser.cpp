@@ -224,9 +224,14 @@ bool Parser::match_type()
     }
     else if (token.is_identifier())
     {
-        if (is_const)
-        { current--; }
-        return true;
+        if (TypeTable::type_exists(token.identifier()))
+        {
+            if (is_const)
+            { current--; }
+            return true;
+        }
+        //TODO: Maybe add optimistic type checking here
+        return false;
     }
     return false;
 }
@@ -262,10 +267,14 @@ bool Parser::get_type(Type& type)
     }
     else if (token.is_identifier())
     {
-        //TODO: Check if class exists and if not add it to TypeTable
-        type = Type::make(token.identifier(), (is_const ? TypeFlags::CONST : 0));
-        advance();
-        return true;
+        if (TypeTable::type_exists(token.identifier()))
+        {
+            type = Type::make(token.identifier(), (is_const ? TypeFlags::CONST : 0));
+            advance();
+            return true;
+        }
+        //TODO: Add optimistic type checking
+        return false;
     }
     return false;
 }
@@ -924,6 +933,9 @@ stmt_ptr Parser::class_decl_stmt()
                     .methods = methods_info,
                     .members = members_info
                 };
+
+                //TODO: Local class types shouldn't be registered in the global type table
+                TypeTable::register_type(info.name, type_id("object"));
 
                 return Statement::make_class_decl_stmt(info, methods, members, pos_from_tokens(class_keyword, r_brace));
             }

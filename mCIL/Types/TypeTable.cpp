@@ -13,11 +13,12 @@ TypeID TypeTable::register_type(std::string name, TypeID super_type)
 
 TypeID TypeTable::get_type_id(std::string name)
 {
-	for (TypeTableEntry& entry : table_)
+	for (TypeTableEntry& entry : TypeTable::table_)
 	{
 		if (entry.name == name)
 		{ return entry.id; }
 	}
+	//TODO: Throw CILError, when type not found
 	return 0;
 }
 

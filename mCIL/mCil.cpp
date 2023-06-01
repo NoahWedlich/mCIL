@@ -18,7 +18,7 @@ int main()
 
 	TypeTable::add_builtin_types();
 
-	SourceFileManager source{ "Samples/Functions.cil" };
+	SourceFileManager source{ "Samples/CLasses.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
