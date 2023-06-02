@@ -24,11 +24,12 @@ bool Type::is(Type other) const
 bool Type::is_subtype_of(TypeID id) const
 {
 	if (id_ == id) { return true; }
-	TypeID super_type = TypeTable::get_super_type(id);
+	TypeID super_type = TypeTable::get_super_type(id_);
 	while (super_type != type_id("type"))
 	{
 		if (super_type == id)
 		{ return true; }
+		super_type = TypeTable::get_super_type(super_type);
 	}
 	return false;
 }

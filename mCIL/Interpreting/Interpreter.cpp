@@ -198,7 +198,7 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
 {
 	Variable var = env_->get_var(expr->identifier());
-	if(!var.info.type.is_subtype_of(type_id("obj")))
+	if(!var.info.type.is_subtype_of(type_id("object")))
 	{ throw CILError::error(expr->pos(), "Can only access variables of objects, got '$'", var.info.type); }
 	CIL::Object obj = *std::dynamic_pointer_cast<CIL::Object, CIL::Value>(var.value);
 
