@@ -3,6 +3,7 @@
 #include "../Types/Type.h"
 #include "../Types/TypeTable.h"
 #include "../Types/cil-types.h"
+#include "../Utils/Threading/ThreadSafeObj.h"
 
 class SymbolTable
 {
@@ -40,5 +41,5 @@ private:
 	std::unordered_map<std::string, FuncInfo> funcs_;
 	std::unordered_map<std::string, ClassInfo> classes_;
 
-	static SymbolTable global_table_;
+	static ThreadSafeObj<SymbolTable> global_table_;
 };
