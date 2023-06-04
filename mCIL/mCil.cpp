@@ -18,7 +18,7 @@ int main()
 
 	TypeTable::add_builtin_types();
 
-	SourceFileManager source{ "Samples/CLasses.cil" };
+	SourceFileManager source{ "Samples/Functions.cil" };
 	Lexer lexer{ source };
 	std::vector<Token> tokens = lexer.scan_file();
 	if (ErrorManager::error_ocurred)
@@ -27,7 +27,15 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	Parser parser{ tokens };
+	Parser scanner{ tokens };
+	std::vector<Token> code_block = scanner.scan();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}
+
+	Parser parser{ code_block };
 	stmt_list& stmts = parser.parse();
 	if (ErrorManager::error_ocurred)
 	{

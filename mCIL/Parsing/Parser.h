@@ -16,6 +16,8 @@ public:
 
 	stmt_list& parse();
 
+	std::vector<Token> scan();
+
 	expr_ptr parse_single_expr();
 	stmt_ptr parse_single_stmt();
 
@@ -88,6 +90,11 @@ private:
 	stmt_ptr func_decl_stmt();
 	stmt_ptr class_decl_stmt();
 	stmt_ptr statement();
+
+	//TODO: Scan array declaration or move it to scan_var_decl
+	//stmt_ptr scan_var_decl();
+	stmt_ptr scan_func_decl();
+	//stmt_ptr scan_class_decl();
 
 	std::vector<Token>& tokens_;
 	int current;

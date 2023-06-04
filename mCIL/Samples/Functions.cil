@@ -1,27 +1,15 @@
-/*
-for (num i = 0; true; i = i+1)
-{
-	print i;
-	if (i >= 5)
-	{
-		break;
-	}
-}
-*/
-
 def sum(num a, num b) -> num;
 
-def call_sum(num a, num b)
+def print_sum(num a, num b)
 {
 	print sum(a, b);
 }
-
 
 def sum(num a, num b) -> num
 {
 	return (a + b);
 }
 
-call_sum(1, 2);
-call_sum(2, 3);
-call_sum(2, 5);
+print_sum(1, 2);
+print_sum(2, 3);
+print_sum(2, 5);

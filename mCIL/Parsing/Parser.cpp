@@ -13,6 +13,28 @@ stmt_list& Parser::parse()
     return *program;
 }
 
+std::vector<Token> Parser::scan()
+{
+    std::vector<Token> code_block{};
+
+    while (!this->atEnd())
+    {
+        stmt_ptr func = scan_func_decl();
+        if (func)
+        {
+            FuncDeclStatement *func_decl = dynamic_cast<FuncDeclStatement*>(func.get());
+            SymbolTable::decl_glob_function(func_decl->info());
+            continue;
+        }
+
+        code_block.push_back(advance());
+	}
+    //TODO: Assert that the last token is an EOF token
+    code_block.push_back(tokens_.back());
+
+    return code_block;
+}
+
 expr_ptr Parser::parse_single_expr()
 {
     expr_ptr expr = this->expression();
@@ -961,4 +983,77 @@ stmt_ptr Parser::statement()
         ErrorManager::cil_error(err);
         return Statement::make_error_stmt(err.range());
     }
+}
+
+stmt_ptr Parser::scan_func_decl()
+{
+    const Token def_keyword = this->peek();
+    if (this->match_keyword(Keyword::KEYWORD_DEF))
+    {
+        const Token name = this->peek();
+        expect_identifier();
+        expect_symbol(Symbol::LEFT_PAREN);
+        std::vector<VarInfo> args{};
+        while (!this->match_symbol(Symbol::RIGHT_PAREN))
+        {
+            if (this->atEnd())
+            {
+                throw CILError::error(this->peek().pos(), "Expected ')'");
+            }
+            Type arg_type = Type::make("error");
+            const Token arg_type_t = this->peek();
+            if (!this->get_type(arg_type))
+            {
+                throw CILError::error(arg_type_t.pos(), "Expected argument type");
+            }
+            const Token arg_name = this->peek();
+            expect_identifier();
+            args.push_back(VarInfo{ arg_name.identifier(), arg_type });
+            if (!this->match_symbol(Symbol::COMMA))
+            {
+                if (!this->match_symbol(Symbol::RIGHT_PAREN))
+                {
+                    throw CILError::error(this->peek().pos(), "Expected ','");
+                }
+                break;
+            }
+        }
+        Type ret_type = Type::make("none");
+        if (this->match_symbol(Symbol::ARROW))
+        {
+            if (!this->get_type(ret_type))
+            {
+                throw CILError::error(this->peek().pos(), "Expected return type");
+            }
+        }
+
+        FuncInfo info
+        {
+            .name = name.identifier(),
+            .args = args,
+            .ret_type = ret_type,
+            .has_return = false
+        };
+
+        stmt_ptr body = nullptr;
+
+        Token semicolon = peek();
+        if (!match_symbol(Symbol::SEMICOLON))
+        {
+            this->func_level++;
+            stmt_ptr body = this->statement();
+            this->func_level--;
+
+            if (has_return_)
+            {
+                info.has_return = true;
+                has_return_ = false;
+            }
+
+            return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), body->pos() });
+        }
+
+        return Statement::make_func_decl_stmt(info, body, Position{ def_keyword.pos(), semicolon.pos() });
+    }
+    return nullptr;
 }
