@@ -111,6 +111,15 @@
     <ClCompile Include="Types\None.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Parsing\SymbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanning\SymbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanning\Scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexing\Lexer.h">
@@ -231,6 +240,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types\None.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\SymbolTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scanning\SymbolTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scanning\Scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,7 +7,7 @@
 #include "../Diagnostics/Diagnostics.h"
 #include "Expression.h"
 #include "Statement.h"
-#include "SymbolTable.h"
+#include "../Scanning/SymbolTable.h"
 
 class Parser
 {

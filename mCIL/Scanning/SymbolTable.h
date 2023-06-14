@@ -4,20 +4,21 @@
 #include "../Types/TypeTable.h"
 #include "../Types/cil-types.h"
 #include "../Utils/Threading/ThreadSafeObj.h"
+#include "../Diagnostics/CILError.h"
+#include "../Lexing/Token.h"
 
 class SymbolTable
 {
 public:
-	//TODO: Add definitions and the respective code-blocks
 	SymbolTable();
 
-	void decl_loc_variable(VarInfo info);
-	void decl_loc_function(FuncInfo info);
-	void decl_loc_class(ClassInfo info);
+	void decl_loc_variable(VarInfo info, token_list tokens = {});
+	void decl_loc_function(FuncInfo info, token_list tokens = {});
+	void decl_loc_class(ClassInfo info, token_list tokens = {});
 
-	static void decl_glob_variable(VarInfo info);
-	static void decl_glob_function(FuncInfo info);
-	static void decl_glob_class(ClassInfo info);
+	static void decl_glob_variable(VarInfo info, token_list tokens = {});
+	static void decl_glob_function(FuncInfo info, token_list tokens = {});
+	static void decl_glob_class(ClassInfo info, token_list tokens = {});
 
 	const bool exists_loc_variable(std::string name) const;
 	const bool exists_loc_function(std::string name) const;
@@ -37,9 +38,27 @@ public:
 
 	static void make_table_global(SymbolTable& table);
 private:
-	std::unordered_map<std::string, VarInfo> vars_;
-	std::unordered_map<std::string, FuncInfo> funcs_;
-	std::unordered_map<std::string, ClassInfo> classes_;
+	struct var_ {
+		VarInfo info;
+		token_list tokens_;
+		expr_ptr expr_;
+	};
+
+	struct func_ {
+		FuncInfo info;
+		token_list tokens_;
+		stmt_ptr stmt_;
+	};
+
+	struct class_ {
+		ClassInfo info;
+		token_list tokens_;
+		stmt_list stmts_;
+	};
+private:
+	std::unordered_map<std::string, var_> vars_;
+	std::unordered_map<std::string, func_> funcs_;
+	std::unordered_map<std::string, class_> classes_;
 
 	static ThreadSafeObj<SymbolTable> global_table_;
 };

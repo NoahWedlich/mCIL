@@ -139,6 +139,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Parsing\SymbolTable.cpp" />
+    <ClCompile Include="Scanning\Scanner.cpp" />
+    <ClCompile Include="Scanning\SymbolTable.cpp" />
     <ClCompile Include="Types\ErrorValue.cpp" />
     <ClCompile Include="Types\None.cpp" />
     <ClCompile Include="Utils\Threading\JobQueue.cpp" />
@@ -177,6 +179,8 @@
     <ClInclude Include="Compiling\LLVMBackend.h" />
     <ClInclude Include="LLVMHeaders.h" />
     <ClInclude Include="Parsing\SymbolTable.h" />
+    <ClInclude Include="Scanning\Scanner.h" />
+    <ClInclude Include="Scanning\SymbolTable.h" />
     <ClInclude Include="Types\cil-types.h" />
     <ClInclude Include="Types\ErrorValue.h" />
     <ClInclude Include="Types\None.h" />
