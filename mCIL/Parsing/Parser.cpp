@@ -207,22 +207,7 @@ bool Parser::match_type()
     bool is_const = this->match_keyword(Keyword::KEYWORD_CONST);
 
     const token_ptr token = this->peek();
-    if (token->is_keyword())
-    {
-        switch (token->keyword())
-        {
-        case Keyword::KEYWORD_BOOL:
-        case Keyword::KEYWORD_NUM:
-        case Keyword::KEYWORD_STR:
-        case Keyword::KEYWORD_AUTO:
-            if(is_const)
-            { current--; }
-            return true;
-        default:
-            return false;
-        }
-    }
-    else if (token->is_identifier())
+    if (token->is_identifier())
     {
         if (TypeTable::type_exists(token->identifier()))
         {
@@ -243,29 +228,7 @@ bool Parser::get_type(Type& type)
     type = Type::make("error");
 
     const token_ptr token = this->peek();
-    if (token->is_keyword())
-    {
-        switch (token->keyword())
-        {
-        case Keyword::KEYWORD_BOOL:
-            type = Type::make("bool", (is_const ? TypeFlags::CONST : 0));
-            break;
-        case Keyword::KEYWORD_NUM:
-            type = Type::make("num", (is_const ? TypeFlags::CONST : 0));
-            break;
-        case Keyword::KEYWORD_STR:
-            type = Type::make("str", (is_const ? TypeFlags::CONST : 0));
-            break;
-        case Keyword::KEYWORD_AUTO:
-            //TODO: Implement auto
-            break;
-        default:
-            return false;
-        }
-        this->advance();
-        return true;
-    }
-    else if (token->is_identifier())
+    if (token->is_identifier())
     {
         if (TypeTable::type_exists(token->identifier()))
         {
@@ -297,11 +260,12 @@ expr_ptr Parser::primary_expr()
 {
     const token_ptr token = this->peek();
 
-    if (match_keyword(Keyword::KEYWORD_NONE))
+    //TODO: Add support for 'none' keyword
+    /*if (match_keyword(Keyword::KEYWORD_NONE))
     {
         return Expression::make_none_expr(token);
-    }
-    else if (this->match_number())
+    }*/
+    if (this->match_number())
     {
         return Expression::make_num_expr(token);
     }

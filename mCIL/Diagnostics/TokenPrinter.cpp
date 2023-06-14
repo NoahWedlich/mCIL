@@ -90,14 +90,6 @@ namespace TokenPrinter
 	{
 		switch (k)
 		{
-		case Keyword::KEYWORD_NONE:
-			return "none";
-		case Keyword::KEYWORD_BOOL:
-			return "bool";
-		case Keyword::KEYWORD_NUM:
-			return "num";
-		case Keyword::KEYWORD_STR:
-			return "str";
 		case Keyword::KEYWORD_AUTO:
 			return "auto";
 		case Keyword::KEYWORD_CONST:

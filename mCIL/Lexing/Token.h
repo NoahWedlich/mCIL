@@ -62,10 +62,6 @@ enum class Operator
 
 enum class Keyword
 {
-	KEYWORD_NONE,
-	KEYWORD_BOOL,
-	KEYWORD_NUM,
-	KEYWORD_STR,
 	KEYWORD_AUTO,
 	KEYWORD_CONST,
 	KEYWORD_TRUE,
