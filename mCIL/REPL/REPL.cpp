@@ -17,7 +17,7 @@ void REPL::run()
 		std::getline(std::cin, buffer);
 		this->source_.add_line(buffer);
 
-		std::vector<Token> tokens = this->lexer_.scan_file();
+		token_list tokens = this->lexer_.scan_file();
 		if (ErrorManager::error_ocurred)
 		{
 			ErrorManager::report_errors(this->source_);

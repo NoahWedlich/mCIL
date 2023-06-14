@@ -133,26 +133,26 @@ namespace TokenPrinter
 		}
 	}
 
-	std::string print_token(Token t)
+	std::string print_token(token_ptr t)
 	{
-		switch (t.type())
+		switch (t->type())
 		{
 		case TokenType::TOKEN_INVALID:
 			return "INVALID_TOKEN";
 		case TokenType::TOKEN_EOF:
 			return "EOF";
 		case TokenType::TOKEN_SYMBOL:
-			return print_symbol(t.symbol());
+			return print_symbol(t->symbol());
 		case TokenType::TOKEN_OPERATOR:
-			return print_operator(t.op());
+			return print_operator(t->op());
 		case TokenType::TOKEN_KEYWORD:
-			return print_keyword(t.keyword());
+			return print_keyword(t->keyword());
 		case TokenType::TOKEN_STRING:
-			return t.string_val();
+			return t->string_val();
 		case TokenType::TOKEN_NUMBER:
-			return std::to_string(t.number_val());
+			return std::to_string(t->number_val());
 		case TokenType::TOKEN_IDENTIFIER:
-			return t.identifier();
+			return t->identifier();
 		default:
 			return "INVALID_TOKEN";
 		}

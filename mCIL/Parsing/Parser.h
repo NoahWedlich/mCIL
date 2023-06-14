@@ -12,25 +12,23 @@
 class Parser
 {
 public:
-	Parser(std::vector<Token>& tokens);
+	Parser(token_list& tokens);
 
 	stmt_list& parse();
-
-	std::vector<Token> scan();
 
 	expr_ptr parse_single_expr();
 	stmt_ptr parse_single_stmt();
 
 	void reset();
 private:
-	Token peek()
+	token_ptr peek()
 	{ return this->tokens_[this->current]; }
-	Token advance()
+	token_ptr advance()
 	{ return this->tokens_[this->current++]; }
-	Token consume()
+	token_ptr consume()
 	{ return this->tokens_[++this->current]; }
 	bool atEnd()
-	{ return this->peek().is_EOF(); }
+	{ return this->peek()->is_EOF(); }
 
 	void expect_number();
 	void expect_str();
@@ -41,7 +39,7 @@ private:
 
 	void synchronize();
 
-	Position pos_from_tokens(Token start, Token end);
+	Position pos_from_tokens(token_ptr start, token_ptr end);
 	Position pos_from_exprs(expr_ptr start, expr_ptr end);
 	Position pos_from_stmts(stmt_ptr start, stmt_ptr end);
 
@@ -91,12 +89,7 @@ private:
 	stmt_ptr class_decl_stmt();
 	stmt_ptr statement();
 
-	//TODO: Scan array declaration or move it to scan_var_decl
-	//stmt_ptr scan_var_decl();
-	stmt_ptr scan_func_decl();
-	//stmt_ptr scan_class_decl();
-
-	std::vector<Token>& tokens_;
+	token_list& tokens_;
 	int current;
 
 	int func_level;

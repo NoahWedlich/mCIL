@@ -3,8 +3,8 @@
 Token::Token(TokenType type, std::string lexeme, Position pos)
 	: type_(type), lexeme_(lexeme), pos_(pos), value_() {}
 
-Token::Token(const Token& other)
-	: type_(other.type_), lexeme_(other.lexeme_), pos_(other.pos_), value_()
+Token::Token(const token_ptr& other)
+	: type_(other->type_), lexeme_(other->lexeme_), pos_(other->pos_), value_()
 {
 	switch (this->type_)
 	{
@@ -12,49 +12,49 @@ Token::Token(const Token& other)
 	case TokenType::TOKEN_EOF:
 		break;
 	case TokenType::TOKEN_KEYWORD:
-		this->value_.keyword_value = other.value_.keyword_value;
+		this->value_.keyword_value = other->value_.keyword_value;
 		break;
 	case TokenType::TOKEN_IDENTIFIER:
 	case TokenType::TOKEN_STRING:
-		this->value_.string_value = other.value_.string_value;
+		this->value_.string_value = other->value_.string_value;
 		break;
 	case TokenType::TOKEN_OPERATOR:
-		this->value_.operator_value = other.value_.operator_value;
+		this->value_.operator_value = other->value_.operator_value;
 		break;
 	case TokenType::TOKEN_SYMBOL:
-		this->value_.symbol_value = other.value_.symbol_value;
+		this->value_.symbol_value = other->value_.symbol_value;
 		break;
 	case TokenType::TOKEN_NUMBER:
-		this->value_.number_value = other.value_.number_value;
+		this->value_.number_value = other->value_.number_value;
 		break;
 	}
 }
 
-Token& Token::operator=(const Token& other)
+Token& Token::operator=(const token_ptr& other)
 {
-	this->type_ = other.type_;
-	this->lexeme_ = other.lexeme_;
-	this->pos_ = other.pos_;
-	switch (other.type_)
+	this->type_ = other->type_;
+	this->lexeme_ = other->lexeme_;
+	this->pos_ = other->pos_;
+	switch (other->type_)
 	{
 	case TokenType::TOKEN_INVALID:
 	case TokenType::TOKEN_EOF:
 		break;
 	case TokenType::TOKEN_KEYWORD:
-		this->value_.keyword_value = other.value_.keyword_value;
+		this->value_.keyword_value = other->value_.keyword_value;
 		break;
 	case TokenType::TOKEN_IDENTIFIER:
 	case TokenType::TOKEN_STRING:
-		this->value_.string_value = other.value_.string_value;
+		this->value_.string_value = other->value_.string_value;
 		break;
 	case TokenType::TOKEN_OPERATOR:
-		this->value_.operator_value = other.value_.operator_value;
+		this->value_.operator_value = other->value_.operator_value;
 		break;
 	case TokenType::TOKEN_SYMBOL:
-		this->value_.symbol_value = other.value_.symbol_value;
+		this->value_.symbol_value = other->value_.symbol_value;
 		break;
 	case TokenType::TOKEN_NUMBER:
-		this->value_.number_value = other.value_.number_value;
+		this->value_.number_value = other->value_.number_value;
 	}
 	return *this;
 }
@@ -150,56 +150,56 @@ const double Token::number_val() const
 	return this->value_.number_value;
 }
 
-Token Token::create_invalid_token(Position pos)
+token_ptr Token::create_invalid_token(Position pos)
 {
-	return Token(TokenType::TOKEN_INVALID, "", pos);
+	return token_ptr(new Token(TokenType::TOKEN_INVALID, "", pos));
 }
 
-Token Token::create_eof_token(Position pos)
+token_ptr Token::create_eof_token(Position pos)
 {
-	return Token(TokenType::TOKEN_EOF, "", pos);
+	return token_ptr(new Token(TokenType::TOKEN_EOF, "", pos));
 }
 
-Token Token::create_symbol_token(Symbol type, std::string lexeme, Position pos)
+token_ptr Token::create_symbol_token(Symbol type, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_SYMBOL, lexeme, pos);
-	token.value_.symbol_value = type;
-	return token;
+	Token *token = new Token(TokenType::TOKEN_SYMBOL, lexeme, pos);
+	token->value_.symbol_value = type;
+	return token_ptr(token);
 }
 
-Token Token::create_operator_token(Operator type, std::string lexeme, Position pos)
+token_ptr Token::create_operator_token(Operator type, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_OPERATOR, lexeme, pos);
-	token.value_.operator_value = type;
-	return token;
+	Token* token = new Token(TokenType::TOKEN_OPERATOR, lexeme, pos);
+	token->value_.operator_value = type;
+	return token_ptr(token);
 }
 
-Token Token::create_keyword_token(Keyword type, std::string lexeme, Position pos)
+token_ptr Token::create_keyword_token(Keyword type, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_KEYWORD, lexeme, pos);
-	token.value_.keyword_value = type;
-	return token;
+	Token* token = new Token(TokenType::TOKEN_KEYWORD, lexeme, pos);
+	token->value_.keyword_value = type;
+	return token_ptr(token);
 }
 
-Token Token::create_string_token(const std::string& text, std::string lexeme, Position pos)
+token_ptr Token::create_string_token(const std::string& text, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_STRING, lexeme, pos);
-	token.value_.string_value = new std::string(text);
-	return token;
+	Token* token = new Token(TokenType::TOKEN_STRING, lexeme, pos);
+	token->value_.string_value = new std::string(text);
+	return token_ptr(token);
 }
 
-Token Token::create_number_token(double value, std::string lexeme, Position pos)
+token_ptr Token::create_number_token(double value, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_NUMBER, lexeme, pos);
-	token.value_.number_value = value;
-	return token;
+	Token* token = new Token(TokenType::TOKEN_NUMBER, lexeme, pos);
+	token->value_.number_value = value;
+	return token_ptr(token);
 }
 
-Token Token::create_identifier_token(const std::string& value, std::string lexeme, Position pos)
+token_ptr Token::create_identifier_token(const std::string& value, std::string lexeme, Position pos)
 {
-	Token token(TokenType::TOKEN_IDENTIFIER, lexeme, pos);
-	token.value_.string_value = new std::string(value);
-	return token;
+	Token* token = new Token(TokenType::TOKEN_IDENTIFIER, lexeme, pos);
+	token->value_.string_value = new std::string(value);
+	return token_ptr(token);
 }
 
 const std::string Token::to_string() const

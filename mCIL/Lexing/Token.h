@@ -2,6 +2,10 @@
 #include "../cil-system.h"
 #include "../Diagnostics/Position.h"
 
+class Token;
+typedef std::shared_ptr<Token> token_ptr;
+typedef std::vector<token_ptr> token_list;
+
 enum class TokenType
 {
 	TOKEN_INVALID,
@@ -84,8 +88,8 @@ enum class Keyword
 class Token
 {
 public:
-	Token(const Token&);
-	Token& operator=(const Token&);
+	Token(const token_ptr&);
+	Token& operator=(const token_ptr&);
 
 	TokenType type() const;
 	Position pos() const;
@@ -107,14 +111,14 @@ public:
 	const std::string& string_val() const;
 	const double number_val() const;
 
-	static Token create_invalid_token(Position pos);
-	static Token create_eof_token(Position pos);
-	static Token create_symbol_token(Symbol type, std::string lexeme, Position pos);
-	static Token create_operator_token(Operator type, std::string lexeme, Position pos);
-	static Token create_keyword_token(Keyword type, std::string lexeme, Position pos);
-	static Token create_string_token(const std::string& text, std::string lexeme, Position pos);
-	static Token create_number_token(double value, std::string lexeme, Position pos);
-	static Token create_identifier_token(const std::string& value, std::string lexeme, Position pos);
+	static token_ptr create_invalid_token(Position pos);
+	static token_ptr create_eof_token(Position pos);
+	static token_ptr create_symbol_token(Symbol type, std::string lexeme, Position pos);
+	static token_ptr create_operator_token(Operator type, std::string lexeme, Position pos);
+	static token_ptr create_keyword_token(Keyword type, std::string lexeme, Position pos);
+	static token_ptr create_string_token(const std::string& text, std::string lexeme, Position pos);
+	static token_ptr create_number_token(double value, std::string lexeme, Position pos);
+	static token_ptr create_identifier_token(const std::string& value, std::string lexeme, Position pos);
 
 	const std::string to_string() const;
 private:
@@ -135,4 +139,3 @@ private:
 
 	Position pos_;
 };
-

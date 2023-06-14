@@ -37,16 +37,16 @@ Lexer::~Lexer()
 	delete[] this->current_line_;
 }
 
-std::vector<Token> Lexer::scan_file()
+token_list Lexer::scan_file()
 {
 	this->cur_line_size_ = 0;
 	this->char_off_ = 0;
 	this->line_off_ = 0;
 	this->start_char_ = 0;
 
-	Token currentToken = this->create_invalid_token();
+	token_ptr currentToken = this->create_invalid_token();
 	
-	std::vector<Token> tokens{ };
+	token_list tokens{ };
 	do
 	{
 		try
@@ -58,11 +58,11 @@ std::vector<Token> Lexer::scan_file()
 		{
 			ErrorManager::cil_error(err);
 		}
-	} while (!currentToken.is_EOF());
+	} while (!currentToken->is_EOF());
 	return tokens;
 }
 
-Token Lexer::next_token()
+token_ptr Lexer::next_token()
 {
 	while (true)
 	{
@@ -83,7 +83,7 @@ Token Lexer::next_token()
 		if(skip_spaces())
 		{ continue; }
 
-		Token next = this->create_invalid_token();
+		token_ptr next = this->create_invalid_token();
 		bool found = false;
 
 		this->start_char_ = this->char_off_;
@@ -155,42 +155,42 @@ Position Lexer::pos(size_t len)
 	return Position{ start, end };
 }
 
-Token Lexer::create_invalid_token()
+token_ptr Lexer::create_invalid_token()
 {
 	return Token::create_invalid_token(this->pos(1));
 }
 
-Token Lexer::create_eof_token()
+token_ptr Lexer::create_eof_token()
 {
 	return Token::create_eof_token(this->pos(1));
 }
 
-Token Lexer::create_keyword_token(Keyword type, std::string lexeme, size_t len)
+token_ptr Lexer::create_keyword_token(Keyword type, std::string lexeme, size_t len)
 {
 	return Token::create_keyword_token(type, lexeme, this->pos(len));
 }
 
-Token Lexer::create_string_token(const std::string& text, std::string lexeme, size_t len)
+token_ptr Lexer::create_string_token(const std::string& text, std::string lexeme, size_t len)
 {
 	return Token::create_string_token(text, lexeme, this->pos(len));
 }
 
-Token Lexer::create_number_token(double value, std::string lexeme, size_t len)
+token_ptr Lexer::create_number_token(double value, std::string lexeme, size_t len)
 {
 	return Token::create_number_token(value, lexeme, this->pos(len));
 }
 
-Token Lexer::create_identifier_token(const std::string& value, std::string lexeme, size_t len)
+token_ptr Lexer::create_identifier_token(const std::string& value, std::string lexeme, size_t len)
 {
 	return Token::create_identifier_token(value, lexeme, this->pos(len));
 }
 
-Token Lexer::create_operator_token(Operator type, std::string lexeme, size_t len)
+token_ptr Lexer::create_operator_token(Operator type, std::string lexeme, size_t len)
 {
 	return Token::create_operator_token(type, lexeme, this->pos(len));
 }
 
-Token Lexer::create_symbol_token(Symbol type, std::string lexeme, size_t len)
+token_ptr Lexer::create_symbol_token(Symbol type, std::string lexeme, size_t len)
 {
 	return Token::create_symbol_token(type, lexeme, this->pos(len));
 }
@@ -255,12 +255,12 @@ bool Lexer::skip_comments()
 	return true;
 }
 
-Token Lexer::get_symbol(bool& found)
+token_ptr Lexer::get_symbol(bool& found)
 {
 	found = true;
 	const char* current = this->current_line_ + this->char_off_;
 
-	Token sym = this->create_invalid_token();
+	token_ptr sym = this->create_invalid_token();
 
 	switch (*current)
 	{
@@ -316,12 +316,12 @@ Token Lexer::get_symbol(bool& found)
 	return sym;
 }
 
-Token Lexer::get_operator(bool& found)
+token_ptr Lexer::get_operator(bool& found)
 {
 	found = true;
 	const char* current = this->current_line_ + this->char_off_;
 
-	Token op = this->create_invalid_token();
+	token_ptr op = this->create_invalid_token();
 
 	switch (*current)
 	{
@@ -444,7 +444,7 @@ Token Lexer::get_operator(bool& found)
 	return op;
 }
 
-Token Lexer::get_number(bool& found)
+token_ptr Lexer::get_number(bool& found)
 {
 	const char* start = this->current_line_ + this->char_off_;
 	const char* end = this->current_line_ + this->cur_line_size_;
@@ -486,14 +486,14 @@ Token Lexer::get_number(bool& found)
 	{
 		found = true;
 		double number = std::stod(number_str);
-		Token token = this->create_number_token(number, number_str, number_str.length());
+		token_ptr token = this->create_number_token(number, number_str, number_str.length());
 		this->char_off_ = current - this->current_line_;
 		return token;
 	}
 	return this->create_invalid_token();
 }
 
-Token Lexer::get_string(bool& found)
+token_ptr Lexer::get_string(bool& found)
 {
 	found = false;
 
@@ -521,12 +521,12 @@ Token Lexer::get_string(bool& found)
 	}
 
 	found = true;
-	Token token = this->create_string_token(str, "\"" + str + "\"", str.length() + 2);
+	token_ptr token = this->create_string_token(str, "\"" + str + "\"", str.length() + 2);
 	this->char_off_ = current + 1 - this->current_line_;
 	return token;
 }
 
-Token Lexer::get_keyword(bool& found)
+token_ptr Lexer::get_keyword(bool& found)
 {
 	found = false;
 
@@ -553,12 +553,12 @@ Token Lexer::get_keyword(bool& found)
 	}
 
 	found = true;
-	Token token = this->create_keyword_token(code_it->second, key_str, key_str.length());
+	token_ptr token = this->create_keyword_token(code_it->second, key_str, key_str.length());
 	this->char_off_ = current - this->current_line_;
 	return token;
 }
 
-Token Lexer::get_identifier(bool& found)
+token_ptr Lexer::get_identifier(bool& found)
 {
 	found = false;
 
@@ -578,7 +578,7 @@ Token Lexer::get_identifier(bool& found)
 	}
 	
 	found = true;
-	Token token = this->create_identifier_token(id_str, id_str, id_str.length());
+	token_ptr token = this->create_identifier_token(id_str, id_str, id_str.length());
 	this->char_off_ = current - this->current_line_;
 	return token;
 }

@@ -49,17 +49,17 @@ public:
 
 	static expr_ptr make_error_expr(Position);
 	static expr_ptr make_grouping_expr(expr_ptr, Position);
-	static expr_ptr make_none_expr(Token);
-	static expr_ptr make_bool_expr(Token);
-	static expr_ptr make_num_expr(Token);
-	static expr_ptr make_str_expr(Token);
-	static expr_ptr make_identifier_expr(Token);
-	static expr_ptr make_call_expr(Token, expr_list, Position);
-	static expr_ptr make_access_expr(Token, expr_ptr, Position);
-	static expr_ptr make_new_expr(Token, expr_list, Position);
-	static expr_ptr make_array_access_expr(Token, expr_ptr, Position);
-	static expr_ptr make_unary_expr(Token, expr_ptr);
-	static expr_ptr make_binary_expr(Token, expr_ptr, expr_ptr);
+	static expr_ptr make_none_expr(token_ptr);
+	static expr_ptr make_bool_expr(token_ptr);
+	static expr_ptr make_num_expr(token_ptr);
+	static expr_ptr make_str_expr(token_ptr);
+	static expr_ptr make_identifier_expr(token_ptr);
+	static expr_ptr make_call_expr(token_ptr, expr_list, Position);
+	static expr_ptr make_access_expr(token_ptr, expr_ptr, Position);
+	static expr_ptr make_new_expr(token_ptr, expr_list, Position);
+	static expr_ptr make_array_access_expr(token_ptr, expr_ptr, Position);
+	static expr_ptr make_unary_expr(token_ptr, expr_ptr);
+	static expr_ptr make_binary_expr(token_ptr, expr_ptr, expr_ptr);
 	static expr_ptr make_ternary_expr(expr_ptr, expr_ptr, expr_ptr);
 	static expr_ptr make_assignment_expr(expr_ptr, expr_ptr);
 
