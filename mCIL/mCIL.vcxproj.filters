@@ -111,9 +111,6 @@
     <ClCompile Include="Types\None.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parsing\SymbolTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scanning\SymbolTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -240,9 +237,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types\None.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Parsing\SymbolTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scanning\SymbolTable.h">

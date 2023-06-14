@@ -1,6 +1,7 @@
 #include "cil-system.h"
 #include "Types/TypeTable.h"
 #include "Lexing/Lexer.h"
+#include "Scanning/Scanner.h"
 #include "Parsing/Parser.h"
 #include "Parsing/Statement.h"
 #include "Compiling/Compiler.h"
@@ -27,7 +28,15 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	Parser parser{ tokens };
+	Scanner scanner{ tokens };
+	token_list top_level_tokens = scanner.scan();
+	if (ErrorManager::error_ocurred)
+	{
+		ErrorManager::report_errors(source);
+		exit(EXIT_FAILURE);
+	}
+
+	Parser parser{ top_level_tokens };
 	stmt_list& stmts = parser.parse();
 	if (ErrorManager::error_ocurred)
 	{
