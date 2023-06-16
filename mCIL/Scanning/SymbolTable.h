@@ -10,55 +10,67 @@
 class SymbolTable
 {
 public:
+	struct Variable {
+		std::string name;
+		Type type;
+
+		token_list tokens;
+		expr_ptr init_expr = nullptr;
+		bool parsed = false;
+	};
+
+	struct Function {
+		std::string name;
+		std::vector<Variable> args;
+		Type ret_type;
+		//TODO: Add has_return
+
+		token_list tokens;
+		stmt_ptr body = nullptr;
+		bool parsed = false;
+	};
+
+	struct Class {
+		std::string name;
+		std::vector<Variable> members;
+		std::vector<Function> methods;
+
+		token_list tokens;
+		bool parsed = false;
+	};
+public:
 	SymbolTable();
 
-	void decl_loc_variable(VarInfo info, token_list tokens = {});
-	void decl_loc_function(FuncInfo info, token_list tokens = {});
-	void decl_loc_class(ClassInfo info, token_list tokens = {});
 
-	static void decl_glob_variable(VarInfo info, token_list tokens = {});
-	static void decl_glob_function(FuncInfo info, token_list tokens = {});
-	static void decl_glob_class(ClassInfo info, token_list tokens = {});
+	void declare_local_variable(std::string name, Type type, token_list tokens = {});
+	void declare_local_function(std::string name, std::vector<Variable> args, Type ret_type, token_list tokens = {});
+	void declare_local_class(std::string name, std::vector<Variable> members, std::vector<Function> methods, token_list tokens = {});
 
-	const bool exists_loc_variable(std::string name) const;
-	const bool exists_loc_function(std::string name) const;
-	const bool exists_loc_class(std::string name) const;
+	static void declare_global_variable(std::string name, Type type, token_list tokens = {});
+	static void declare_global_function(std::string name, std::vector<Variable> args, Type ret_type, token_list tokens = {});
+	static void declare_global_class(std::string name, std::vector<Variable> members, std::vector<Function> methods, token_list tokens = {});
 
-	static const bool exists_glob_variable(std::string name);
-	static const bool exists_glob_function(std::string name);
-	static const bool exists_glob_class(std::string name);
+	const bool local_variable_exists(std::string name) const;
+	const bool local_function_exists(std::string name) const;
+	const bool local_class_exists(std::string name) const;
 
-	const VarInfo get_loc_variable(std::string name) const;
-	const FuncInfo get_loc_function(std::string name) const;
-	const ClassInfo get_loc_class(std::string name) const;
+	static const bool global_variable_exists(std::string name);
+	static const bool global_function_exists(std::string name);
+	static const bool global_class_exists(std::string name);
 
-	static const VarInfo get_glob_variable(std::string name);
-	static const FuncInfo get_glob_function(std::string name);
-	static const ClassInfo get_glob_class(std::string name);
+	Variable& get_local_variable(std::string name);
+	Function& get_local_function(std::string name);
+	Class& get_local_class(std::string name);
 
-	static void make_table_global(SymbolTable& table);
+	static Variable& get_global_variable(std::string name);
+	static Function& get_global_function(std::string name);
+	static Class& get_global_class(std::string name);
+
+	void make_table_global();
 private:
-	struct var_ {
-		VarInfo info;
-		token_list tokens_;
-		expr_ptr expr_;
-	};
-
-	struct func_ {
-		FuncInfo info;
-		token_list tokens_;
-		stmt_ptr stmt_;
-	};
-
-	struct class_ {
-		ClassInfo info;
-		token_list tokens_;
-		stmt_list stmts_;
-	};
-private:
-	std::unordered_map<std::string, var_> vars_;
-	std::unordered_map<std::string, func_> funcs_;
-	std::unordered_map<std::string, class_> classes_;
+	std::unordered_map<std::string, Variable> vars_;
+	std::unordered_map<std::string, Function> funcs_;
+	std::unordered_map<std::string, Class> classes_;
 
 	static ThreadSafeObj<SymbolTable> global_table_;
 };

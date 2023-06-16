@@ -19,7 +19,7 @@ token_list Scanner::scan()
 		list.push_back(advance());
 	}
 
-	SymbolTable::make_table_global(table_);
+	table_.make_table_global();
 	return list;
 }
 
@@ -228,13 +228,22 @@ bool Scanner::scan_function()
 		token_ptr name = expect_identifier();
 		expect_symbol(Symbol::LEFT_PAREN);
 
-		std::vector<VarInfo> parameters{};
+		std::vector<SymbolTable::Variable> parameters{};
 		while (!match_symbol(Symbol::RIGHT_PAREN))
 		{
 			if (at_end()) throw CILError::error(peek()->pos(), "Expected ')' got 'EOF'");
 			Type type = expect_type();
 			token_ptr arg_name = expect_identifier();
-			parameters.push_back(VarInfo{ arg_name->identifier(), type });
+
+			if (match_operator(Operator::OPERATOR_EQUAL))
+			{
+				token_list init{};
+				while (!match_symbol(Symbol::COMMA, false) && !match_symbol(Symbol::RIGHT_PAREN, false))
+				{ init.push_back(advance()); }
+				parameters.push_back(SymbolTable::Variable{ arg_name->identifier(), type, init });
+			}
+
+			parameters.push_back(SymbolTable::Variable{ arg_name->identifier(), type });
 
 			if (!match_symbol(Symbol::COMMA))
 			{
@@ -247,22 +256,15 @@ bool Scanner::scan_function()
 		if (match_symbol(Symbol::ARROW))
 			return_type = expect_type();
 
-		FuncInfo info
-		{
-			.name = name->identifier(),
-			.args = parameters,
-			.ret_type = return_type,
-			.has_return = false
-		};
-
 		if (match_symbol(Symbol::SEMICOLON))
 		{
-			table_.decl_loc_function(info);
+			table_.declare_local_function(name->identifier(), parameters, return_type);
 			return true;
 		}
 
 		token_list body = scan_stmt();
-		table_.decl_loc_function(info, body);
+
+		table_.declare_local_function(name->identifier(), parameters, return_type, body);
 		return true;
 	}
 	return false;

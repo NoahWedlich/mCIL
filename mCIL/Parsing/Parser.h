@@ -89,6 +89,10 @@ private:
 	stmt_ptr class_decl_stmt();
 	stmt_ptr statement();
 
+	void parse_variable(SymbolTable::Variable& var);
+	void parse_function(SymbolTable::Function& func);
+	void parse_class(SymbolTable::Class& cls);
+
 	token_list& tokens_;
 	int current;
 

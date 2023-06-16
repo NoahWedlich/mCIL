@@ -313,6 +313,12 @@ expr_ptr Parser::call_expr()
                     throw CILError::error(comma->pos(), "Exptected ','");
                 }
             }
+            //TODO: Add a local symbol table
+            if (!SymbolTable::global_function_exists(id->identifier()))
+			{ throw CILError::error(id->pos(), "Function '" + id->identifier() + "' does not exist"); }
+            
+            parse_function(SymbolTable::get_global_function(id->identifier()));
+
             return Expression::make_call_expr(id, args, this->pos_from_tokens(id, r_paren));
         }
         this->current--;
@@ -925,4 +931,24 @@ stmt_ptr Parser::statement()
         ErrorManager::cil_error(err);
         return Statement::make_error_stmt(err.range());
     }
+}
+
+void Parser::parse_variable(SymbolTable::Variable& var)
+{
+    //TODO: Implement variable parsing
+}
+
+void Parser::parse_function(SymbolTable::Function& func)
+{
+    //TODO: Implement parsing of parameter-default values
+    Parser p{ func.tokens };
+    p.func_level++;
+    stmt_ptr body = p.parse_single_stmt();
+    func.body = body;
+    func.parsed = true;
+}
+
+void Parser::parse_class(SymbolTable::Class& cls)
+{
+    //TODO: Implement class parsing
 }

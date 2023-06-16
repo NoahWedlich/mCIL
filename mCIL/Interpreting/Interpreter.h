@@ -9,6 +9,7 @@
 #include "../Parsing/Statement.h"
 #include "../Diagnostics/CILError.h"
 #include "../Diagnostics/Diagnostics.h"
+#include "../Scanning/SymbolTable.h"
 
 #define TRY_OP(op, pos) \
 try                     \
