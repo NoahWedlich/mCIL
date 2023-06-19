@@ -135,33 +135,34 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 {
 	try
 	{
-		Function func = this->env_->get_func(expr->identifier());
+		Environment::Function func = this->env_->get_func(expr->identifier());
 		if (!func.body)
 		{
-			throw CILError::error(expr->pos(), "Function '$' was declared but never defined", func.info.name);
+			throw CILError::error(expr->pos(), "Function '$' was declared but never defined", func.name);
 		}
-		std::vector<Variable> args {};
-		if (expr->args().size() != func.info.args.size())
+		std::vector<Environment::Variable> args {};
+		if (expr->args().size() != func.parameters.size())
 		{
+			//TODO: Add default arguments
 			throw CILError::error(expr->pos(), "Function '$' expects $ arguments, got $",
-				func.info.name.c_str(), func.info.args.size(), expr->args().size());
+				func.name.c_str(), func.parameters.size(), expr->args().size());
 		}
-		for (int i = 0; i < func.info.args.size(); i++)
+		for (int i = 0; i < func.parameters.size(); i++)
 		{
 			value_ptr arg_val = this->run_expr(expr->args()[i]);
-			VarInfo arg_info = func.info.args[i];
-			if (!arg_val->type().is(arg_info.type))
+			Type required_type = func.parameters[i].type;
+			if (!arg_val->type().is(required_type))
 			{
 				throw CILError::error(expr->pos(), "Argument '$' of function '$' must be '$' not '$'",
-					arg_info.name.c_str(), func.info.name.c_str(), arg_info.type, arg_val->type());
+					func.parameters[i].name.c_str(), func.name.c_str(), required_type, arg_val->type());
 			}
-			Variable arg{ arg_info, arg_val};
+			Environment::Variable arg{ func.parameters[i].name, arg_val->type(), arg_val };
 			args.push_back(arg);
 		}
 
 		Environment* previous = this->env_;
 		this->env_ = new Environment(previous);
-		for (Variable arg : args)
+		for (Environment::Variable arg : args)
 		{
 			this->env_->define_var(arg);
 		}
@@ -174,10 +175,10 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 		{
 			delete this->env_;
 			this->env_ = previous;
-			if (!ret.ret_val()->type().is(func.info.ret_type))
+			if (!ret.ret_val()->type().is(func.ret_type))
 			{
 				throw CILError::error(func.body->pos(), "Function '$' should return '$' not '$'",
-					func.info.name, func.info.ret_type, ret.ret_val()->type());
+					func.name, func.ret_type, ret.ret_val()->type());
 			}
 			return ret.ret_val();
 		}
@@ -197,9 +198,9 @@ value_ptr Interpreter::run_call_expr(std::shared_ptr<CallExpression> expr)
 
 value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
 {
-	Variable var = env_->get_var(expr->identifier());
-	if(!var.info.type.is_subtype_of(type_id("object")))
-	{ throw CILError::error(expr->pos(), "Can only access variables of objects, got '$'", var.info.type); }
+	Environment::Variable var = env_->get_var(expr->identifier());
+	if(!var.type.is_subtype_of(type_id("object")))
+	{ throw CILError::error(expr->pos(), "Can only access variables of objects, got '$'", var.type); }
 	CIL::Object obj = *std::dynamic_pointer_cast<CIL::Object, CIL::Value>(var.value);
 
 	Environment* previous = this->env_;
@@ -213,7 +214,7 @@ value_ptr Interpreter::run_access_expr(std::shared_ptr<AccessExpression> expr)
 
 value_ptr Interpreter::run_new_expr(std::shared_ptr<NewExpression> expr)
 {
-	Class cls = env_->get_class(expr->identifier());
+	Environment::Class cls = env_->get_class(expr->identifier());
 	value_ptr obj = CIL::Object::create(cls);
 	return obj;
 }
@@ -224,10 +225,10 @@ value_ptr Interpreter::run_array_access_expr(std::shared_ptr<ArrayAccessExpressi
 	if(!index_num->type().is_subtype_of(type_id("num")))
 	{ throw CILError::error(expr->pos(), "Index must be 'num' not '$'", index_num->type()); }
 	int index = (int)std::dynamic_pointer_cast<CIL::Number>(index_num)->value();
-	Array arr = this->env_->get_arr(expr->identifier());
-	if (index < 0 || index >= arr.info.size)
-	{ throw CILError::error(expr->pos(), "Index must be in the range [$,$[", 0, arr.info.size); }
-	return arr.arr[index];
+	Environment::Array arr = this->env_->get_arr(expr->identifier());
+	if (index < 0 || index >= arr.size)
+	{ throw CILError::error(expr->pos(), "Index must be in the range [$,$[", 0, arr.size); }
+	return arr.values[index];
 }
 
 value_ptr Interpreter::run_unary_expr(std::shared_ptr<UnaryExpression> expr)
@@ -496,7 +497,7 @@ void Interpreter::run_var_decl_stmt(std::shared_ptr<VarDeclStatement> stmt)
 			stmt->info().type, value->type());
 	}
 	
-	Variable var{ stmt->info(), value};
+	Environment::Variable var{ stmt->info().name, stmt->info().type, value};
 
 	this->env_->define_var(var);
 }
@@ -520,39 +521,57 @@ void Interpreter::run_arr_decl_stmt(std::shared_ptr<ArrDeclStatement> stmt)
 		vals.push_back(val);
 	}
 	
-	Array arr{ stmt->info(), vals };
+	Environment::Array arr{ stmt->info().name, stmt->info().size, stmt->info().type, vals};
 	this->env_->define_arr(arr);
 }
 
 void Interpreter::run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt)
 {
-	Function func{ stmt->info(), stmt->body() };
+	std::vector<Environment::Variable> args{};
+	for (VarInfo arg : stmt->info().args)
+	{
+		args.push_back({ arg.name, arg.type, nullptr });
+	}
+	Environment::Function func{ stmt->info().name, stmt->info().ret_type, args, stmt->body() };
 	this->env_->define_func(func);
 }
 
 void Interpreter::run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt)
 {
-	std::vector<Function> methods{};
-	std::vector<Variable> members{};
+	std::vector<Environment::Function> methods{};
+	std::vector<Environment::Variable> members{};
 
 	for (stmt_ptr s : stmt->methods())
 	{
 		std::shared_ptr<FuncDeclStatement> method_ptr = std::dynamic_pointer_cast<FuncDeclStatement, Statement>(s);
-		methods.emplace_back(method_ptr->info(), method_ptr->body());
+		std::vector<Environment::Variable> args{};
+		for (VarInfo arg : method_ptr->info().args)
+		{
+			args.push_back({ arg.name, arg.type, nullptr });
+		}
+		methods.push_back({ method_ptr->info().name, method_ptr->info().ret_type, args, method_ptr->body() });
 	}
 
 	for (stmt_ptr s : stmt->members())
 	{
 		std::shared_ptr<VarDeclStatement> member_ptr = std::dynamic_pointer_cast<VarDeclStatement, Statement>(s);
 		value_ptr value = run_expr(member_ptr->val());
-		members.emplace_back(member_ptr->info(), value);
+		members.push_back({ member_ptr->info().name, member_ptr->info().type, value });
 	}
 
-	Class cls{ stmt->info(), methods, members };
+	Environment::Class cls{ stmt->info().name, members, methods };
 	env_->define_class(cls);
 }
 
 void Interpreter::run_expr_stmt(std::shared_ptr<ExprStatement> stmt)
 {
 	this->run_expr(stmt->expr());
+}
+
+void Interpreter::define_symbols(SymbolTable& table)
+{
+	for (auto& pair : table.vars_)
+	{
+		SymbolTable::Variable& var = pair.second;
+	}
 }

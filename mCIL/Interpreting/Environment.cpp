@@ -16,45 +16,45 @@ Environment::~Environment()
 
 void Environment::define_var(Variable var)
 {
-	if (this->variables_.contains(var.info.name))
+	if (this->variables_.contains(var.name))
 	{
-		throw CILError::error("Redifinition of variable '$'", var.info.name.c_str());
+		throw CILError::error("Redifinition of variable '$'", var.name.c_str());
 	}
-	this->variables_.insert({ var.info.name, var });
+	this->variables_.insert({ var.name, var });
 }
 
 void Environment::define_arr(Array arr)
 {
-	if (this->arrays_.contains(arr.info.name))
+	if (this->arrays_.contains(arr.name))
 	{
-		throw CILError::error("Redifinition of array '$'", arr.info.name.c_str());
+		throw CILError::error("Redifinition of array '$'", arr.name.c_str());
 	}
-	this->arrays_.insert({ arr.info.name, arr });
+	this->arrays_.insert({ arr.name, arr });
 }
 
 void Environment::define_func(Function func)
 {
-	if (this->functions_.contains(func.info.name))
+	if (this->functions_.contains(func.name))
 	{
-		if (functions_.at(func.info.name).body)
+		if (functions_.at(func.name).body)
 		{
-			throw CILError::error("Redifinition of function '$'", func.info.name.c_str());
+			throw CILError::error("Redifinition of function '$'", func.name.c_str());
 		}
-		functions_.at(func.info.name) = func;
+		functions_.at(func.name) = func;
 	}
-	this->functions_.insert({ func.info.name, func });
+	this->functions_.insert({ func.name, func });
 }
 
 void Environment::define_class(Class cls)
 {
-	if (classes_.contains(cls.info.name))
+	if (classes_.contains(cls.name))
 	{
-		throw CILError::error("Redifinition of class '$'", cls.info.name.c_str());
+		throw CILError::error("Redifinition of class '$'", cls.name.c_str());
 	}
-	classes_.insert({ cls.info.name, cls });
+	classes_.insert({ cls.name, cls });
 }
 
-Variable& Environment::get_var(const std::string name)
+Environment::Variable& Environment::get_var(const std::string name)
 {
 	if (this->variables_.contains(name))
 	{
@@ -70,7 +70,7 @@ Variable& Environment::get_var(const std::string name)
 	}
 }
 
-Array& Environment::get_arr(const std::string name)
+Environment::Array& Environment::get_arr(const std::string name)
 {
 	if (this->arrays_.contains(name))
 	{
@@ -86,7 +86,7 @@ Array& Environment::get_arr(const std::string name)
 	}
 }
 
-Function& Environment::get_func(const std::string name)
+Environment::Function& Environment::get_func(const std::string name)
 {
 	if (this->functions_.contains(name))
 	{
@@ -102,7 +102,7 @@ Function& Environment::get_func(const std::string name)
 	}
 }
 
-Class& Environment::get_class(const std::string name)
+Environment::Class& Environment::get_class(const std::string name)
 {
 	if (classes_.contains(name))
 	{
@@ -130,7 +130,7 @@ bool Environment::var_exists(const std::string name)
 
 bool Environment::var_exists(Variable var)
 {
-	if (this->variables_.contains(var.info.name))
+	if (this->variables_.contains(var.name))
 	{ return true; }
 	if (this->enclosing_ != nullptr)
 	{ return this->enclosing_->var_exists(var); }
@@ -150,7 +150,7 @@ bool Environment::arr_exists(const std::string name)
 
 bool Environment::arr_exists(Array arr)
 {
-	return this->arr_exists(arr.info.name);
+	return this->arr_exists(arr.name);
 }
 
 bool Environment::func_exists(const std::string name)
@@ -165,7 +165,7 @@ bool Environment::func_exists(const std::string name)
 
 bool Environment::func_exists(Function func)
 {
-	if (this->functions_.contains(func.info.name))
+	if (this->functions_.contains(func.name))
 	{ return true; }
 	if (this->enclosing_ != nullptr)
 	{ return this->enclosing_->func_exists(func); }
@@ -185,7 +185,7 @@ bool Environment::class_exists(const std::string name)
 
 bool Environment::class_exists(Class cls)
 {
-	return class_exists(cls.info.name);
+	return class_exists(cls.name);
 }
 
 void Environment::add_enclosing(Environment* other)

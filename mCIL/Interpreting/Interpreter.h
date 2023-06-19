@@ -50,7 +50,6 @@ public:
 
 	void run_single_statement(stmt_ptr stmt);
 	value_ptr run_single_expression(expr_ptr expr);
-
 private:
 	value_ptr run_expr(expr_ptr expr);
 
@@ -80,6 +79,8 @@ private:
 	void run_func_decl_stmt(std::shared_ptr<FuncDeclStatement> stmt);
 	void run_class_decl_stmt(std::shared_ptr<ClassDeclStatement> stmt);
 	void run_expr_stmt(std::shared_ptr<ExprStatement> stmt);
+
+	void define_symbols(SymbolTable& table);
 
 	stmt_list program_;
 

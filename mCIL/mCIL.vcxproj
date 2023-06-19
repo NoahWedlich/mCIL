@@ -206,7 +206,6 @@
     <ClInclude Include="Diagnostics\SourceManager.h" />
     <ClInclude Include="Lexing\Token.h" />
     <ClInclude Include="Diagnostics\TokenPrinter.h" />
-    <ClInclude Include="Types\RuntimeObjects.h" />
     <ClInclude Include="Types\TypeTable.h" />
     <ClInclude Include="Utils\Threading\FunctionJob.h" />
     <ClInclude Include="Utils\Threading\JobQueue.h" />

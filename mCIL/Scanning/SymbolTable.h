@@ -7,9 +7,13 @@
 #include "../Diagnostics/CILError.h"
 #include "../Lexing/Token.h"
 
+class Interpreter;
+
 class SymbolTable
 {
 public:
+	friend Interpreter;
+
 	struct Variable {
 		std::string name;
 		Type type;

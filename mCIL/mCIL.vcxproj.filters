@@ -170,9 +170,6 @@
     <ClInclude Include="Diagnostics\CILError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Types\RuntimeObjects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Types\Value.h">
       <Filter>Header Files</Filter>
     </ClInclude>

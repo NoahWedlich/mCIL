@@ -1,11 +1,41 @@
 #pragma once
 #include "../cil-system.h"
-#include "../Types/RuntimeObjects.h"
 #include "../Diagnostics/CILError.h"
 #include "../Types/Value.h"
 
 class Environment
 {
+public:
+	struct Variable {
+		std::string name;
+		Type type;
+
+		value_ptr value;
+	};
+
+	struct Array {
+		std::string name;
+		size_t size;
+		Type type;
+
+		std::vector<value_ptr> values;
+	};
+
+	struct Function {
+		std::string name;
+		Type ret_type;
+
+		std::vector<Variable> parameters;
+
+		stmt_ptr body;
+	};
+
+	struct Class {
+		std::string name;
+
+		std::vector<Variable> members;
+		std::vector<Function> methods;
+	};
 public:
 	Environment();
 	Environment(Environment* enclosing);
