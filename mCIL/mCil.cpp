@@ -56,6 +56,7 @@ int main()
 	}*/
 	
 	Interpreter interpreter{ stmts };
+	interpreter.define_global_symbols();
 	interpreter.run();
 	if (ErrorManager::error_ocurred)
 	{

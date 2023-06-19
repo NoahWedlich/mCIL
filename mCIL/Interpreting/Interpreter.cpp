@@ -573,5 +573,89 @@ void Interpreter::define_symbols(SymbolTable& table)
 	for (auto& pair : table.vars_)
 	{
 		SymbolTable::Variable& var = pair.second;
+		value_ptr value = var.init_expr == nullptr ? nullptr : this->run_expr(var.init_expr);
+		env_->define_var({ var.name, var.type, value });
+	}
+	for (auto& pair : table.funcs_)
+	{
+		SymbolTable::Function& func = pair.second;
+		std::vector<Environment::Variable> args{};
+		for (SymbolTable::Variable arg : func.args)
+		{
+			value_ptr value = arg.init_expr == nullptr ? nullptr : this->run_expr(arg.init_expr);
+			args.push_back({ arg.name, arg.type, value });
+		}
+		env_->define_func({ func.name, func.ret_type, args, func.body });
+	}
+	for (auto& pair : table.classes_)
+	{
+		SymbolTable::Class& cls = pair.second;
+		std::vector<Environment::Function> methods{};
+		std::vector<Environment::Variable> members{};
+
+		for (SymbolTable::Function method : cls.methods)
+		{
+			std::vector<Environment::Variable> args{};
+			for (SymbolTable::Variable arg : method.args)
+			{
+				value_ptr value = arg.init_expr == nullptr ? nullptr : this->run_expr(arg.init_expr);
+				args.push_back({ arg.name, arg.type, value });
+			}
+			methods.push_back({ method.name, method.ret_type, args, method.body });
+		}
+
+		for (SymbolTable::Variable member : cls.members)
+		{
+			value_ptr value = member.init_expr == nullptr ? nullptr : this->run_expr(member.init_expr);
+			members.push_back({ member.name, member.type, value });
+		}
+
+		env_->define_class({ cls.name, members, methods });
+	}
+}
+
+void Interpreter::define_global_symbols()
+{
+	for (auto& pair : SymbolTable::global_table_->vars_)
+	{
+		SymbolTable::Variable& var = pair.second;
+		value_ptr value = var.init_expr == nullptr ? nullptr : this->run_expr(var.init_expr);
+		env_->define_var({ var.name, var.type, value });
+	}
+	for (auto& pair : SymbolTable::global_table_->funcs_)
+	{
+		SymbolTable::Function& func = pair.second;
+		std::vector<Environment::Variable> args{};
+		for (SymbolTable::Variable arg : func.args)
+		{
+			value_ptr value = arg.init_expr == nullptr ? nullptr : this->run_expr(arg.init_expr);
+			args.push_back({ arg.name, arg.type, value });
+		}
+		env_->define_func({ func.name, func.ret_type, args, func.body });
+	}
+	for (auto& pair : SymbolTable::global_table_->classes_)
+	{
+		SymbolTable::Class& cls = pair.second;
+		std::vector<Environment::Function> methods{};
+		std::vector<Environment::Variable> members{};
+
+		for (SymbolTable::Function method : cls.methods)
+		{
+			std::vector<Environment::Variable> args{};
+			for (SymbolTable::Variable arg : method.args)
+			{
+				value_ptr value = arg.init_expr == nullptr ? nullptr : this->run_expr(arg.init_expr);
+				args.push_back({ arg.name, arg.type, value });
+			}
+			methods.push_back({ method.name, method.ret_type, args, method.body });
+		}
+
+		for (SymbolTable::Variable member : cls.members)
+		{
+			value_ptr value = member.init_expr == nullptr ? nullptr : this->run_expr(member.init_expr);
+			members.push_back({ member.name, member.type, value });
+		}
+
+		env_->define_class({ cls.name, members, methods });
 	}
 }

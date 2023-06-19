@@ -45,7 +45,6 @@ public:
 public:
 	SymbolTable();
 
-
 	void declare_local_variable(std::string name, Type type, token_list tokens = {});
 	void declare_local_function(std::string name, std::vector<Variable> args, Type ret_type, token_list tokens = {});
 	void declare_local_class(std::string name, std::vector<Variable> members, std::vector<Function> methods, token_list tokens = {});
